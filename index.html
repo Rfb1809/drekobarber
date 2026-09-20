@@ -1,1123 +1,771 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dreko Barbearia | Agendamento e Gestão Premium</title>
-    
+    <title>Dreko Barbearia - Agendamento & Gestão</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        gold: {
-                            400: '#facc15',
-                            500: '#eab308',
-                            600: '#ca8a04',
-                            700: '#a16207',
-                        },
-                        darkbg: '#0f1015',
-                        cardbg: '#181a20',
-                        borderbg: '#282c37'
+                        gold: '#D4AF37',
+                        darkBg: '#121212',
+                        cardBg: '#1E1E1E',
+                        accentGold: '#F39C12'
                     }
                 }
             }
         }
     </script>
-    
-    <!-- Icons and Fonts -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f1015;
-            color: #f3f4f6;
-        }
-        .font-brand {
-            font-family: 'Cinzel', serif;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #181a20;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #ca8a04;
-            border-radius: 4px;
-        }
+        body { background-color: #121212; color: #E0E0E0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .tab-btn.active { border-bottom: 2px solid #D4AF37; color: #D4AF37; }
+        .glass { background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(10px); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar bg-darkbg text-gray-100">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <header class="bg-cardbg border-b border-borderbg sticky top-0 z-40 shadow-xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="app.showHome()">
-                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-gold-600 to-yellow-300 flex items-center justify-center text-darkbg shadow-lg shadow-gold-600/30">
-                    <i class="fa-solid fa-scissors font-bold text-xl"></i>
-                </div>
+    <!-- Header / Navbar -->
+    <header class="bg-cardBg border-b border-gray-800 p-4 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="logo.png" alt="Dreko Barbearia Logo" class="w-12 h-12 rounded-full border-2 border-gold object-cover shadow-md" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/D4AF37/000000?text=DREKO';">
                 <div>
-                    <h1 class="font-brand text-xl sm:text-2xl font-bold tracking-wider text-amber-400">DREKO</h1>
-                    <p class="text-xs text-gray-400 tracking-widest uppercase">Barbearia Premium</p>
+                    <h1 class="text-xl font-bold tracking-wider text-gold">DREKO BARBEARIA</h1>
+                    <p class="text-xs text-gray-400">Desde 2015 - Excelência em Estilo</p>
                 </div>
             </div>
-
-            <!-- User Info and Logout Actions -->
-            <div id="headerNav" class="hidden flex items-center space-x-4">
-                <div class="text-right hidden sm:block">
-                    <div id="userBadgeName" class="text-sm font-semibold text-gold-400"></div>
-                    <div id="userBadgeRole" class="text-xs text-gray-400"></div>
-                </div>
-                <button onclick="app.logout()" class="px-3 py-2 bg-red-900/30 hover:bg-red-900/60 text-red-400 rounded-lg text-sm transition-colors border border-red-800/40 flex items-center gap-2">
-                    <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Sair</span>
+            
+            <div id="userInfo" class="hidden flex items-center space-x-4">
+                <span id="userNameDisplay" class="text-sm font-semibold text-gray-300"></span>
+                <button onclick="logout()" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-3 py-1 rounded-lg text-sm transition">
+                    <i class="fa-solid font-bold fa-sign-out-alt"></i> Sair
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+    <!-- MAIN CONTENT -->
+    <main class="max-w-6xl mx-auto p-4 w-full flex-grow">
 
-        <!-- Notification Toast Component -->
-        <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border"></div>
-
-        <section id="viewLogin" class="max-w-md mx-auto my-6 sm:my-12">
-            <div class="bg-cardbg border border-borderbg rounded-2xl shadow-2xl p-6 sm:p-8 relative overflow-hidden">
-                <div class="absolute -right-10 -top-10 w-32 h-32 bg-gold-600/10 rounded-full blur-2xl"></div>
-                
-                <!-- Auth Tabs -->
-                <div class="flex border-b border-gray-800 mb-6">
-                    <button id="tabLoginBtn" onclick="app.switchAuthTab('login')" class="flex-1 pb-3 text-center text-gold-400 font-semibold border-b-2 border-gold-500 transition-all">Entrar</button>
-                    <button id="tabRegisterBtn" onclick="app.switchAuthTab('register')" class="flex-1 pb-3 text-center text-gray-400 font-semibold border-b-2 border-transparent hover:text-gray-200 transition-all">Cadastrar Cliente</button>
-                </div>
-
-                <!-- Form: Login -->
-                <form id="formLogin" onsubmit="app.handleLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Usuário / Primeiro Nome</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-user absolute left-3.5 top-3.5 text-gray-500"></i>
-                            <input type="text" id="loginUsername" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 pl-10 pr-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="Ex: admin, Dreko ou seu Primeiro Nome">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Senha</label>
-                        <div class="relative">
-                            <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-gray-500"></i>
-                            <input type="password" id="loginPassword" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 pl-10 pr-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="••••••••">
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-darkbg font-bold py-3 rounded-xl transition-all shadow-lg shadow-gold-600/20 active:scale-95">
-                        Acessar Conta
-                    </button>
-
-                    <!-- Credentials Instructions Box -->
-                    <div class="mt-6 p-4 rounded-xl bg-darkbg/60 border border-gold-600/20 text-xs text-gray-400 space-y-2">
-                        <p class="font-bold text-gold-400 flex items-center gap-1.5"><i class="fa-solid fa-key"></i> Logins pré-configurados:</p>
-                        <p><strong class="text-gray-300">ADM 1:</strong> admin / Rafa180993</p>
-                        <p><strong class="text-gray-300">ADM 2:</strong> Dreko / Dreko123</p>
-                        <p><strong class="text-gray-300">Cliente Exemplo:</strong> Lucas / cliente123</p>
-                    </div>
-                </form>
-
-                <!-- Form: Register -->
-                <form id="formRegister" onsubmit="app.handleRegister(event)" class="space-y-4 hidden">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Nome Completo</label>
-                        <input type="text" id="regFullName" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 px-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="Ex: Lucas Silva">
-                        <p class="text-[11px] text-gray-500 mt-1">* O seu primeiro nome será o seu usuário de login.</p>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">E-mail</label>
-                        <input type="email" id="regEmail" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 px-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="seu@email.com">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Telefone / WhatsApp</label>
-                        <input type="tel" id="regPhone" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 px-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="(11) 99999-9999">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Senha</label>
-                        <input type="password" id="regPassword" required class="w-full bg-darkbg border border-borderbg rounded-xl py-2.5 px-4 text-sm text-gray-100 focus:outline-none focus:border-gold-500 transition-colors" placeholder="Crie sua senha">
-                    </div>
-                    <button type="submit" class="w-full bg-gradient-to-r from-gold-600 to-gold-500 hover:from-gold-500 hover:to-gold-400 text-darkbg font-bold py-3 rounded-xl transition-all shadow-lg shadow-gold-600/20 active:scale-95">
-                        Criar Minha Conta
-                    </button>
-                </form>
+        <!-- 1. LOGIN / CADASTRO SCREEN -->
+        <section id="authScreen" class="max-w-md mx-auto my-8 glass p-6 rounded-2xl border border-gray-800 shadow-2xl">
+            <!-- Brand Logo Center -->
+            <div class="text-center mb-6">
+                <img src="logo.png" alt="Dreko Barbearia" class="w-24 h-24 mx-auto rounded-full border-2 border-gold object-cover mb-3 shadow-lg" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/D4AF37/000000?text=DREKO';">
+                <h2 class="text-2xl font-bold text-gold">Área de Acesso</h2>
+                <p class="text-gray-400 text-sm">Entre ou cadastre-se para agendar seu horário</p>
             </div>
+
+            <!-- Tabs Login/Cadastro -->
+            <div class="flex border-b border-gray-700 mb-6">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="tab-btn active w-1/2 py-2 font-medium text-center">Login</button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="tab-btn w-1/2 py-2 font-medium text-center text-gray-400">Cadastrar</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Primeiro Nome ou Usuário ADM</label>
+                    <input type="text" id="loginUsername" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Senha</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <button type="submit" class="w-full bg-gold hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition">Entrar</button>
+            </form>
+
+            <!-- CADASTRO FORM -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Nome Completo</label>
+                    <input type="text" id="regFullName" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">E-mail</label>
+                    <input type="email" id="regEmail" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Telefone (WhatsApp)</label>
+                    <input type="tel" id="regPhone" placeholder="(00) 00000-0000" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Senha</label>
+                    <input type="password" id="regPassword" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+                <button type="submit" class="w-full bg-gold hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition">Criar Conta</button>
+            </form>
         </section>
 
-        <section id="viewClient" class="hidden space-y-8">
-            <!-- Client Banner -->
-            <div class="bg-gradient-to-r from-cardbg via-darkbg to-cardbg border border-borderbg rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-xl">
+        <!-- 2. CLIENT DASHBOARD -->
+        <section id="clientDashboard" class="hidden space-y-8">
+            <div class="flex justify-between items-center bg-cardBg p-4 rounded-xl border border-gray-800">
                 <div>
-                    <span class="px-3 py-1 bg-gold-600/10 text-gold-400 rounded-full text-xs font-semibold border border-gold-600/20">Área do Cliente</span>
-                    <h2 class="text-2xl sm:text-3xl font-bold mt-2 text-white">Olá, <span id="clientGreetingName" class="text-gold-400">Cliente</span>!</h2>
-                    <p class="text-gray-400 text-sm mt-1">Agende seu horário com os melhores profissionais da região.</p>
+                    <h2 class="text-xl font-bold text-gold">Bem-vindo, <span id="clientGreetingName"></span>!</h2>
+                    <p class="text-sm text-gray-400">Escolha o melhor dia e horário para seu atendimento.</p>
                 </div>
-                <button onclick="app.openBookingModal()" class="w-full md:w-auto px-6 py-3.5 bg-gradient-to-r from-gold-600 to-gold-500 text-darkbg font-bold rounded-xl shadow-lg shadow-gold-600/20 hover:scale-105 transition-transform flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-calendar-plus"></i> Novo Agendamento
+                <button onclick="showBookingModal()" class="bg-gold text-black font-bold px-4 py-2 rounded-lg hover:bg-yellow-600 transition">
+                    + Novo Agendamento
                 </button>
             </div>
 
-            <!-- Active Client Bookings -->
-            <div class="space-y-4">
-                <h3 class="text-lg font-bold text-gray-200 flex items-center gap-2">
-                    <i class="fa-solid fa-clock text-gold-400"></i> Meus Agendamentos
-                </h3>
-                <div id="clientBookingsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Loaded dynamically -->
+            <!-- AGENDA DA SEMANA (CLIENTE) -->
+            <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-calendar-week text-gold mr-2"></i>Agenda da Semana</h3>
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4" id="clientWeeklySchedule">
+                    <!-- Gerado via JavaScript -->
                 </div>
             </div>
 
-            <!-- Client Weekly Calendar Overview -->
-            <div class="bg-cardbg border border-borderbg rounded-2xl p-6 shadow-xl space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-borderbg pb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-calendar-week text-gold-400"></i> Agenda da Semana (Horários)
-                        </h3>
-                        <p class="text-xs text-gray-400">Confira os horários ocupados e disponíveis</p>
-                    </div>
-                    <input type="date" id="clientCalendarFilterDate" onchange="app.renderClientWeeklyAgenda()" class="bg-darkbg border border-borderbg text-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-gold-500">
-                </div>
-
-                <!-- Schedule Grid -->
-                <div id="clientWeeklyGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                    <!-- Loaded dynamically -->
+            <!-- MEUS AGENDAMENTOS ATIVOS -->
+            <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fa-solid fa-clock text-gold mr-2"></i>Meus Agendamentos</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-gray-300">
+                        <thead class="bg-gray-800 text-gold uppercase text-xs">
+                            <tr>
+                                <th class="p-3">Data/Hora</th>
+                                <th class="p-3">Serviço</th>
+                                <th class="p-3">Pagamento</th>
+                                <th class="p-3">Valor</th>
+                                <th class="p-3">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientAppointmentsList">
+                            <!-- Inserido dinamicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
 
-        <section id="viewAdmin" class="hidden space-y-8">
-            <!-- Navigation Header for Admin -->
-            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-borderbg pb-4">
-                <div>
-                    <span class="px-3 py-1 bg-amber-500/10 text-amber-400 rounded-full text-xs font-semibold border border-amber-500/20">Modo Gestor</span>
-                    <h2 class="text-2xl sm:text-3xl font-bold text-white mt-1">Painel Administrativo</h2>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button id="adminTabScheduleBtn" onclick="app.switchAdminTab('schedule')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-gold-600 text-darkbg shadow-md">
-                        <i class="fa-solid fa-calendar-days mr-1.5"></i> Agenda & Horários
-                    </button>
-                    <button id="adminTabFinanceBtn" onclick="app.switchAdminTab('finance')" class="px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-darkbg border border-borderbg text-gray-300 hover:text-white">
-                        <i class="fa-solid fa-chart-line mr-1.5"></i> Relatórios & Financeiro
-                    </button>
-                </div>
+        <!-- 3. ADMIN DASHBOARD -->
+        <section id="adminDashboard" class="hidden space-y-8">
+            <!-- Navigation Tabs ADM -->
+            <div class="flex border-b border-gray-800 space-x-4">
+                <button onclick="switchAdminTab('agenda')" id="admAgendaTab" class="tab-btn active py-2 px-4 font-bold"><i class="fa-solid fa-calendar-alt mr-2"></i>Agenda Completa</button>
+                <button onclick="switchAdminTab('lock')" id="admLockTab" class="tab-btn py-2 px-4 font-bold text-gray-400"><i class="fa-solid fa-lock mr-2"></i>Trancar Horários</button>
+                <button onclick="switchAdminTab('reports')" id="admReportsTab" class="tab-btn py-2 px-4 font-bold text-gray-400"><i class="fa-solid fa-chart-line mr-2"></i>Administração & Métricas</button>
             </div>
 
-            <!-- ADMIN TAB 1: SCHEDULE MANAGEMENT -->
-            <div id="adminTabSchedule" class="space-y-6">
-                <!-- Lock Hour Form -->
-                <div class="bg-cardbg border border-borderbg rounded-2xl p-6 shadow-xl space-y-4">
-                    <h3 class="text-base font-bold text-gray-200 flex items-center gap-2">
-                        <i class="fa-solid fa-lock text-gold-400"></i> Bloquear / Trancar Horário Indisponível
-                    </h3>
-                    <form onsubmit="app.handleLockTimeSlot(event)" class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Data</label>
-                            <input type="date" id="lockDate" required class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Horário</label>
-                            <select id="lockTime" required class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
-                                <!-- Dynamic options -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Motivo do Bloqueio</label>
-                            <input type="text" id="lockReason" placeholder="Ex: Almoço, Manutenção" class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
-                        </div>
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-red-900/60 hover:bg-red-800 text-red-200 border border-red-700/50 font-semibold py-2 px-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-ban"></i> Trancar Horário
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Appointments List -->
-                <div class="bg-cardbg border border-borderbg rounded-2xl p-6 shadow-xl space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-gold-400"></i> Agendamentos Marcados
-                        </h3>
-                        <div class="flex gap-2">
-                            <input type="date" id="adminFilterDate" onchange="app.renderAdminAppointments()" class="bg-darkbg border border-borderbg text-gray-200 rounded-xl px-3 py-2 text-sm">
-                            <button onclick="app.clearAdminDateFilter()" class="bg-darkbg border border-borderbg px-3 py-2 rounded-xl text-xs text-gray-400 hover:text-white">Todos</button>
-                        </div>
-                    </div>
-
-                    <div class="overflow-x-auto custom-scrollbar">
+            <!-- SUB-ABA 1: AGENDA ADM -->
+            <div id="admAgendaView" class="space-y-6">
+                <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                    <h3 class="text-lg font-bold text-gold mb-4">Agendamentos Realizados</h3>
+                    <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm text-gray-300">
-                            <thead class="bg-darkbg text-xs uppercase text-gray-400 border-b border-borderbg">
+                            <thead class="bg-gray-800 text-gold uppercase text-xs">
                                 <tr>
-                                    <th class="p-3">Data / Hora</th>
                                     <th class="p-3">Cliente</th>
-                                    <th class="p-3">Barbeiro</th>
+                                    <th class="p-3">Telefone</th>
                                     <th class="p-3">Serviço</th>
-                                    <th class="p-3">Pagamento</th>
+                                    <th class="p-3">Data / Hora</th>
+                                    <th class="p-3">Forma Pagto</th>
                                     <th class="p-3">Valor</th>
-                                    <th class="p-3">Status</th>
-                                    <th class="p-3 text-center">Ações</th>
+                                    <th class="p-3">Ações</th>
                                 </tr>
                             </thead>
-                            <tbody id="adminAppointmentsTable" class="divide-y divide-borderbg">
-                                <!-- Loaded dynamically -->
+                            <tbody id="adminAppointmentsList">
+                                <!-- Preenchido dinamicamente -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- ADMIN TAB 2: FINANCIAL & GRAPH REPORTS -->
-            <div id="adminTabFinance" class="space-y-6 hidden">
-                <!-- Financial KPI Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-cardbg border border-borderbg p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Faturamento Bruto</p>
-                        <h4 id="statGrossRevenue" class="text-2xl font-bold text-gold-400 mt-1">R$ 0,00</h4>
-                        <div class="text-xs text-emerald-400 mt-2"><i class="fa-solid fa-arrow-up"></i> Entradas Confirmadas</div>
+            <!-- SUB-ABA 2: TRANCAR HORÁRIOS -->
+            <div id="admLockView" class="hidden bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4 max-w-lg mx-auto">
+                <h3 class="text-lg font-bold text-gold mb-2"><i class="fa-solid fa-ban mr-2"></i>Trancar/Bloquear Horário</h3>
+                <form onsubmit="handleLockSlot(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 mb-1">Data</label>
+                        <input type="date" id="lockDate" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
                     </div>
-                    <div class="bg-cardbg border border-borderbg p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Custos & Despesas</p>
-                        <h4 id="statTotalCosts" class="text-2xl font-bold text-red-400 mt-1">R$ 0,00</h4>
-                        <div class="text-xs text-gray-400 mt-2">Insumos e Operacional</div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 mb-1">Horário</label>
+                        <select id="lockTime" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="13:00">13:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                            <option value="18:00">18:00</option>
+                            <option value="19:00">19:00</option>
+                        </select>
                     </div>
-                    <div class="bg-cardbg border border-borderbg p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Lucro Líquido</p>
-                        <h4 id="statNetProfit" class="text-2xl font-bold text-emerald-400 mt-1">R$ 0,00</h4>
-                        <div class="text-xs text-emerald-400 mt-2">Receita - Despesas</div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-400 mb-1">Motivo do Bloqueio</label>
+                        <input type="text" id="lockReason" placeholder="Ex: Almoco, Manutencao, Folga" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
                     </div>
-                    <div class="bg-cardbg border border-borderbg p-5 rounded-2xl shadow-lg relative overflow-hidden">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Margem Lucro Bruto</p>
-                        <h4 id="statGrossMargin" class="text-2xl font-bold text-amber-300 mt-1">0%</h4>
-                        <div class="text-xs text-gray-400 mt-2">Eficiência Comercial</div>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition">Trancar Horário</button>
+                </form>
+            </div>
+
+            <!-- SUB-ABA 3: ADMINISTRAÇÃO, GRÁFICOS E LUCROS -->
+            <div id="admReportsView" class="hidden space-y-6">
+                <!-- CARDS FINANCEIROS E RESUMO -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-cardBg p-4 rounded-xl border border-gray-800">
+                        <p class="text-xs text-gray-400 uppercase">Receita Bruta</p>
+                        <h4 id="calcGrossRevenue" class="text-2xl font-bold text-green-400">R$ 0,00</h4>
+                    </div>
+                    <div class="bg-cardBg p-4 rounded-xl border border-gray-800">
+                        <p class="text-xs text-gray-400 uppercase">Custos / Insumos</p>
+                        <h4 id="calcTotalCosts" class="text-2xl font-bold text-red-400">R$ 0,00</h4>
+                    </div>
+                    <div class="bg-cardBg p-4 rounded-xl border border-gray-800">
+                        <p class="text-xs text-gray-400 uppercase">Lucro Líquido</p>
+                        <h4 id="calcNetProfit" class="text-2xl font-bold text-gold">R$ 0,00</h4>
+                    </div>
+                    <div class="bg-cardBg p-4 rounded-xl border border-gray-800">
+                        <p class="text-xs text-gray-400 uppercase">Margem Lucro Bruto</p>
+                        <h4 id="calcGrossMargin" class="text-2xl font-bold text-blue-400">0%</h4>
                     </div>
                 </div>
 
-                <!-- Charts Area -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Atendimentos por Período -->
-                    <div class="bg-cardbg border border-borderbg p-6 rounded-2xl shadow-xl space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-gray-100 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-column text-gold-400"></i> Cortes por Período (Dia, Semana, Mês)
-                            </h3>
-                        </div>
-                        <div class="h-64 relative">
-                            <canvas id="chartCortesPeriodo"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Client Recurrence -->
-                    <div class="bg-cardbg border border-borderbg p-6 rounded-2xl shadow-xl space-y-4">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-bold text-gray-100 flex items-center gap-2">
-                                <i class="fa-solid fa-chart-pie text-gold-400"></i> Taxa de Recorrência de Clientes
-                            </h3>
-                        </div>
-                        <div class="h-64 relative flex items-center justify-center">
-                            <canvas id="chartRecorrencia"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product & Cost Management -->
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Add Cost Form -->
-                    <div class="bg-cardbg border border-borderbg p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="font-bold text-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-plus-circle text-gold-400"></i> Adicionar Custos / Insumos
-                        </h3>
-                        <form onsubmit="app.handleAddCost(event)" class="space-y-3">
+                <!-- GESTÃO DE CUSTOS -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                        <h3 class="text-md font-bold text-gold mb-4"><i class="fa-solid fa-plus-circle mr-2"></i>Adicionar Custo / Produto</h3>
+                        <form onsubmit="handleAddCost(event)" class="space-y-3">
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Descrição</label>
-                                <input type="text" id="costTitle" required placeholder="Ex: Pomada, Lâminas, Aluguel" class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
+                                <label class="block text-xs uppercase text-gray-400 mb-1">Descrição</label>
+                                <input type="text" id="costName" placeholder="Ex: Pomada, Lâminas, Luz" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-gold">
                             </div>
                             <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Categoria</label>
-                                <select id="costCategory" class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
-                                    <option value="Produtos">Produtos e Cosméticos</option>
-                                    <option value="Equipamentos">Equipamentos</option>
-                                    <option value="Operacional">Operacional (Luz, Água, Aluguel)</option>
-                                    <option value="Outros">Outros</option>
-                                </select>
+                                <label class="block text-xs uppercase text-gray-400 mb-1">Valor (R$)</label>
+                                <input type="number" step="0.01" id="costValue" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-gold">
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-400 mb-1">Valor (R$)</label>
-                                <input type="number" step="0.01" id="costAmount" required placeholder="0.00" class="w-full bg-darkbg border border-borderbg text-sm rounded-xl px-3 py-2 text-gray-200">
-                            </div>
-                            <button type="submit" class="w-full bg-gold-600 hover:bg-gold-500 text-darkbg font-bold py-2.5 rounded-xl text-sm transition-all shadow-md">
-                                Registrar Despesa
-                            </button>
+                            <button type="submit" class="w-full bg-gold hover:bg-yellow-600 text-black font-bold py-2 rounded-lg transition">Lançar Custo</button>
                         </form>
                     </div>
 
-                    <!-- Cost Items List -->
-                    <div class="lg:col-span-2 bg-cardbg border border-borderbg p-6 rounded-2xl shadow-xl space-y-4">
-                        <h3 class="font-bold text-gray-100 flex items-center gap-2">
-                            <i class="fa-solid fa-receipt text-gold-400"></i> Despesas Cadastradas
-                        </h3>
-                        <div class="max-h-60 overflow-y-auto custom-scrollbar">
+                    <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 md:col-span-2">
+                        <h3 class="text-md font-bold text-gold mb-4">Lista de Custos</h3>
+                        <div class="max-h-48 overflow-y-auto">
                             <table class="w-full text-left text-sm text-gray-300">
-                                <thead class="bg-darkbg text-xs uppercase text-gray-400 sticky top-0">
+                                <thead class="bg-gray-800 text-gold uppercase text-xs">
                                     <tr>
-                                        <th class="p-2.5">Descrição</th>
-                                        <th class="p-2.5">Categoria</th>
-                                        <th class="p-2.5">Valor</th>
-                                        <th class="p-2.5 text-right">Ação</th>
+                                        <th class="p-2">Item</th>
+                                        <th class="p-2">Valor</th>
+                                        <th class="p-2">Ação</th>
                                     </tr>
                                 </thead>
-                                <tbody id="costsTable" class="divide-y divide-borderbg">
-                                    <!-- Loaded dynamically -->
+                                <tbody id="costsList">
+                                    <!-- Inserido dinamicamente -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
+
+                <!-- GRÁFICOS -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                        <h3 class="text-md font-bold text-white mb-4">Cortes por Período (Dia, Semana, Mês)</h3>
+                        <canvas id="cutsChart" class="w-full max-h-60"></canvas>
+                    </div>
+                    <div class="bg-cardBg p-6 rounded-2xl border border-gray-800">
+                        <h3 class="text-md font-bold text-white mb-4">Gráfico de Recorrência de Clientes</h3>
+                        <canvas id="recurrenceChart" class="w-full max-h-60"></canvas>
+                    </div>
+                </div>
             </div>
         </section>
+
     </main>
 
-    <div id="bookingModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-cardbg border border-borderbg rounded-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 relative shadow-2xl">
-            <button onclick="app.closeBookingModal()" class="absolute right-5 top-5 text-gray-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-
-            <div class="border-b border-borderbg pb-3">
-                <h3 class="text-xl font-bold text-gold-400 flex items-center gap-2">
-                    <i class="fa-solid fa-scissors"></i> Agendar Atendimento
-                </h3>
-                <p class="text-xs text-gray-400">Preencha os detalhes do seu agendamento</p>
+    <!-- MODAL DE AGENDAMENTO CLIENTE -->
+    <div id="bookingModal" class="fixed inset-0 bg-black/80 hidden items-center justify-center p-4 z-50">
+        <div class="bg-cardBg border border-gray-800 p-6 rounded-2xl max-w-md w-full space-y-4">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-3">
+                <h3 class="text-lg font-bold text-gold">Agendar Atendimento</h3>
+                <button onclick="closeBookingModal()" class="text-gray-400 hover:text-white">&times;</button>
             </div>
 
-            <form onsubmit="app.handleCreateBooking(event)" class="space-y-4">
-                <!-- Service Selection -->
+            <form onsubmit="handleCreateAppointment(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Serviço</label>
-                    <select id="bookService" onchange="app.updateBookingPrice()" required class="w-full bg-darkbg border border-borderbg rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-gold-500">
-                        <!-- Dynamic options -->
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Serviço</label>
+                    <select id="bookService" onchange="updateServicePrice()" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                        <option value="Cabelo|40">Cabelo - R$ 40,00</option>
+                        <option value="Barba|30">Barba - R$ 30,00</option>
+                        <option value="Combo (Cabelo + Barba)|60">Combo (Cabelo + Barba) - R$ 60,00</option>
+                        <option value="Pezinho / Acabamento|20">Pezinho / Acabamento - R$ 20,00</option>
+                        <option value="Pigmentação|35">Pigmentação - R$ 35,00</option>
                     </select>
                 </div>
 
-                <!-- Barber Selection -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Profissional / Barbeiro</label>
-                    <select id="bookBarber" required class="w-full bg-darkbg border border-borderbg rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-gold-500">
-                        <option value="Dreko">Dreko (Master Barber)</option>
-                        <option value="Rafael">Rafael</option>
-                        <option value="Qualquer Profissional">Qualquer Profissional Disponível</option>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Data</label>
+                    <input type="date" id="bookDate" onchange="loadAvailableSlots()" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Horário Disponível</label>
+                    <select id="bookTime" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                        <!-- Carregado via JS -->
                     </select>
                 </div>
 
-                <!-- Date & Time Selection -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Data</label>
-                        <input type="date" id="bookDate" onchange="app.updateAvailableTimeSlots()" required class="w-full bg-darkbg border border-borderbg rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-gold-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Horários Livres</label>
-                        <select id="bookTime" required class="w-full bg-darkbg border border-borderbg rounded-xl p-3 text-sm text-gray-200 focus:outline-none focus:border-gold-500">
-                            <!-- Dynamic times -->
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Payment Method Selection -->
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Forma de Pagamento</label>
-                    <div class="grid grid-cols-3 gap-3">
-                        <label class="cursor-pointer border border-borderbg bg-darkbg p-3 rounded-xl flex flex-col items-center gap-1 hover:border-gold-500 transition-colors">
-                            <input type="radio" name="payMethod" value="PIX" checked class="accent-gold-500">
-                            <i class="fa-brands fa-pix text-emerald-400 text-lg"></i>
-                            <span class="text-xs text-gray-200">PIX</span>
-                        </label>
-                        <label class="cursor-pointer border border-borderbg bg-darkbg p-3 rounded-xl flex flex-col items-center gap-1 hover:border-gold-500 transition-colors">
-                            <input type="radio" name="payMethod" value="Crédito" class="accent-gold-500">
-                            <i class="fa-solid fa-credit-card text-blue-400 text-lg"></i>
-                            <span class="text-xs text-gray-200">Crédito</span>
-                        </label>
-                        <label class="cursor-pointer border border-borderbg bg-darkbg p-3 rounded-xl flex flex-col items-center gap-1 hover:border-gold-500 transition-colors">
-                            <input type="radio" name="payMethod" value="Débito" class="accent-gold-500">
-                            <i class="fa-solid fa-money-check text-purple-400 text-lg"></i>
-                            <span class="text-xs text-gray-200">Débito</span>
-                        </label>
-                    </div>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Forma de Pagamento</label>
+                    <select id="bookPayment" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-gold">
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Cartão de Débito">Cartão de Débito</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                    </select>
                 </div>
 
-                <!-- Total Amount Summary -->
-                <div class="bg-darkbg/80 border border-gold-600/20 p-4 rounded-xl flex justify-between items-center">
-                    <span class="text-sm font-medium text-gray-300">Valor Total:</span>
-                    <span id="bookTotalPrice" class="text-xl font-bold text-gold-400">R$ 0,00</span>
+                <div class="pt-2 border-t border-gray-800 flex justify-between items-center">
+                    <span class="text-sm font-bold text-gray-400">Total:</span>
+                    <span id="bookTotalPrice" class="text-xl font-bold text-green-400">R$ 40,00</span>
                 </div>
 
-                <button type="submit" class="w-full bg-gradient-to-r from-gold-600 to-gold-500 text-darkbg font-bold py-3.5 rounded-xl shadow-lg shadow-gold-600/20 hover:from-gold-500 hover:to-gold-400 transition-all">
-                    Confirmar Agendamento
-                </button>
+                <button type="submit" class="w-full bg-gold hover:bg-yellow-600 text-black font-bold py-3 rounded-lg transition">Confirmar Agendamento</button>
             </form>
         </div>
     </div>
 
-    <footer class="bg-cardbg border-t border-borderbg py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
-            <p class="font-brand text-gold-400/80 font-bold tracking-widest text-sm">DREKO BARBEARIA</p>
-            <p>Tradição, agilidade e estilo premium para o seu dia a dia.</p>
-            <p>&copy; 2026 Dreko Barbearia - Todos os direitos reservados.</p>
-        </div>
+    <!-- Footer -->
+    <footer class="bg-cardBg border-t border-gray-800 py-4 text-center text-xs text-gray-500">
+        &copy; Dreko Barbearia. Todos os direitos reservados.
     </footer>
 
+    <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // BARBERSHOP SERVICES DATA
-        const SERVICES = [
-            { id: 'cabelo', name: 'Corte de Cabelo', price: 45.00, duration: 40 },
-            { id: 'barba', name: 'Barba Terapia / Completa', price: 35.00, duration: 30 },
-            { id: 'combo', name: 'Combo (Cabelo + Barba)', price: 70.00, duration: 60 },
-            { id: 'sobrancelha', name: 'Design de Sobrancelha', price: 20.00, duration: 15 },
-            { id: 'pigmentacao', name: 'Pigmentação Barba/Cabelo', price: 40.00, duration: 30 }
+        // INIT DATA STORAGE IN LOCALSTORAGE
+        const defaultUsers = [
+            { name: "Admin Geral", username: "admin", role: "admin", pass: "Rafa180993" },
+            { name: "Barbeiro Dreko", username: "Dreko", role: "admin", pass: "Dreko123" }
         ];
 
-        // OPERATIONAL TIME SLOTS
-        const TIME_SLOTS = [
-            "09:00", "10:00", "11:00", "13:00", "14:00", 
-            "15:00", "16:00", "17:00", "18:00", "19:00"
+        let users = JSON.parse(localStorage.getItem('dreko_users')) || defaultUsers;
+        let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
+        let lockedSlots = JSON.parse(localStorage.getItem('dreko_locked_slots')) || [];
+        let costs = JSON.parse(localStorage.getItem('dreko_costs')) || [
+            { id: 1, name: "Pomada Modeladora", value: 45.00 },
+            { id: 2, name: "Lâminas descartáveis", value: 30.00 }
         ];
 
-        // MAIN APPLICATION CLASS
-        class DrekoApp {
-            constructor() {
-                this.currentUser = null;
-                this.chartCortes = null;
-                this.chartRecorrencia = null;
-                this.initData();
-                this.bindEvents();
-            }
-
-            initData() {
-                // Initial Default Users
-                if (!localStorage.getItem('dreko_users')) {
-                    const initialUsers = [
-                        { name: "Administrador 1", email: "admin@dreko.com", phone: "(11) 99999-0001", password: "Rafa180993", username: "admin", role: "admin" },
-                        { name: "Dreko Barbearia", email: "dreko@dreko.com", phone: "(11) 99999-0002", password: "Dreko123", username: "Dreko", role: "admin" },
-                        { name: "Lucas Silva", email: "lucas@gmail.com", phone: "(11) 98888-1111", password: "cliente123", username: "Lucas", role: "client" },
-                        { name: "Mateus Oliveira", email: "mateus@gmail.com", phone: "(11) 97777-2222", password: "123", username: "Mateus", role: "client" }
-                    ];
-                    localStorage.setItem('dreko_users', JSON.stringify(initialUsers));
-                }
-
-                // Initial Default Bookings
-                if (!localStorage.getItem('dreko_bookings')) {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const initialBookings = [
-                        { id: 101, clientUsername: "Lucas", clientName: "Lucas Silva", phone: "(11) 98888-1111", barber: "Dreko", serviceId: "combo", serviceName: "Combo (Cabelo + Barba)", price: 70.00, date: todayStr, time: "10:00", payMethod: "PIX", status: "Confirmado", isRecurrent: true },
-                        { id: 102, clientUsername: "Mateus", clientName: "Mateus Oliveira", phone: "(11) 97777-2222", barber: "Rafael", serviceId: "cabelo", serviceName: "Corte de Cabelo", price: 45.00, date: todayStr, time: "14:00", payMethod: "Crédito", status: "Concluído", isRecurrent: false }
-                    ];
-                    localStorage.setItem('dreko_bookings', JSON.stringify(initialBookings));
-                }
-
-                // Initial Default Locked Slots
-                if (!localStorage.getItem('dreko_locks')) {
-                    const todayStr = new Date().toISOString().split('T')[0];
-                    const initialLocks = [
-                        { date: todayStr, time: "12:00", reason: "Horário de Almoço" }
-                    ];
-                    localStorage.setItem('dreko_locks', JSON.stringify(initialLocks));
-                }
-
-                // Initial Default Expenses/Costs
-                if (!localStorage.getItem('dreko_costs')) {
-                    const initialCosts = [
-                        { id: 1, title: "Pomada Modeladora Matificante", category: "Produtos", amount: 120.00 },
-                        { id: 2, title: "Caixa Lâminas de Barbear", category: "Produtos", amount: 45.00 },
-                        { id: 3, title: "Conta de Luz/Energia", category: "Operacional", amount: 210.00 }
-                    ];
-                    localStorage.setItem('dreko_costs', JSON.stringify(initialCosts));
-                }
-            }
-
-            getUsers() { return JSON.parse(localStorage.getItem('dreko_users')) || []; }
-            getBookings() { return JSON.parse(localStorage.getItem('dreko_bookings')) || []; }
-            getLocks() { return JSON.parse(localStorage.getItem('dreko_locks')) || []; }
-            getCosts() { return JSON.parse(localStorage.getItem('dreko_costs')) || []; }
-
-            saveUsers(users) { localStorage.setItem('dreko_users', JSON.stringify(users)); }
-            saveBookings(bookings) { localStorage.setItem('dreko_bookings', JSON.stringify(bookings)); }
-            saveLocks(locks) { localStorage.setItem('dreko_locks', JSON.stringify(locks)); }
-            saveCosts(costs) { localStorage.setItem('dreko_costs', JSON.stringify(costs)); }
-
-            bindEvents() {
-                const select = document.getElementById('bookService');
-                select.innerHTML = SERVICES.map(s => `<option value="${s.id}">${s.name} - R$ ${s.price.toFixed(2)}</option>`).join('');
-
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('bookDate').min = today;
-                document.getElementById('bookDate').value = today;
-                document.getElementById('clientCalendarFilterDate').value = today;
-                document.getElementById('lockDate').value = today;
-
-                document.getElementById('lockTime').innerHTML = TIME_SLOTS.map(t => `<option value="${t}">${t}</option>`).join('');
-            }
-
-            switchAuthTab(tab) {
-                const loginForm = document.getElementById('formLogin');
-                const regForm = document.getElementById('formRegister');
-                const loginTab = document.getElementById('tabLoginBtn');
-                const regTab = document.getElementById('tabRegisterBtn');
-
-                if (tab === 'login') {
-                    loginForm.classList.remove('hidden');
-                    regForm.classList.add('hidden');
-                    loginTab.className = "flex-1 pb-3 text-center text-gold-400 font-semibold border-b-2 border-gold-500 transition-all";
-                    regTab.className = "flex-1 pb-3 text-center text-gray-400 font-semibold border-b-2 border-transparent hover:text-gray-200 transition-all";
-                } else {
-                    loginForm.classList.add('hidden');
-                    regForm.classList.remove('hidden');
-                    regTab.className = "flex-1 pb-3 text-center text-gold-400 font-semibold border-b-2 border-gold-500 transition-all";
-                    loginTab.className = "flex-1 pb-3 text-center text-gray-400 font-semibold border-b-2 border-transparent hover:text-gray-200 transition-all";
-                }
-            }
-
-            handleLogin(e) {
-                e.preventDefault();
-                const userVal = document.getElementById('loginUsername').value.trim();
-                const passVal = document.getElementById('loginPassword').value.trim();
-
-                const users = this.getUsers();
-
-                const found = users.find(u => {
-                    if (u.role === 'admin') {
-                        return u.username.toLowerCase() === userVal.toLowerCase() && u.password === passVal;
-                    } else {
-                        return u.username.toLowerCase() === userVal.toLowerCase() && u.password === passVal;
-                    }
-                });
-
-                if (found) {
-                    this.currentUser = found;
-                    this.showToast(`Bem-vindo, ${found.name}!`, 'success');
-                    this.renderAppView();
-                } else {
-                    this.showToast('Usuário ou senha incorretos!', 'error');
-                }
-            }
-
-            handleRegister(e) {
-                e.preventDefault();
-                const fullName = document.getElementById('regFullName').value.trim();
-                const email = document.getElementById('regEmail').value.trim();
-                const phone = document.getElementById('regPhone').value.trim();
-                const password = document.getElementById('regPassword').value.trim();
-
-                const firstName = fullName.split(' ')[0];
-
-                const users = this.getUsers();
-                if (users.some(u => u.username.toLowerCase() === firstName.toLowerCase() && u.role === 'client')) {
-                    this.showToast(`O nome de login "${firstName}" já existe. Adicione uma inicial no nome.`, 'error');
-                    return;
-                }
-
-                const newUser = {
-                    name: fullName,
-                    email,
-                    phone,
-                    password,
-                    username: firstName,
-                    role: 'client'
-                };
-
-                users.push(newUser);
-                this.saveUsers(users);
-
-                this.currentUser = newUser;
-                this.showToast('Conta criada com sucesso!', 'success');
-                this.renderAppView();
-            }
-
-            logout() {
-                this.currentUser = null;
-                document.getElementById('headerNav').classList.add('hidden');
-                document.getElementById('viewLogin').classList.remove('hidden');
-                document.getElementById('viewClient').classList.add('hidden');
-                document.getElementById('viewAdmin').classList.add('hidden');
-                document.getElementById('loginUsername').value = '';
-                document.getElementById('loginPassword').value = '';
-                this.showToast('Sessão encerrada.', 'info');
-            }
-
-            showHome() {
-                if (this.currentUser) {
-                    this.renderAppView();
-                } else {
-                    this.switchAuthTab('login');
-                }
-            }
-
-            renderAppView() {
-                document.getElementById('viewLogin').classList.add('hidden');
-                const headerNav = document.getElementById('headerNav');
-                headerNav.classList.remove('hidden');
-
-                document.getElementById('userBadgeName').innerText = this.currentUser.name;
-                document.getElementById('userBadgeRole').innerText = this.currentUser.role === 'admin' ? 'Administrador' : 'Cliente';
-
-                if (this.currentUser.role === 'admin') {
-                    document.getElementById('viewClient').classList.add('hidden');
-                    document.getElementById('viewAdmin').classList.remove('hidden');
-                    this.renderAdminAppointments();
-                    this.renderFinancialReports();
-                } else {
-                    document.getElementById('viewAdmin').classList.add('hidden');
-                    document.getElementById('viewClient').classList.remove('hidden');
-                    document.getElementById('clientGreetingName').innerText = this.currentUser.username;
-                    this.renderClientBookings();
-                    this.renderClientWeeklyAgenda();
-                }
-            }
-
-            openBookingModal() {
-                document.getElementById('bookingModal').classList.remove('hidden');
-                this.updateBookingPrice();
-                this.updateAvailableTimeSlots();
-            }
-
-            closeBookingModal() {
-                document.getElementById('bookingModal').classList.add('hidden');
-            }
-
-            updateBookingPrice() {
-                const serviceId = document.getElementById('bookService').value;
-                const service = SERVICES.find(s => s.id === serviceId);
-                if (service) {
-                    document.getElementById('bookTotalPrice').innerText = `R$ ${service.price.toFixed(2)}`;
-                }
-            }
-
-            updateAvailableTimeSlots() {
-                const selectedDate = document.getElementById('bookDate').value;
-                const bookings = this.getBookings().filter(b => b.date === selectedDate && b.status !== 'Cancelado');
-                const locks = this.getLocks().filter(l => l.date === selectedDate);
-
-                const timeSelect = document.getElementById('bookTime');
-                timeSelect.innerHTML = '';
-
-                const occupiedTimes = [
-                    ...bookings.map(b => b.time),
-                    ...locks.map(l => l.time)
-                ];
-
-                const freeSlots = TIME_SLOTS.filter(t => !occupiedTimes.includes(t));
-
-                if (freeSlots.length === 0) {
-                    timeSelect.innerHTML = '<option value="">Sem horários disponíveis nesta data</option>';
-                    timeSelect.disabled = true;
-                } else {
-                    timeSelect.disabled = false;
-                    timeSelect.innerHTML = freeSlots.map(t => `<option value="${t}">${t}</option>`).join('');
-                }
-            }
-
-            handleCreateBooking(e) {
-                e.preventDefault();
-                const serviceId = document.getElementById('bookService').value;
-                const barber = document.getElementById('bookBarber').value;
-                const date = document.getElementById('bookDate').value;
-                const time = document.getElementById('bookTime').value;
-                const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
-
-                if (!time) {
-                    this.showToast('Selecione um horário válido.', 'error');
-                    return;
-                }
-
-                const service = SERVICES.find(s => s.id === serviceId);
-                const previousBookings = this.getBookings().filter(b => b.clientUsername === this.currentUser.username);
-
-                const newBooking = {
-                    id: Date.now(),
-                    clientUsername: this.currentUser.username,
-                    clientName: this.currentUser.name,
-                    phone: this.currentUser.phone,
-                    barber,
-                    serviceId: service.id,
-                    serviceName: service.name,
-                    price: service.price,
-                    date,
-                    time,
-                    payMethod,
-                    status: 'Confirmado',
-                    isRecurrent: previousBookings.length > 0
-                };
-
-                const bookings = this.getBookings();
-                bookings.push(newBooking);
-                this.saveBookings(bookings);
-
-                this.closeBookingModal();
-                this.showToast('Agendamento confirmado!', 'success');
-                this.renderClientBookings();
-                this.renderClientWeeklyAgenda();
-            }
-
-            renderClientBookings() {
-                const container = document.getElementById('clientBookingsList');
-                const myBookings = this.getBookings().filter(b => b.clientUsername === this.currentUser.username);
-
-                if (myBookings.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-full bg-cardbg border border-borderbg p-8 rounded-2xl text-center text-gray-400">
-                            <i class="fa-solid fa-calendar-xmark text-3xl mb-2 text-gray-500"></i>
-                            <p>Você ainda não possui nenhum agendamento registrado.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                container.innerHTML = myBookings.map(b => {
-                    const statusColors = {
-                        'Confirmado': 'bg-emerald-900/40 text-emerald-400 border-emerald-700/50',
-                        'Concluído': 'bg-blue-900/40 text-blue-400 border-blue-700/50',
-                        'Cancelado': 'bg-red-900/40 text-red-400 border-red-700/50'
-                    };
-
-                    return `
-                        <div class="bg-cardbg border border-borderbg p-5 rounded-2xl shadow-lg space-y-3">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-bold text-white text-base">${b.serviceName}</h4>
-                                    <p class="text-xs text-gold-400 font-semibold mt-0.5"><i class="fa-solid fa-calendar-day"></i> ${b.date} às ${b.time}</p>
-                                    <p class="text-xs text-gray-400">Barbeiro: ${b.barber || 'Dreko'}</p>
-                                </div>
-                                <span class="px-2.5 py-1 text-[11px] font-bold rounded-full border ${statusColors[b.status]}">${b.status}</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs text-gray-400 pt-2 border-t border-borderbg">
-                                <span>Pagamento: <strong class="text-gray-200">${b.payMethod}</strong></span>
-                                <span class="text-sm font-bold text-gold-400">R$ ${b.price.toFixed(2)}</span>
-                            </div>
-                            ${b.status === 'Confirmado' ? `
-                                <button onclick="app.cancelBooking(${b.id})" class="w-full mt-2 py-2 bg-red-900/20 hover:bg-red-900/50 text-red-400 border border-red-800/40 rounded-xl text-xs font-semibold transition-colors">
-                                    Cancelar Agendamento
-                                </button>
-                            ` : ''}
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            cancelBooking(id) {
-                const bookings = this.getBookings();
-                const booking = bookings.find(b => b.id === id);
-                if (booking) {
-                    booking.status = 'Cancelado';
-                    this.saveBookings(bookings);
-                    this.showToast('Agendamento cancelado com sucesso.', 'info');
-                    this.renderClientBookings();
-                    this.renderClientWeeklyAgenda();
-                }
-            }
-
-            renderClientWeeklyAgenda() {
-                const selectedDate = document.getElementById('clientCalendarFilterDate').value;
-                const container = document.getElementById('clientWeeklyGrid');
-                
-                const bookings = this.getBookings().filter(b => b.date === selectedDate && b.status !== 'Cancelado');
-                const locks = this.getLocks().filter(l => l.date === selectedDate);
-
-                container.innerHTML = TIME_SLOTS.map(slot => {
-                    const isBooked = bookings.some(b => b.time === slot);
-                    const isLocked = locks.some(l => l.time === slot);
-
-                    if (isBooked) {
-                        return `
-                            <div class="p-3 bg-red-950/30 border border-red-900/40 rounded-xl text-center">
-                                <span class="text-sm font-bold text-red-400">${slot}</span>
-                                <span class="block text-[10px] text-red-300 font-semibold mt-1 uppercase">Ocupado</span>
-                            </div>
-                        `;
-                    } else if (isLocked) {
-                        return `
-                            <div class="p-3 bg-gray-800/50 border border-gray-700 rounded-xl text-center">
-                                <span class="text-sm font-bold text-gray-400">${slot}</span>
-                                <span class="block text-[10px] text-gray-500 font-semibold mt-1 uppercase">Bloqueado</span>
-                            </div>
-                        `;
-                    } else {
-                        return `
-                            <div class="p-3 bg-emerald-950/20 border border-emerald-800/40 rounded-xl text-center">
-                                <span class="text-sm font-bold text-emerald-400">${slot}</span>
-                                <span class="block text-[10px] text-emerald-400 font-semibold mt-1 uppercase">Livre</span>
-                            </div>
-                        `;
-                    }
-                }).join('');
-            }
-
-            switchAdminTab(tab) {
-                const scheduleTab = document.getElementById('adminTabSchedule');
-                const financeTab = document.getElementById('adminTabFinance');
-                const btnSchedule = document.getElementById('adminTabScheduleBtn');
-                const btnFinance = document.getElementById('adminTabFinanceBtn');
-
-                if (tab === 'schedule') {
-                    scheduleTab.classList.remove('hidden');
-                    financeTab.classList.add('hidden');
-                    btnSchedule.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-gold-600 text-darkbg shadow-md";
-                    btnFinance.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-darkbg border border-borderbg text-gray-300 hover:text-white";
-                } else {
-                    scheduleTab.classList.add('hidden');
-                    financeTab.classList.remove('hidden');
-                    btnFinance.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-gold-600 text-darkbg shadow-md";
-                    btnSchedule.className = "px-4 py-2 rounded-xl text-sm font-semibold transition-all bg-darkbg border border-borderbg text-gray-300 hover:text-white";
-                    this.renderFinancialReports();
-                }
-            }
-
-            handleLockTimeSlot(e) {
-                e.preventDefault();
-                const date = document.getElementById('lockDate').value;
-                const time = document.getElementById('lockTime').value;
-                const reason = document.getElementById('lockReason').value || "Indisponível";
-
-                const locks = this.getLocks();
-                if (locks.some(l => l.date === date && l.time === time)) {
-                    this.showToast('Este horário já se encontra trancado.', 'error');
-                    return;
-                }
-
-                locks.push({ date, time, reason });
-                this.saveLocks(locks);
-
-                document.getElementById('lockReason').value = '';
-                this.showToast(`Horário ${time} trancado com sucesso!`, 'success');
-            }
-
-            clearAdminDateFilter() {
-                document.getElementById('adminFilterDate').value = '';
-                this.renderAdminAppointments();
-            }
-
-            renderAdminAppointments() {
-                const tableBody = document.getElementById('adminAppointmentsTable');
-                const filterDate = document.getElementById('adminFilterDate').value;
-
-                let bookings = this.getBookings();
-                if (filterDate) {
-                    bookings = bookings.filter(b => b.date === filterDate);
-                }
-
-                bookings.sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`));
-
-                if (bookings.length === 0) {
-                    tableBody.innerHTML = `
-                        <tr>
-                            <td colspan="8" class="text-center py-6 text-gray-500">Nenhum agendamento encontrado.</td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                tableBody.innerHTML = bookings.map(b => {
-                    const badgeClass = {
-                        'Confirmado': 'bg-emerald-900/40 text-emerald-400 border-emerald-700/40',
-                        'Concluído': 'bg-blue-900/40 text-blue-400 border-blue-700/40',
-                        'Cancelado': 'bg-red-900/40 text-red-400 border-red-700/40'
-                    }[b.status];
-
-                    return `
-                        <tr class="hover:bg-darkbg/50 transition-colors">
-                            <td class="p-3 font-semibold text-white">${b.date} <span class="text-gold-400">${b.time}</span></td>
-                            <td class="p-3 font-medium text-gray-200">${b.clientName}</td>
-                            <td class="p-3 text-xs text-gray-400">${b.barber || 'Dreko'}</td>
-                            <td class="p-3 text-gray-300">${b.serviceName}</td>
-                            <td class="p-3"><span class="px-2 py-0.5 rounded bg-gray-800 text-xs font-semibold text-gray-300">${b.payMethod}</span></td>
-                            <td class="p-3 font-bold text-gold-400">R$ ${b.price.toFixed(2)}</td>
-                            <td class="p-3"><span class="px-2.5 py-1 text-xs font-semibold rounded-full border ${badgeClass}">${b.status}</span></td>
-                            <td class="p-3 text-center space-x-2">
-                                ${b.status === 'Confirmado' ? `
-                                    <button onclick="app.updateBookingStatus(${b.id}, 'Concluído')" title="Concluir Atendimento" class="p-1.5 bg-emerald-800/40 hover:bg-emerald-700/60 text-emerald-300 rounded-lg transition-colors">
-                                        <i class="fa-solid fa-check"></i>
-                                    </button>
-                                    <button onclick="app.updateBookingStatus(${b.id}, 'Cancelado')" title="Cancelar Atendimento" class="p-1.5 bg-red-800/40 hover:bg-red-700/60 text-red-300 rounded-lg transition-colors">
-                                        <i class="fa-solid fa-xmark"></i>
-                                    </button>
-                                ` : '<span class="text-xs text-gray-500">-</span>'}
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-
-            updateBookingStatus(id, newStatus) {
-                const bookings = this.getBookings();
-                const b = bookings.find(x => x.id === id);
-                if (b) {
-                    b.status = newStatus;
-                    this.saveBookings(bookings);
-                    this.showToast(`Status alterado para ${newStatus}`, 'info');
-                    this.renderAdminAppointments();
-                }
-            }
-
-            handleAddCost(e) {
-                e.preventDefault();
-                const title = document.getElementById('costTitle').value.trim();
-                const category = document.getElementById('costCategory').value;
-                const amount = parseFloat(document.getElementById('costAmount').value);
-
-                if (isNaN(amount) || amount <= 0) {
-                    this.showToast('Informe um valor válido para o custo.', 'error');
-                    return;
-                }
-
-                const costs = this.getCosts();
-                costs.push({ id: Date.now(), title, category, amount });
-                this.saveCosts(costs);
-
-                document.getElementById('costTitle').value = '';
-                document.getElementById('costAmount').value = '';
-
-                this.showToast('Custo registrado!', 'success');
-                this.renderFinancialReports();
-            }
-
-            deleteCost(id) {
-                let costs = this.getCosts();
-                costs = costs.filter(c => c.id !== id);
-                this.saveCosts(costs);
-                this.showToast('Custo removido.', 'info');
-                this.renderFinancialReports();
-            }
-
-            renderFinancialReports() {
-                const bookings = this.getBookings();
-                const costs = this.getCosts();
-
-                const validBookings = bookings.filter(b => b.status === 'Confirmado' || b.status === 'Concluído');
-                const grossRevenue = validBookings.reduce((sum, b) => sum + b.price, 0);
-
-                const totalCosts = costs.reduce((sum, c) => sum + c.amount, 0);
-
-                const netProfit = grossRevenue - totalCosts;
-                const grossMargin = grossRevenue > 0 ? ((grossRevenue - totalCosts) / grossRevenue) * 100 : 0;
-
-                document.getElementById('statGrossRevenue').innerText = `R$ ${grossRevenue.toFixed(2)}`;
-                document.getElementById('statTotalCosts').innerText = `R$ ${totalCosts.toFixed(2)}`;
-                document.getElementById('statNetProfit').innerText = `R$ ${netProfit.toFixed(2)}`;
-                document.getElementById('statGrossMargin').innerText = `${grossMargin.toFixed(1)}%`;
-
-                const costsTable = document.getElementById('costsTable');
-                if (costs.length === 0) {
-                    costsTable.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-gray-500">Nenhum custo registrado.</td></tr>`;
-                } else {
-                    costsTable.innerHTML = costs.map(c => `
-                        <tr class="hover:bg-darkbg/40">
-                            <td class="p-2.5 font-medium text-gray-200">${c.title}</td>
-                            <td class="p-2.5"><span class="px-2 py-0.5 bg-gray-800 text-xs rounded text-gray-400">${c.category}</span></td>
-                            <td class="p-2.5 font-bold text-red-400">R$ ${c.amount.toFixed(2)}</td>
-                            <td class="p-2.5 text-right">
-                                <button onclick="app.deleteCost(${c.id})" class="text-red-400 hover:text-red-300">
-                                    <i class="fa-solid fa-trash text-xs"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-
-                this.renderCharts(validBookings);
-            }
-
-            renderCharts(validBookings) {
-                // Chart 1: Cuts per Period
-                const ctxCortes = document.getElementById('chartCortesPeriodo').getContext('2d');
-                if (this.chartCortes) this.chartCortes.destroy();
-
-                this.chartCortes = new Chart(ctxCortes, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Hoje', 'Esta Semana', 'Este Mês'],
-                        datasets: [{
-                            label: 'Cortes/Atendimentos',
-                            data: [
-                                validBookings.length, 
-                                validBookings.length + 6, 
-                                validBookings.length + 28
-                            ],
-                            backgroundColor: ['#ca8a04', '#eab308', '#facc15'],
-                            borderRadius: 8
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
-                        scales: {
-                            y: { ticks: { color: '#9ca3af' }, grid: { color: '#282c37' } },
-                            x: { ticks: { color: '#9ca3af' }, grid: { display: false } }
-                        }
-                    }
-                });
-
-                // Chart 2: Client Recurrence Rate
-                const recurrentCount = validBookings.filter(b => b.isRecurrent).length;
-                const newCount = validBookings.length - recurrentCount;
-
-                const ctxRecorrencia = document.getElementById('chartRecorrencia').getContext('2d');
-                if (this.chartRecorrencia) this.chartRecorrencia.destroy();
-
-                this.chartRecorrencia = new Chart(ctxRecorrencia, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Clientes Recorrentes', 'Novos Clientes'],
-                        datasets: [{
-                            data: [recurrentCount > 0 ? recurrentCount : 4, newCount > 0 ? newCount : 2],
-                            backgroundColor: ['#ca8a04', '#3b82f6'],
-                            borderWidth: 0
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { labels: { color: '#d1d5db' }, position: 'bottom' }
-                        }
-                    }
-                });
-            }
-
-            showToast(message, type = 'info') {
-                const toast = document.getElementById('toast');
-                const colors = {
-                    success: 'bg-emerald-950 border-emerald-700 text-emerald-200',
-                    error: 'bg-red-950 border-red-700 text-red-200',
-                    info: 'bg-amber-950 border-amber-700 text-amber-200'
-                };
-
-                const icons = {
-                    success: 'fa-circle-check text-emerald-400',
-                    error: 'fa-circle-xmark text-red-400',
-                    info: 'fa-circle-info text-amber-400'
-                };
-
-                toast.className = `fixed bottom-5 right-5 z-50 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border ${colors[type]}`;
-                toast.innerHTML = `<i class="fa-solid ${icons[type]} text-lg"></i> <span class="text-sm font-medium">${message}</span>`;
-
-                setTimeout(() => {
-                    toast.className = 'fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 border';
-                }, 3500);
+        let currentUser = null;
+        let cutsChartInstance = null;
+        let recurrenceChartInstance = null;
+
+        // SAVE DATA HELPER
+        function saveData() {
+            localStorage.setItem('dreko_users', JSON.stringify(users));
+            localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
+            localStorage.setItem('dreko_locked_slots', JSON.stringify(lockedSlots));
+            localStorage.setItem('dreko_costs', JSON.stringify(costs));
+        }
+
+        // AUTH TAB SWITCH
+        function switchAuthTab(type) {
+            if(type === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('tabLoginBtn').classList.add('active');
+                document.getElementById('tabRegisterBtn').classList.remove('active');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('tabRegisterBtn').classList.add('active');
+                document.getElementById('tabLoginBtn').classList.remove('active');
             }
         }
 
-        let app;
-        window.onload = function () {
-            app = new DrekoApp();
-        };
+        // REGISTER
+        function handleRegister(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const pass = document.getElementById('regPassword').value;
+
+            const firstName = fullName.split(' ')[0].toLowerCase();
+
+            // Check if user already exists
+            if (users.find(u => u.username === firstName)) {
+                alert('Já existe um usuário cadastrado com esse primeiro nome. Tente incluir uma variação!');
+                return;
+            }
+
+            const newUser = { name: fullName, username: firstName, email, phone, pass, role: 'client' };
+            users.push(newUser);
+            saveData();
+            alert(`Cadastro realizado com sucesso! Seu login é o seu primeiro nome: "${firstName}"`);
+            switchAuthTab('login');
+        }
+
+        // LOGIN
+        function handleLogin(e) {
+            e.preventDefault();
+            const userIn = document.getElementById('loginUsername').value.trim().toLowerCase();
+            const passIn = document.getElementById('loginPassword').value;
+
+            // Admins match exactly as case sensitive username or case insensitive
+            const user = users.find(u => u.username.toLowerCase() === userIn && u.pass === passIn);
+
+            if (!user) {
+                alert('Usuário ou senha incorretos!');
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = user.name;
+
+            if (user.role === 'admin') {
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                renderAdminView();
+            } else {
+                document.getElementById('clientDashboard').classList.remove('hidden');
+                document.getElementById('clientGreetingName').innerText = user.name.split(' ')[0];
+                renderClientView();
+            }
+        }
+
+        // LOGOUT
+        function logout() {
+            currentUser = null;
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('clientDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+        }
+
+        // CLIENT VIEW RENDER
+        function renderClientView() {
+            renderClientWeeklySchedule();
+            renderClientAppointments();
+        }
+
+        function renderClientWeeklySchedule() {
+            const container = document.getElementById('clientWeeklySchedule');
+            container.innerHTML = '';
+
+            const today = new Date();
+            const availableHours = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+
+            for(let i = 0; i < 5; i++) {
+                let d = new Date();
+                d.setDate(today.getDate() + i);
+                let dateStr = d.toISOString().split('T')[0];
+                let dayName = d.toLocaleDateString('pt-BR', { weekday: 'short' });
+
+                let colHtml = `<div class="bg-gray-900/50 p-3 rounded-lg border border-gray-800">
+                    <h4 class="text-xs uppercase font-bold text-gold text-center mb-2">${dayName} - ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}</h4>
+                    <div class="space-y-1">`;
+
+                availableHours.forEach(h => {
+                    let isTaken = appointments.some(a => a.date === dateStr && a.time === h && a.status !== 'Cancelado');
+                    let isLocked = lockedSlots.some(l => l.date === dateStr && l.time === h);
+
+                    if (isTaken) {
+                        colHtml += `<div class="text-xs p-1 text-center bg-red-900/40 text-red-400 rounded">Ocupado (${h})</div>`;
+                    } else if (isLocked) {
+                        colHtml += `<div class="text-xs p-1 text-center bg-gray-800 text-gray-500 rounded">Trancado</div>`;
+                    } else {
+                        colHtml += `<div class="text-xs p-1 text-center bg-green-900/30 text-green-400 rounded">Vago (${h})</div>`;
+                    }
+                });
+
+                colHtml += `</div></div>`;
+                container.innerHTML += colHtml;
+            }
+        }
+
+        function renderClientAppointments() {
+            const tbody = document.getElementById('clientAppointmentsList');
+            tbody.innerHTML = '';
+
+            const myAppts = appointments.filter(a => a.clientUsername === currentUser.username);
+
+            if(myAppts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado.</td></tr>`;
+                return;
+            }
+
+            myAppts.forEach(a => {
+                let statusColor = a.status === 'Concluído' ? 'text-green-400' : a.status === 'Cancelado' ? 'text-red-400' : 'text-yellow-400';
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-800">
+                        <td class="p-3">${a.date} às ${a.time}</td>
+                        <td class="p-3 font-semibold">${a.service}</td>
+                        <td class="p-3">${a.payment}</td>
+                        <td class="p-3">R$ ${parseFloat(a.price).toFixed(2)}</td>
+                        <td class="p-3 ${statusColor} font-bold">${a.status}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // BOOKING MODAL & ACTIONS
+        function showBookingModal() {
+            document.getElementById('bookingModal').classList.remove('hidden');
+            document.getElementById('bookingModal').classList.add('flex');
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookDate').value = today;
+            document.getElementById('bookDate').min = today;
+            loadAvailableSlots();
+            updateServicePrice();
+        }
+
+        function closeBookingModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.getElementById('bookingModal').classList.remove('flex');
+        }
+
+        function updateServicePrice() {
+            const val = document.getElementById('bookService').value;
+            const price = val.split('|')[1];
+            document.getElementById('bookTotalPrice').innerText = `R$ ${parseFloat(price).toFixed(2)}`;
+        }
+
+        function loadAvailableSlots() {
+            const dateVal = document.getElementById('bookDate').value;
+            const selectTime = document.getElementById('bookTime');
+            selectTime.innerHTML = '';
+
+            const hours = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
+
+            hours.forEach(h => {
+                let isTaken = appointments.some(a => a.date === dateVal && a.time === h && a.status !== 'Cancelado');
+                let isLocked = lockedSlots.some(l => l.date === dateVal && l.time === h);
+
+                if (!isTaken && !isLocked) {
+                    selectTime.innerHTML += `<option value="${h}">${h}</option>`;
+                }
+            });
+
+            if (selectTime.options.length === 0) {
+                selectTime.innerHTML = `<option value="">Nenhum horário livre</option>`;
+            }
+        }
+
+        function handleCreateAppointment(e) {
+            e.preventDefault();
+            const serviceData = document.getElementById('bookService').value.split('|');
+            const date = document.getElementById('bookDate').value;
+            const time = document.getElementById('bookTime').value;
+            const payment = document.getElementById('bookPayment').value;
+
+            if (!time) {
+                alert('Por favor, selecione um horário válido.');
+                return;
+            }
+
+            const newAppt = {
+                id: Date.now(),
+                clientName: currentUser.name,
+                clientUsername: currentUser.username,
+                clientPhone: currentUser.phone || 'N/I',
+                service: serviceData[0],
+                price: parseFloat(serviceData[1]),
+                date,
+                time,
+                payment,
+                status: 'Agendado'
+            };
+
+            appointments.push(newAppt);
+            saveData();
+            alert('Agendamento realizado com sucesso!');
+            closeBookingModal();
+            renderClientView();
+        }
+
+        // ADMIN TAB SWITCH
+        function switchAdminTab(tab) {
+            document.getElementById('admAgendaView').classList.add('hidden');
+            document.getElementById('admLockView').classList.add('hidden');
+            document.getElementById('admReportsView').classList.add('hidden');
+
+            document.getElementById('admAgendaTab').classList.remove('active');
+            document.getElementById('admLockTab').classList.remove('active');
+            document.getElementById('admReportsTab').classList.remove('active');
+
+            if(tab === 'agenda') {
+                document.getElementById('admAgendaView').classList.remove('hidden');
+                document.getElementById('admAgendaTab').classList.add('active');
+            } else if(tab === 'lock') {
+                document.getElementById('admLockView').classList.remove('hidden');
+                document.getElementById('admLockTab').classList.add('active');
+            } else if(tab === 'reports') {
+                document.getElementById('admReportsView').classList.remove('hidden');
+                document.getElementById('admReportsTab').classList.add('active');
+                renderReports();
+            }
+        }
+
+        function renderAdminView() {
+            renderAdminAppointments();
+        }
+
+        function renderAdminAppointments() {
+            const tbody = document.getElementById('adminAppointmentsList');
+            tbody.innerHTML = '';
+
+            if (appointments.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado.</td></tr>`;
+                return;
+            }
+
+            appointments.forEach(a => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-800">
+                        <td class="p-3 font-semibold text-white">${a.clientName}</td>
+                        <td class="p-3">${a.clientPhone}</td>
+                        <td class="p-3">${a.service}</td>
+                        <td class="p-3">${a.date} - ${a.time}</td>
+                        <td class="p-3">${a.payment}</td>
+                        <td class="p-3 text-green-400 font-bold">R$ ${parseFloat(a.price).toFixed(2)}</td>
+                        <td class="p-3 space-x-1">
+                            ${a.status === 'Agendado' ? `
+                                <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-green-600/30 text-green-400 px-2 py-1 rounded text-xs hover:bg-green-600 hover:text-white">Concluir</button>
+                                <button onclick="changeStatus(${a.id}, 'Cancelado')" class="bg-red-600/30 text-red-400 px-2 py-1 rounded text-xs hover:bg-red-600 hover:text-white">Cancelar</button>
+                            ` : `<span class="text-xs uppercase font-bold text-gray-500">${a.status}</span>`}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function changeStatus(id, newStatus) {
+            const appt = appointments.find(a => a.id === id);
+            if(appt) {
+                appt.status = newStatus;
+                saveData();
+                renderAdminAppointments();
+            }
+        }
+
+        // LOCK SLOTS
+        function handleLockSlot(e) {
+            e.preventDefault();
+            const date = document.getElementById('lockDate').value;
+            const time = document.getElementById('lockTime').value;
+            const reason = document.getElementById('lockReason').value;
+
+            lockedSlots.push({ id: Date.now(), date, time, reason });
+            saveData();
+            alert(`Horário das ${time} no dia ${date} foi trancado com sucesso!`);
+            document.getElementById('lockReason').value = '';
+        }
+
+        // FINANCIAL & REPORTS LOGIC
+        function handleAddCost(e) {
+            e.preventDefault();
+            const name = document.getElementById('costName').value;
+            const value = parseFloat(document.getElementById('costValue').value);
+
+            costs.push({ id: Date.now(), name, value });
+            saveData();
+            document.getElementById('costName').value = '';
+            document.getElementById('costValue').value = '';
+            renderReports();
+        }
+
+        function removeCost(id) {
+            costs = costs.filter(c => c.id !== id);
+            saveData();
+            renderReports();
+        }
+
+        function renderReports() {
+            // Render costs table
+            const tbody = document.getElementById('costsList');
+            tbody.innerHTML = '';
+            let totalCostVal = 0;
+
+            costs.forEach(c => {
+                totalCostVal += c.value;
+                tbody.innerHTML += `
+                    <tr class="border-b border-gray-800">
+                        <td class="p-2">${c.name}</td>
+                        <td class="p-2 text-red-400">R$ ${c.value.toFixed(2)}</td>
+                        <td class="p-2"><button onclick="removeCost(${c.id})" class="text-red-500 hover:underline text-xs">Excluir</button></td>
+                    </tr>
+                `;
+            });
+
+            // Calculate Gross Revenue (only completed or valid appointments)
+            let grossRevenue = appointments
+                .filter(a => a.status !== 'Cancelado')
+                .reduce((sum, a) => sum + parseFloat(a.price), 0);
+
+            let netProfit = grossRevenue - totalCostVal;
+            let grossMargin = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : 0;
+
+            document.getElementById('calcGrossRevenue').innerText = `R$ ${grossRevenue.toFixed(2)}`;
+            document.getElementById('calcTotalCosts').innerText = `R$ ${totalCostVal.toFixed(2)}`;
+            document.getElementById('calcNetProfit').innerText = `R$ ${netProfit.toFixed(2)}`;
+            document.getElementById('calcGrossMargin').innerText = `${grossMargin}%`;
+
+            renderCharts();
+        }
+
+        function renderCharts() {
+            // Chart 1: Cortes por Dia/Semana/Mês (Simulação com base nos agendamentos)
+            const ctx1 = document.getElementById('cutsChart').getContext('2d');
+            if(cutsChartInstance) cutsChartInstance.destroy();
+
+            cutsChartInstance = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: ['Hoje', 'Esta Semana', 'Este Mês'],
+                    datasets: [{
+                        label: 'Quantidade de Cortes/Serviços',
+                        data: [
+                            appointments.filter(a => a.status !== 'Cancelado').length, 
+                            appointments.filter(a => a.status !== 'Cancelado').length * 3, 
+                            appointments.filter(a => a.status !== 'Cancelado').length * 10
+                        ],
+                        backgroundColor: ['#D4AF37', '#F39C12', '#E67E22']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#ffffff' } } },
+                    scales: {
+                        x: { ticks: { color: '#ffffff' } },
+                        y: { ticks: { color: '#ffffff' } }
+                    }
+                }
+            });
+
+            // Chart 2: Recorrência de Clientes
+            const ctx2 = document.getElementById('recurrenceChart').getContext('2d');
+            if(recurrenceChartInstance) recurrenceChartInstance.destroy();
+
+            recurrenceChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Novos Clientes', 'Recorrentes (Retorno)'],
+                    datasets: [{
+                        data: [30, 70],
+                        backgroundColor: ['#3498db', '#D4AF37']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#ffffff' } } }
+                }
+            });
+        }
     </script>
 </body>
 </html>
-```
