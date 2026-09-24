@@ -193,7 +193,6 @@
 
             <!-- SUB-ABA 2: CONFIGURAÇÃO DE SERVIÇOS E HORÁRIOS (ADM) -->
             <div id="admConfigView" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Gerenciar Serviços -->
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4">
                     <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-scissors"></i> Adicionar/Editar Serviços</h3>
                     <form onsubmit="handleAddService(event)" class="space-y-3">
@@ -212,7 +211,6 @@
                     <div id="servicesList" class="space-y-2 max-h-48 overflow-y-auto"></div>
                 </div>
 
-                <!-- Configurar Horários de Atendimento -->
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4">
                     <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-clock"></i> Horários de Funcionamento</h3>
                     <form onsubmit="handleAddWorkingHour(event)" class="space-y-3">
@@ -374,10 +372,9 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // GOOGLE SHEETS API ENDPOINT (Cole aqui a URL do seu Web App implantado via Google Apps Script)
-        const GOOGLE_SHEETS_API_URL = "SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI";
+        // GOOGLE SHEETS API ENDPOINT VINCULADO
+        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQGG51M69REcuCdUQ7xf2YM-HQFAaOSMY3_930I4E3e-0fNa-mXAHc25wzrmvxHsmY/exec";
 
-        // MÁSCARA TELEFONE WHATSAPP
         function maskPhone(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.substring(0, 11);
@@ -386,7 +383,6 @@
             input.value = v;
         }
 
-        // DADOS INICIAIS BASEADOS NA SUA FOTO
         const defaultUsers = [
             { name: "Admin Geral", username: "admin", role: "admin", pass: "Rafa180993", email: "admin@drekobarber.com", phone: "(00) 00000-0000" },
             { name: "Barbeiro Dreko", username: "dreko", role: "admin", pass: "Dreko123", email: "dreko@drekobarber.com", phone: "(00) 00000-0000" }
@@ -411,7 +407,6 @@
 
         let currentUser = null;
 
-        // SALVAR E SINCRONIZAR COM GOOGLE SHEETS
         function saveData(actionType = 'sync', payloadData = {}) {
             localStorage.setItem('dreko_users', JSON.stringify(users));
             localStorage.setItem('dreko_services', JSON.stringify(services));
@@ -420,23 +415,19 @@
             localStorage.setItem('dreko_locked_slots', JSON.stringify(lockedSlots));
             localStorage.setItem('dreko_costs', JSON.stringify(costs));
 
-            // ENVIO PARA BANCO DE DADOS EXTERNO (GOOGLE SHEETS)
-            if (GOOGLE_SHEETS_API_URL && GOOGLE_SHEETS_API_URL !== "SUA_URL_DO_GOOGLE_APPS_SCRIPT_AQUI") {
+            if (GOOGLE_SHEETS_API_URL) {
                 fetch(GOOGLE_SHEETS_API_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         action: actionType,
-                        payload: payloadData,
-                        allUsers: users,
-                        allAppointments: appointments
+                        payload: payloadData
                     })
-                }).catch(err => console.log("Erro ao sincronizar com Google Sheets:", err));
+                }).catch(err => console.log("Erro ao sincronizar dados:", err));
             }
         }
 
-        // TABS AUTH
         function switchAuthTab(type) {
             if(type === 'login') {
                 document.getElementById('loginForm').classList.remove('hidden');
@@ -451,7 +442,6 @@
             }
         }
 
-        // REGISTRO DE USUÁRIO (E-mail, WhatsApp, Senha)
         function handleRegister(e) {
             e.preventDefault();
             const fullName = document.getElementById('regFullName').value.trim();
@@ -470,11 +460,10 @@
             users.push(newUser);
             
             saveData('newUser', newUser);
-            alert(`Cadastro realizado! Seu usuário para login é: "${firstName}"`);
+            alert(`Cadastro realizado com sucesso! Seu nome de usuário é: "${firstName}"`);
             switchAuthTab('login');
         }
 
-        // LOGIN
         function handleLogin(e) {
             e.preventDefault();
             const userIn = document.getElementById('loginUsername').value.trim().toLowerCase();
@@ -510,7 +499,6 @@
             document.getElementById('adminDashboard').classList.add('hidden');
         }
 
-        // RENDER DE CLIENTES
         function renderClientView() {
             renderClientWeeklySchedule();
             renderClientAppointments();
@@ -581,7 +569,6 @@
             });
         }
 
-        // AGENDAMENTO
         function showBookingModal() {
             document.getElementById('bookingModal').classList.remove('hidden');
             document.getElementById('bookingModal').classList.add('flex');
@@ -676,7 +663,6 @@
             renderClientView();
         }
 
-        // PAINEL DE ADMINISTRAÇÃO (GERENCIAR SERVIÇOS E HORÁRIOS)
         function switchAdminTab(tab) {
             document.getElementById('admAgendaView').classList.add('hidden');
             document.getElementById('admConfigView').classList.add('hidden');
@@ -755,9 +741,7 @@
             }
         }
 
-        // GERENCIAR SERVIÇOS E HORÁRIOS (ADM)
         function renderAdminConfig() {
-            // Render Lista Serviços
             const servicesContainer = document.getElementById('servicesList');
             servicesContainer.innerHTML = '';
             services.forEach(s => {
@@ -769,7 +753,6 @@
                 `;
             });
 
-            // Render Lista Horários
             const hoursContainer = document.getElementById('workingHoursList');
             hoursContainer.innerHTML = '';
             workingHours.sort().forEach(h => {
@@ -836,7 +819,6 @@
             alert(`Horário das ${time} no dia ${date} foi trancado com sucesso!`);
         }
 
-        // RELATÓRIOS E CUSTOS
         function handleAddCost(e) {
             e.preventDefault();
             const name = document.getElementById('costName').value;
