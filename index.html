@@ -32,7 +32,7 @@
         .reggae-border { border-image: linear-gradient(to right, #1b5e20, #fbc02d, #c62828) 1; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between" onload="fetchFromCloud()">
+<body class="min-h-screen flex flex-col justify-between" onload="initApp()">
 
     <!-- Header / Navbar -->
     <header class="bg-cardBg border-b-4 reggae-border p-4 sticky top-0 z-50">
@@ -193,7 +193,6 @@
 
             <!-- SUB-ABA DE GESTÃO DE USUÁRIOS (ADM) -->
             <div id="admUsersView" class="hidden space-y-6">
-                <!-- FORMULARIO DE NOVO USUARIO PELO ADM -->
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md">
                     <h3 class="text-md font-bold text-reggaeYellow mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Cliente Manualmente</h3>
                     <form onsubmit="handleAdminCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -221,7 +220,6 @@
                     </form>
                 </div>
 
-                <!-- TABELA DE USUÁRIOS -->
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md space-y-4">
                     <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> Usuários Cadastrados</h3>
                     <div class="overflow-x-auto">
@@ -416,6 +414,14 @@
     <script>
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQGG51M69REcuCdUQ7xf2YM-HQFAaOSMY3_930I4E3e-0fNa-mXAHc25wzrmvxHsmY/exec";
 
+        function initApp() {
+            fetchFromCloud();
+            // Polling automático a cada 5 segundos para atualizações simultâneas de múltiplos acessos
+            setInterval(() => {
+                fetchFromCloud(false);
+            }, 5000);
+        }
+
         function maskPhone(input) {
             let v = input.value.replace(/\D/g, '');
             if (v.length > 11) v = v.substring(0, 11);
@@ -463,20 +469,13 @@
 
         let currentUser = null;
 
-        // RECEBIMENTO VIA JSONP
+        // PROCESSAMENTO DA RESPOSTA JSONP DA NUVEM
         window.handleCloudResponse = function(data) {
             const syncStatus = document.getElementById('syncStatus');
             const syncIcon = document.getElementById('syncIcon');
 
             if (data && data.appointments && Array.isArray(data.appointments)) {
-                data.appointments.forEach(cloudAppt => {
-                    let idx = appointments.findIndex(l => String(l.id) === String(cloudAppt.id));
-                    if (idx !== -1) {
-                        appointments[idx] = cloudAppt;
-                    } else {
-                        appointments.push(cloudAppt);
-                    }
-                });
+                appointments = data.appointments;
                 localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
             }
 
@@ -509,7 +508,7 @@
             const syncStatus = document.getElementById('syncStatus');
             const syncIcon = document.getElementById('syncIcon');
 
-            if (syncStatus) syncStatus.innerText = "(Buscando planilha...)";
+            if (syncStatus) syncStatus.innerText = "(Sincronizando...)";
             if (syncIcon) syncIcon.classList.add('fa-spin');
 
             const oldScript = document.getElementById('jsonpScript');
@@ -540,7 +539,7 @@
                         payload: payloadData
                     })
                 }).then(() => {
-                    setTimeout(() => fetchFromCloud(false), 2000);
+                    setTimeout(() => fetchFromCloud(false), 1500);
                 }).catch(err => console.log("Erro no envio:", err));
             }
         }
@@ -656,6 +655,7 @@
             renderClientAppointments();
         }
 
+        // GRADE DA SEMANA COM VISUALIZADOR EM VERMELHO PARA OCUPADOS
         function renderClientWeeklySchedule() {
             const container = document.getElementById('clientWeeklySchedule');
             container.innerHTML = '';
@@ -681,7 +681,7 @@
                         let isLocked = lockedSlots.some(l => l.date === dateStr && l.time === h);
 
                         if (isTaken) {
-                            colHtml += `<div class="text-xs p-1 text-center bg-red-900/30 text-red-400 rounded">Ocupado (${h})</div>`;
+                            colHtml += `<div class="text-xs p-1 text-center bg-red-600 text-white rounded font-bold shadow">Ocupado (${h})</div>`;
                         } else if (isLocked) {
                             colHtml += `<div class="text-xs p-1 text-center bg-gray-800 text-gray-500 rounded">Trancado</div>`;
                         } else {
@@ -737,7 +737,6 @@
             });
         }
 
-        // CANCELAR E LIBERAR HORÁRIO (COMPARTILHADO POR CLIENTE E ADM)
         function cancelAppointment(id) {
             if (confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível imediatamente para novos agendamentos.")) {
                 const appt = appointments.find(a => String(a.id) === String(id));
@@ -788,6 +787,7 @@
             }
         }
 
+        // CARREGA SLOTS NO MODAL DESTACANDO OCUPADOS EM VERMELHO
         function loadAvailableSlots() {
             const dateVal = document.getElementById('bookDate').value;
             const barberVal = document.getElementById('bookBarber').value;
@@ -809,7 +809,7 @@
                 let isLocked = lockedSlots.some(l => l.date === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
 
                 if (isTaken) {
-                    container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded-lg bg-red-900/30 text-red-500 border border-red-800 cursor-not-allowed">Ocupado</button>`;
+                    container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded-lg bg-red-600 text-white font-bold border border-red-700 cursor-not-allowed shadow">Ocupado</button>`;
                 } else if (isLocked) {
                     container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded-lg bg-gray-800 text-gray-600 border border-gray-800 cursor-not-allowed">Bloqueado</button>`;
                 } else {
@@ -834,6 +834,14 @@
 
             if (!time) {
                 alert('Por favor, selecione um horário.');
+                return;
+            }
+
+            // Validação de dupla reserva simultânea
+            let isTaken = appointments.some(a => a.date === date && a.time === time && a.barber === barber && a.status !== 'Cancelado');
+            if(isTaken) {
+                alert('Este horário acabou de ser agendado por outro cliente! Por favor selecione outro horário.');
+                loadAvailableSlots();
                 return;
             }
 
@@ -978,7 +986,6 @@
             }
         }
 
-        // APAGAR USUÁRIO E BLOQUEAR O ACESSO TOTAL
         function deleteUser(identifier) {
             const userObj = users.find(u => (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier);
             if (userObj && confirm(`Tem certeza que deseja excluir o cadastro de ${userObj.name}? Ele não conseguirá mais entrar na aplicação.`)) {
