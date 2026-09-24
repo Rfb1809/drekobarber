@@ -372,7 +372,6 @@
 
     <!-- JAVASCRIPT LOGIC -->
     <script>
-        // GOOGLE SHEETS API ENDPOINT VINCULADO
         const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQGG51M69REcuCdUQ7xf2YM-HQFAaOSMY3_930I4E3e-0fNa-mXAHc25wzrmvxHsmY/exec";
 
         function maskPhone(input) {
@@ -398,7 +397,19 @@
 
         const defaultHours = ["08:00", "09:00", "10:00", "11:00", "12:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
 
-        let users = JSON.parse(localStorage.getItem('dreko_users')) || defaultUsers;
+        let storedUsers = JSON.parse(localStorage.getItem('dreko_users')) || [];
+
+        // Garante que as contas ADM sempre fiquem atualizadas com as senhas corretas
+        defaultUsers.forEach(defUser => {
+            let index = storedUsers.findIndex(u => u.username.toLowerCase() === defUser.username.toLowerCase());
+            if (index !== -1) {
+                storedUsers[index] = defUser;
+            } else {
+                storedUsers.push(defUser);
+            }
+        });
+
+        let users = storedUsers;
         let services = JSON.parse(localStorage.getItem('dreko_services')) || defaultServices;
         let workingHours = JSON.parse(localStorage.getItem('dreko_hours')) || defaultHours;
         let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
@@ -447,11 +458,11 @@
             const fullName = document.getElementById('regFullName').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const phone = document.getElementById('regPhone').value.trim();
-            const pass = document.getElementById('regPassword').value;
+            const pass = document.getElementById('regPassword').value.trim();
 
             const firstName = fullName.split(' ')[0].toLowerCase();
 
-            if (users.find(u => u.username === firstName || u.email === email)) {
+            if (users.find(u => u.username.toLowerCase() === firstName || u.email.toLowerCase() === email.toLowerCase())) {
                 alert('Já existe um usuário com esse primeiro nome ou e-mail!');
                 return;
             }
@@ -467,7 +478,7 @@
         function handleLogin(e) {
             e.preventDefault();
             const userIn = document.getElementById('loginUsername').value.trim().toLowerCase();
-            const passIn = document.getElementById('loginPassword').value;
+            const passIn = document.getElementById('loginPassword').value.trim();
 
             const user = users.find(u => u.username.toLowerCase() === userIn && u.pass === passIn);
 
@@ -481,7 +492,7 @@
             document.getElementById('userInfo').classList.remove('hidden');
             document.getElementById('userNameDisplay').innerText = user.name;
 
-            if (user.role === 'admin' || user.username === 'dreko' || user.username === 'admin') {
+            if (user.role === 'admin' || user.username.toLowerCase() === 'dreko' || user.username.toLowerCase() === 'admin') {
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 renderAdminView();
             } else {
@@ -540,7 +551,7 @@
         function renderClientAppointments() {
             const tbody = document.getElementById('clientAppointmentsList');
             tbody.innerHTML = '';
-            const myAppts = appointments.filter(a => a.clientUsername === currentUser.username);
+            const myAppts = appointments.filter(a => a.clientUsername.toLowerCase() === currentUser.username.toLowerCase());
 
             if(myAppts.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado.</td></tr>`;
