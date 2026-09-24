@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -34,7 +32,7 @@
         .reggae-border { border-image: linear-gradient(to right, #1b5e20, #fbc02d, #c62828) 1; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between" onload="fetchFromCloud()">
 
     <!-- Header / Navbar -->
     <header class="bg-cardBg border-b-4 reggae-border p-4 sticky top-0 z-50">
@@ -164,11 +162,9 @@
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                         <h3 class="text-lg font-bold text-reggaeYellow">Agendamentos Realizados</h3>
                         <div class="flex items-center gap-2">
-                            <label class="text-xs text-gray-400">Filtrar por:</label>
-                            <select id="admFilterPeriod" onchange="renderAdminAppointments()" class="bg-gray-900 border border-gray-700 text-white text-xs rounded-lg p-2 focus:outline-none focus:border-reggaeYellow">
-                                <option value="all">Todos os Agendamentos</option>
-                                <option value="today">Hoje</option>
-                            </select>
+                            <button onclick="fetchFromCloud()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-2 rounded border border-gray-700 text-reggaeYellow flex items-center gap-1">
+                                <i class="fa-solid fa-rotate"></i> Sincronizar
+                            </button>
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -191,7 +187,7 @@
                 </div>
             </div>
 
-            <!-- SUB-ABA 2: CONFIGURAÇÃO DE SERVIÇOS E HORÁRIOS (ADM) -->
+            <!-- SUB-ABA 2: CONFIGURAÇÃO DE SERVIÇOS E HORÁRIOS -->
             <div id="admConfigView" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4">
                     <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-scissors"></i> Adicionar/Editar Serviços</h3>
@@ -214,8 +210,8 @@
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4">
                     <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-clock"></i> Horários Padrão</h3>
                     <div class="text-xs text-gray-400 space-y-2">
-                        <p><b class="text-white">Segunda a Sexta:</b> 18:30, 19:00, 19:30, 20:00, 20:30, 21:00, 21:30, 22:00</p>
-                        <p><b class="text-white">Sábado:</b> 08:00, 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00</p>
+                        <p><b class="text-white">Segunda a Sexta:</b> 18:30 às 22:00</p>
+                        <p><b class="text-white">Sábado:</b> 08:00 às 12:00</p>
                         <p><b class="text-white">Domingo:</b> Fechado</p>
                     </div>
                 </div>
@@ -401,24 +397,41 @@
             { id: 5, name: "Selagem (Consultar tamanho)", price: 0.00 }
         ];
 
-        let storedUsers = JSON.parse(localStorage.getItem('dreko_users')) || [];
-
-        defaultUsers.forEach(defUser => {
-            let index = storedUsers.findIndex(u => u.username.toLowerCase() === defUser.username.toLowerCase());
-            if (index !== -1) {
-                storedUsers[index] = defUser;
-            } else {
-                storedUsers.push(defUser);
-            }
-        });
-
-        let users = storedUsers;
+        let users = JSON.parse(localStorage.getItem('dreko_users')) || defaultUsers;
         let services = JSON.parse(localStorage.getItem('dreko_services')) || defaultServices;
         let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
         let lockedSlots = JSON.parse(localStorage.getItem('dreko_locked_slots')) || [];
         let costs = JSON.parse(localStorage.getItem('dreko_costs')) || [];
 
         let currentUser = null;
+
+        // BÚSCA DADOS DO GOOGLE SHEETS
+        function fetchFromCloud() {
+            if (!GOOGLE_SHEETS_API_URL) return;
+            
+            fetch(GOOGLE_SHEETS_API_URL)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.appointments && data.appointments.length > 0) {
+                        appointments = data.appointments;
+                        localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
+                    }
+                    if (data.users && data.users.length > 0) {
+                        data.users.forEach(u => {
+                            if (!users.find(localU => localU.username.toLowerCase() === u.username.toLowerCase())) {
+                                users.push(u);
+                            }
+                        });
+                        localStorage.setItem('dreko_users', JSON.stringify(users));
+                    }
+                    if (currentUser && (currentUser.role === 'admin' || currentUser.username === 'dreko')) {
+                        renderAdminAppointments();
+                    } else if (currentUser) {
+                        renderClientView();
+                    }
+                })
+                .catch(err => console.log("Erro na leitura da cloud:", err));
+        }
 
         function saveData(actionType = 'sync', payloadData = {}) {
             localStorage.setItem('dreko_users', JSON.stringify(users));
@@ -436,7 +449,9 @@
                         action: actionType,
                         payload: payloadData
                     })
-                }).catch(err => console.log("Erro ao sincronizar dados:", err));
+                }).then(() => {
+                    setTimeout(fetchFromCloud, 1000);
+                }).catch(err => console.log("Erro na sincronização:", err));
             }
         }
 
@@ -464,7 +479,7 @@
             const firstName = fullName.split(' ')[0].toLowerCase();
 
             if (users.find(u => u.username.toLowerCase() === firstName || u.email.toLowerCase() === email.toLowerCase())) {
-                alert('Já existe um usuário com esse primeiro nome ou e-mail!');
+                alert('Já existe um utilizador cadastrado com esse nome ou e-mail!');
                 return;
             }
 
@@ -472,7 +487,7 @@
             users.push(newUser);
             
             saveData('newUser', newUser);
-            alert(`Cadastro realizado com sucesso! Seu nome de usuário é: "${firstName}"`);
+            alert(`Registo efetuado com sucesso! O seu nome de utilizador é: "${firstName}"`);
             switchAuthTab('login');
         }
 
@@ -484,7 +499,7 @@
             const user = users.find(u => u.username.toLowerCase() === userIn && u.pass === passIn);
 
             if (!user) {
-                alert('Usuário ou senha incorretos!');
+                alert('Utilizador ou palavra-passe incorretos!');
                 return;
             }
 
@@ -558,7 +573,7 @@
         function renderClientAppointments() {
             const tbody = document.getElementById('clientAppointmentsList');
             tbody.innerHTML = '';
-            const myAppts = appointments.filter(a => a.clientUsername.toLowerCase() === currentUser.username.toLowerCase());
+            const myAppts = appointments.filter(a => a.clientUsername && a.clientUsername.toLowerCase() === currentUser.username.toLowerCase());
 
             if(myAppts.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado.</td></tr>`;
@@ -574,8 +589,8 @@
                         <td class="p-3">${a.date} às ${a.time}</td>
                         <td class="p-3 font-semibold text-white">${a.barber}</td>
                         <td class="p-3 font-semibold">${a.service}</td>
-                        <td class="p-3">${a.payment}</td>
-                        <td class="p-3">R$ ${parseFloat(a.price).toFixed(2)}</td>
+                        <td class="p-3">${a.payment || 'Não especificado'}</td>
+                        <td class="p-3">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
                         <td class="p-3 flex items-center gap-2">
                             <span class="${statusColor} font-bold">${a.status}</span>
                             <a href="https://wa.me/?text=${msgWsp}" target="_blank" class="bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white px-2 py-1 rounded text-xs flex items-center gap-1 transition">
@@ -685,7 +700,7 @@
 
             appointments.push(newAppt);
             saveData('newAppointment', newAppt);
-            alert('Agendamento realizado!');
+            alert('Agendamento efetuado com sucesso!');
             closeBookingModal();
             renderClientView();
         }
@@ -728,7 +743,7 @@
             tbody.innerHTML = '';
 
             if (appointments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">Nenhum agendamento realizado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">Nenhum agendamento registado na planilha.</td></tr>`;
                 return;
             }
 
@@ -743,8 +758,8 @@
                         <td class="p-3 text-reggaeYellow font-semibold">${a.barber}</td>
                         <td class="p-3">${a.service}</td>
                         <td class="p-3">${a.date} - ${a.time}</td>
-                        <td class="p-3">${a.payment}</td>
-                        <td class="p-3 text-green-400 font-bold">R$ ${parseFloat(a.price).toFixed(2)}</td>
+                        <td class="p-3">${a.payment || 'Pix'}</td>
+                        <td class="p-3 text-green-400 font-bold">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
                         <td class="p-3 space-y-1">
                             ${a.status === 'Agendado' ? `
                                 <div class="flex gap-1">
@@ -820,7 +835,7 @@
 
             lockedSlots.push({ id: Date.now(), date, time, barber, reason });
             saveData();
-            alert(`Horário das ${time} no dia ${date} foi trancado com sucesso!`);
+            alert(`Horário das ${time} no dia ${date} trancado!`);
         }
 
         function handleAddCost(e) {
@@ -859,7 +874,7 @@
 
             let grossRevenue = appointments
                 .filter(a => a.status !== 'Cancelado')
-                .reduce((sum, a) => sum + parseFloat(a.price), 0);
+                .reduce((sum, a) => sum + parseFloat(a.price || 0), 0);
 
             let netProfit = grossRevenue - totalCostVal;
             let grossMargin = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : 0;
