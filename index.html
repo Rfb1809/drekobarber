@@ -162,8 +162,8 @@
                     <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
                         <h3 class="text-lg font-bold text-reggaeYellow">Agendamentos Realizados</h3>
                         <div class="flex items-center gap-2">
-                            <button onclick="fetchFromCloud()" class="bg-gray-800 hover:bg-gray-700 text-xs px-3 py-2 rounded border border-gray-700 text-reggaeYellow flex items-center gap-1">
-                                <i class="fa-solid fa-rotate"></i> Sincronizar
+                            <button onclick="fetchFromCloud()" class="bg-reggaeYellow hover:bg-yellow-500 text-black font-bold text-xs px-3 py-2 rounded shadow flex items-center gap-1">
+                                <i class="fa-solid fa-rotate"></i> Atualizar Planilha
                             </button>
                         </div>
                     </div>
@@ -405,18 +405,18 @@
 
         let currentUser = null;
 
-        // BÚSCA DADOS DO GOOGLE SHEETS
+        // BÚSCA DIRETA DA NUVEM / PLANILHA
         function fetchFromCloud() {
             if (!GOOGLE_SHEETS_API_URL) return;
-            
+
             fetch(GOOGLE_SHEETS_API_URL)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.appointments && data.appointments.length > 0) {
+                    if (data && data.appointments && Array.isArray(data.appointments)) {
                         appointments = data.appointments;
                         localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
                     }
-                    if (data.users && data.users.length > 0) {
+                    if (data && data.users && Array.isArray(data.users)) {
                         data.users.forEach(u => {
                             if (!users.find(localU => localU.username.toLowerCase() === u.username.toLowerCase())) {
                                 users.push(u);
@@ -424,11 +424,9 @@
                         });
                         localStorage.setItem('dreko_users', JSON.stringify(users));
                     }
-                    if (currentUser && (currentUser.role === 'admin' || currentUser.username === 'dreko')) {
-                        renderAdminAppointments();
-                    } else if (currentUser) {
-                        renderClientView();
-                    }
+
+                    // Força renderização do painel ADM após puxar os dados
+                    renderAdminAppointments();
                 })
                 .catch(err => console.log("Erro na leitura da cloud:", err));
         }
@@ -479,7 +477,7 @@
             const firstName = fullName.split(' ')[0].toLowerCase();
 
             if (users.find(u => u.username.toLowerCase() === firstName || u.email.toLowerCase() === email.toLowerCase())) {
-                alert('Já existe um utilizador cadastrado com esse nome ou e-mail!');
+                alert('Já existe um usuário com esse nome ou e-mail!');
                 return;
             }
 
@@ -487,7 +485,7 @@
             users.push(newUser);
             
             saveData('newUser', newUser);
-            alert(`Registo efetuado com sucesso! O seu nome de utilizador é: "${firstName}"`);
+            alert(`Cadastro realizado com sucesso! Seu nome de usuário é: "${firstName}"`);
             switchAuthTab('login');
         }
 
@@ -499,7 +497,7 @@
             const user = users.find(u => u.username.toLowerCase() === userIn && u.pass === passIn);
 
             if (!user) {
-                alert('Utilizador ou palavra-passe incorretos!');
+                alert('Usuário ou senha incorretos!');
                 return;
             }
 
@@ -510,6 +508,7 @@
 
             if (user.role === 'admin' || user.username.toLowerCase() === 'dreko' || user.username.toLowerCase() === 'admin') {
                 document.getElementById('adminDashboard').classList.remove('hidden');
+                fetchFromCloud(); // Atualiza a planilha no login do Admin
                 renderAdminView();
             } else {
                 document.getElementById('clientDashboard').classList.remove('hidden');
@@ -700,7 +699,7 @@
 
             appointments.push(newAppt);
             saveData('newAppointment', newAppt);
-            alert('Agendamento efetuado com sucesso!');
+            alert('Agendamento realizado!');
             closeBookingModal();
             renderClientView();
         }
@@ -743,7 +742,7 @@
             tbody.innerHTML = '';
 
             if (appointments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">Nenhum agendamento registado na planilha.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-4 text-center text-gray-500">Nenhum agendamento encontrado. Clique no botão "Atualizar Planilha" acima.</td></tr>`;
                 return;
             }
 
@@ -835,7 +834,7 @@
 
             lockedSlots.push({ id: Date.now(), date, time, barber, reason });
             saveData();
-            alert(`Horário das ${time} no dia ${date} trancado!`);
+            alert(`Horário das ${time} no dia ${date} foi trancado com sucesso!`);
         }
 
         function handleAddCost(e) {
