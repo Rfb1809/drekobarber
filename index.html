@@ -112,7 +112,7 @@
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-lg">
                 <div>
                     <h2 class="text-2xl font-bold text-reggaeYellow">Bem-vindo, <span id="clientGreetingName"></span>! ✌️</h2>
-                    <p class="text-sm text-gray-400">Escolha o seu barbeiro, dia e horário abaixo.</p>
+                    <p class="text-sm text-gray-400">Escolha o dia e horário abaixo.</p>
                 </div>
                 <button onclick="showBookingModal()" class="bg-reggaeYellow text-black font-bold px-6 py-3 rounded-xl hover:bg-yellow-500 transition shadow-lg flex items-center justify-center gap-2">
                     <i class="fa-solid fa-calendar-plus"></i> Novo Agendamento
@@ -123,9 +123,9 @@
             <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md">
                 <div class="flex justify-between items-center mb-4">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-calendar-week text-reggaeYellow"></i> Agenda da Semana</h3>
-                    <span class="text-xs text-gray-400">Horários de Funcionamento</span>
+                    <span class="text-xs text-gray-400">Seg-Sex: 18:30 às 22:00 | Sáb: 08:00 às 12:00</span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-5 gap-4" id="clientWeeklySchedule"></div>
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4" id="clientWeeklySchedule"></div>
             </div>
 
             <!-- MEUS AGENDAMENTOS -->
@@ -212,17 +212,12 @@
                 </div>
 
                 <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 space-y-4">
-                    <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-clock"></i> Horários de Funcionamento</h3>
-                    <form onsubmit="handleAddWorkingHour(event)" class="space-y-3">
-                        <div>
-                            <label class="block text-xs uppercase text-gray-400 mb-1">Novo Horário Disponível</label>
-                            <input type="time" id="newWorkingHour" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-reggaeYellow">
-                        </div>
-                        <button type="submit" class="w-full bg-reggaeYellow hover:bg-yellow-500 text-black font-bold py-2 rounded-lg transition">Adicionar Horário</button>
-                    </form>
-
-                    <h4 class="text-sm font-bold text-gray-300 pt-4 border-t border-gray-800">Grade de Horários Ativa</h4>
-                    <div id="workingHoursList" class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto"></div>
+                    <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-clock"></i> Horários Padrão</h3>
+                    <div class="text-xs text-gray-400 space-y-2">
+                        <p><b class="text-white">Segunda a Sexta:</b> 18:30, 19:00, 19:30, 20:00, 20:30, 21:00, 21:30, 22:00</p>
+                        <p><b class="text-white">Sábado:</b> 08:00, 08:30, 09:00, 09:30, 10:00, 10:30, 11:00, 11:30, 12:00</p>
+                        <p><b class="text-white">Domingo:</b> Fechado</p>
+                    </div>
                 </div>
             </div>
 
@@ -233,14 +228,12 @@
                     <div>
                         <label class="block text-xs uppercase text-gray-400 mb-1">Barbeiro</label>
                         <select id="lockBarber" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-reggaeYellow">
-                            <option value="Todos">Todos os Barbeiros</option>
                             <option value="Dreko">Dreko</option>
-                            <option value="Rafa">Rafa Barbeiro</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-400 mb-1">Data</label>
-                        <input type="date" id="lockDate" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-reggaeYellow">
+                        <input type="date" id="lockDate" onchange="populateLockTimes()" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-reggaeYellow">
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-400 mb-1">Horário</label>
@@ -322,10 +315,9 @@
 
             <form onsubmit="handleCreateAppointment(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs uppercase text-gray-400 mb-1">Barbeiro Preferido</label>
+                    <label class="block text-xs uppercase text-gray-400 mb-1">Barbeiro</label>
                     <select id="bookBarber" onchange="loadAvailableSlots()" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-3 text-white focus:outline-none focus:border-reggaeYellow">
                         <option value="Dreko">Dreko</option>
-                        <option value="Rafa">Rafa Barbeiro</option>
                     </select>
                 </div>
 
@@ -382,6 +374,20 @@
             input.value = v;
         }
 
+        function getWorkingHoursForDate(dateStr) {
+            let parts = dateStr.split('-');
+            let d = new Date(parts[0], parts[1] - 1, parts[2]);
+            let day = d.getDay();
+
+            if (day >= 1 && day <= 5) {
+                return ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+            } else if (day === 6) {
+                return ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
+            } else {
+                return [];
+            }
+        }
+
         const defaultUsers = [
             { name: "Admin Geral", username: "admin", role: "admin", pass: "Rafa180993", email: "admin@drekobarber.com", phone: "(00) 00000-0000" },
             { name: "Barbeiro Dreko", username: "dreko", role: "admin", pass: "Dreko123", email: "dreko@drekobarber.com", phone: "(00) 00000-0000" }
@@ -395,11 +401,8 @@
             { id: 5, name: "Selagem (Consultar tamanho)", price: 0.00 }
         ];
 
-        const defaultHours = ["08:00", "09:00", "10:00", "11:00", "12:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
-
         let storedUsers = JSON.parse(localStorage.getItem('dreko_users')) || [];
 
-        // Garante que as contas ADM sempre fiquem atualizadas com as senhas corretas
         defaultUsers.forEach(defUser => {
             let index = storedUsers.findIndex(u => u.username.toLowerCase() === defUser.username.toLowerCase());
             if (index !== -1) {
@@ -411,7 +414,6 @@
 
         let users = storedUsers;
         let services = JSON.parse(localStorage.getItem('dreko_services')) || defaultServices;
-        let workingHours = JSON.parse(localStorage.getItem('dreko_hours')) || defaultHours;
         let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
         let lockedSlots = JSON.parse(localStorage.getItem('dreko_locked_slots')) || [];
         let costs = JSON.parse(localStorage.getItem('dreko_costs')) || [];
@@ -421,7 +423,6 @@
         function saveData(actionType = 'sync', payloadData = {}) {
             localStorage.setItem('dreko_users', JSON.stringify(users));
             localStorage.setItem('dreko_services', JSON.stringify(services));
-            localStorage.setItem('dreko_hours', JSON.stringify(workingHours));
             localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
             localStorage.setItem('dreko_locked_slots', JSON.stringify(lockedSlots));
             localStorage.setItem('dreko_costs', JSON.stringify(costs));
@@ -520,28 +521,34 @@
             container.innerHTML = '';
             const today = new Date();
 
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 6; i++) {
                 let d = new Date();
                 d.setDate(today.getDate() + i);
                 let dateStr = d.toISOString().split('T')[0];
                 let dayName = d.toLocaleDateString('pt-BR', { weekday: 'short' });
 
+                let hoursForDay = getWorkingHoursForDate(dateStr);
+
                 let colHtml = `<div class="bg-gray-900/50 p-3 rounded-xl border border-gray-800">
                     <h4 class="text-xs uppercase font-bold text-reggaeYellow text-center mb-2">${dayName} - ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}</h4>
                     <div class="space-y-1 max-h-48 overflow-y-auto">`;
 
-                workingHours.forEach(h => {
-                    let isTaken = appointments.some(a => a.date === dateStr && a.time === h && a.status !== 'Cancelado');
-                    let isLocked = lockedSlots.some(l => l.date === dateStr && l.time === h);
+                if(hoursForDay.length === 0) {
+                    colHtml += `<div class="text-xs p-2 text-center text-gray-500">Fechado</div>`;
+                } else {
+                    hoursForDay.forEach(h => {
+                        let isTaken = appointments.some(a => a.date === dateStr && a.time === h && a.status !== 'Cancelado');
+                        let isLocked = lockedSlots.some(l => l.date === dateStr && l.time === h);
 
-                    if (isTaken) {
-                        colHtml += `<div class="text-xs p-1 text-center bg-red-900/30 text-red-400 rounded">Ocupado (${h})</div>`;
-                    } else if (isLocked) {
-                        colHtml += `<div class="text-xs p-1 text-center bg-gray-800 text-gray-500 rounded">Trancado</div>`;
-                    } else {
-                        colHtml += `<div class="text-xs p-1 text-center bg-green-900/30 text-green-400 rounded font-semibold">Vago (${h})</div>`;
-                    }
-                });
+                        if (isTaken) {
+                            colHtml += `<div class="text-xs p-1 text-center bg-red-900/30 text-red-400 rounded">Ocupado (${h})</div>`;
+                        } else if (isLocked) {
+                            colHtml += `<div class="text-xs p-1 text-center bg-gray-800 text-gray-500 rounded">Trancado</div>`;
+                        } else {
+                            colHtml += `<div class="text-xs p-1 text-center bg-green-900/30 text-green-400 rounded font-semibold">Vago (${h})</div>`;
+                        }
+                    });
+                }
 
                 colHtml += `</div></div>`;
                 container.innerHTML += colHtml;
@@ -620,7 +627,16 @@
             document.getElementById('selectedTime').value = '';
             container.innerHTML = '';
 
-            workingHours.forEach(h => {
+            if(!dateVal) return;
+
+            let hoursForDay = getWorkingHoursForDate(dateVal);
+
+            if (hoursForDay.length === 0) {
+                container.innerHTML = `<p class="col-span-4 text-xs text-red-400 text-center py-2">Fechado aos domingos.</p>`;
+                return;
+            }
+
+            hoursForDay.forEach(h => {
                 let isTaken = appointments.some(a => a.date === dateVal && a.time === h && a.barber === barberVal && a.status !== 'Cancelado');
                 let isLocked = lockedSlots.some(l => l.date === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
 
@@ -763,17 +779,6 @@
                     </div>
                 `;
             });
-
-            const hoursContainer = document.getElementById('workingHoursList');
-            hoursContainer.innerHTML = '';
-            workingHours.sort().forEach(h => {
-                hoursContainer.innerHTML += `
-                    <div class="flex justify-between items-center bg-gray-900 p-2 rounded border border-gray-800 text-xs text-reggaeYellow font-bold">
-                        <span>${h}</span>
-                        <button onclick="removeWorkingHour('${h}')" class="text-red-500 hover:text-red-700"><i class="fa-solid fa-times"></i></button>
-                    </div>
-                `;
-            });
         }
 
         function handleAddService(e) {
@@ -794,26 +799,14 @@
             renderAdminConfig();
         }
 
-        function handleAddWorkingHour(e) {
-            e.preventDefault();
-            const time = document.getElementById('newWorkingHour').value;
-            if(!workingHours.includes(time)) {
-                workingHours.push(time);
-                saveData();
-                renderAdminConfig();
-            }
-        }
-
-        function removeWorkingHour(time) {
-            workingHours = workingHours.filter(h => h !== time);
-            saveData();
-            renderAdminConfig();
-        }
-
         function populateLockTimes() {
             const select = document.getElementById('lockTime');
+            const lockDateVal = document.getElementById('lockDate').value;
             select.innerHTML = '';
-            workingHours.sort().forEach(h => {
+
+            let hoursForDay = lockDateVal ? getWorkingHoursForDate(lockDateVal) : ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+
+            hoursForDay.forEach(h => {
                 select.innerHTML += `<option value="${h}">${h}</option>`;
             });
         }
