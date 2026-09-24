@@ -433,8 +433,26 @@
             return phone ? String(phone).replace(/\D/g, '') : '';
         }
 
+        // FORMATADOR DE DATA PARA EXIBIR SEMPRE YYYY-MM-DD
+        function formatDateClean(dateVal) {
+            if (!dateVal) return "";
+            if (String(dateVal).includes('GMT') || String(dateVal).includes('1899')) {
+                let d = new Date(dateVal);
+                if (!isNaN(d.getTime())) {
+                    let year = d.getFullYear();
+                    let month = ("0" + (d.getMonth() + 1)).slice(-2);
+                    let day = ("0" + d.getDate()).slice(-2);
+                    return `${year}-${month}-${day}`;
+                }
+            }
+            return String(dateVal).split('T')[0];
+        }
+
         function getWorkingHoursForDate(dateStr) {
-            let parts = dateStr.split('-');
+            let clean = formatDateClean(dateStr);
+            let parts = clean.split('-');
+            if(parts.length < 3) return ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+            
             let d = new Date(parts[0], parts[1] - 1, parts[2]);
             let day = d.getDay();
 
@@ -653,7 +671,6 @@
             renderClientAppointments();
         }
 
-        // GRADE DA SEMANA (Destaca Ocupados em Vermelho)
         function renderClientWeeklySchedule() {
             const container = document.getElementById('clientWeeklySchedule');
             container.innerHTML = '';
@@ -675,8 +692,8 @@
                     colHtml += `<div class="text-xs p-2 text-center text-gray-500">Fechado</div>`;
                 } else {
                     hoursForDay.forEach(h => {
-                        let isTaken = appointments.some(a => a.date === dateStr && a.time === h && a.status !== 'Cancelado');
-                        let isLocked = lockedSlots.some(l => l.date === dateStr && l.time === h);
+                        let isTaken = appointments.some(a => formatDateClean(a.date) === dateStr && a.time === h && a.status !== 'Cancelado');
+                        let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateStr && l.time === h);
 
                         if (isTaken) {
                             colHtml += `<div class="text-xs p-1 text-center bg-red-600 text-white rounded font-bold shadow">Ocupado (${h})</div>`;
@@ -693,7 +710,6 @@
             }
         }
 
-        // LISTA CLIENTE (Apenas agendamentos ativos - Cancelados somem da lista do cliente)
         function renderClientAppointments() {
             const tbody = document.getElementById('clientAppointmentsList');
             tbody.innerHTML = '';
@@ -712,11 +728,12 @@
 
             myAppts.forEach(a => {
                 let statusColor = a.status === 'Concluído' ? 'text-green-400' : 'text-yellow-400';
-                let msgWsp = encodeURIComponent(`Olá Dreko Barbearia, sou ${a.clientName}. Gostaria de confirmar meu agendamento de ${a.service} no dia ${a.date} às ${a.time}.`);
+                let formattedDate = formatDateClean(a.date);
+                let msgWsp = encodeURIComponent(`Olá Dreko Barbearia, sou ${a.clientName}. Gostaria de confirmar meu agendamento de ${a.service} no dia ${formattedDate} às ${a.time}.`);
 
                 tbody.innerHTML += `
                     <tr class="border-b border-gray-800">
-                        <td class="p-3">${a.date} às ${a.time}</td>
+                        <td class="p-3">${formattedDate} às ${a.time}</td>
                         <td class="p-3 font-semibold text-white">${a.barber}</td>
                         <td class="p-3 font-semibold">${a.service}</td>
                         <td class="p-3">${a.payment || 'Não especificado'}</td>
@@ -752,6 +769,17 @@
                     }
                     alert('Agendamento cancelado com sucesso! O horário foi liberado.');
                 }
+            }
+        }
+
+        // APAGAR DEFINITIVAMENTE O REGISTRO DO AGENDAMENTO (ADM)
+        function deleteAppointmentPermanently(id) {
+            if (confirm("Tem certeza que deseja APAGAR este registro da aplicação e da planilha?")) {
+                appointments = appointments.filter(a => String(a.id) !== String(id));
+                saveData('deleteAppointment', { id: id });
+                renderAdminAppointments();
+                renderReports();
+                alert('Registro excluído com sucesso.');
             }
         }
 
@@ -805,8 +833,8 @@
             }
 
             hoursForDay.forEach(h => {
-                let isTaken = appointments.some(a => a.date === dateVal && a.time === h && a.barber === barberVal && a.status !== 'Cancelado');
-                let isLocked = lockedSlots.some(l => l.date === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
+                let isTaken = appointments.some(a => formatDateClean(a.date) === dateVal && a.time === h && a.barber === barberVal && a.status !== 'Cancelado');
+                let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
 
                 if (isTaken) {
                     container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded-lg bg-red-600 text-white font-bold border border-red-700 cursor-not-allowed shadow">Ocupado</button>`;
@@ -837,7 +865,7 @@
                 return;
             }
 
-            let isTaken = appointments.some(a => a.date === date && a.time === time && a.barber === barber && a.status !== 'Cancelado');
+            let isTaken = appointments.some(a => formatDateClean(a.date) === date && a.time === time && a.barber === barber && a.status !== 'Cancelado');
             if(isTaken) {
                 alert('Este horário acabou de ser agendado por outro cliente! Por favor selecione outro horário.');
                 loadAvailableSlots();
@@ -904,7 +932,6 @@
             renderAdminAppointments();
         }
 
-        // TELA ADM - MOSTRA ATIVOS E CANCELADOS (Em vermelho) + WHATSAPP DE CANCELAMENTO
         function renderAdminAppointments() {
             const tbody = document.getElementById('adminAppointmentsList');
             tbody.innerHTML = '';
@@ -917,17 +944,18 @@
             appointments.forEach(a => {
                 let rawPhone = cleanPhone(a.clientPhone);
                 let isCancelled = a.status === 'Cancelado';
+                let formattedDate = formatDateClean(a.date);
 
-                let msgLembrete = encodeURIComponent(`Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia (${a.date}) às ${a.time} com o barbeiro ${a.barber}. Aguardamos você!`);
-                let msgCancelamentoADM = encodeURIComponent(`Olá ${a.clientName}, informamos que o seu agendamento para ${a.service} no dia ${a.date} às ${a.time} foi CANCELADO pela Dreko Barbearia. Entre em contato se precisar remarcar.`);
+                let msgLembrete = encodeURIComponent(`Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia (${formattedDate}) às ${a.time} com o barbeiro ${a.barber}. Aguardamos você!`);
+                let msgCancelamentoADM = encodeURIComponent(`Olá ${a.clientName}, informamos que o seu agendamento para ${a.service} no dia ${formattedDate} às ${a.time} foi CANCELADO pela Dreko Barbearia. Entre em contato se precisar remarcar.`);
 
                 tbody.innerHTML += `
-                    <tr class="border-b border-gray-800 ${isCancelled ? 'bg-red-950/30' : ''}">
+                    <tr class="border-b border-gray-800 ${isCancelled ? 'bg-red-950/40' : ''}">
                         <td class="p-3 font-semibold text-white">${a.clientName}</td>
                         <td class="p-3">${a.clientPhone}</td>
                         <td class="p-3 text-reggaeYellow font-semibold">${a.barber}</td>
                         <td class="p-3">${a.service}</td>
-                        <td class="p-3">${a.date} - ${a.time}</td>
+                        <td class="p-3">${formattedDate} - ${a.time}</td>
                         <td class="p-3">${a.payment || 'Pix'}</td>
                         <td class="p-3 text-green-400 font-bold">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
                         <td class="p-3 space-y-1">
@@ -936,11 +964,15 @@
                                     <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-green-600/30 text-green-400 px-2 py-1 rounded text-xs hover:bg-green-600 hover:text-white transition">Concluir</button>
                                     <button onclick="cancelAppointment(${a.id})" class="bg-red-600/30 text-red-400 px-2 py-1 rounded text-xs hover:bg-red-600 hover:text-white transition">Cancelar</button>
                                 </div>
-                            ` : `<span class="text-xs uppercase font-bold ${isCancelled ? 'text-red-500 bg-red-900/40 px-2 py-1 rounded border border-red-800' : 'text-gray-500'}">${a.status}</span>`}
+                            ` : `<span class="text-xs uppercase font-bold ${isCancelled ? 'text-red-400 bg-red-900/60 px-2 py-1 rounded border border-red-700' : 'text-gray-500'}">${a.status}</span>`}
                             
                             ${rawPhone && !isCancelled ? `<a href="https://wa.me/55${rawPhone}?text=${msgLembrete}" target="_blank" class="block text-center bg-green-600/20 text-green-400 hover:bg-green-600 hover:text-white px-2 py-1 rounded text-xs transition"><i class="fa-brands fa-whatsapp"></i> Lembrete</a>` : ''}
                             
                             ${rawPhone && isCancelled ? `<a href="https://wa.me/55${rawPhone}?text=${msgCancelamentoADM}" target="_blank" class="block text-center bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white px-2 py-1 rounded text-xs transition"><i class="fa-brands fa-whatsapp"></i> Avisar Cancelamento</a>` : ''}
+
+                            <button onclick="deleteAppointmentPermanently(${a.id})" class="block w-full text-center bg-gray-800 hover:bg-red-800 text-gray-400 hover:text-white px-2 py-1 rounded text-xs transition mt-1">
+                                <i class="fa-solid fa-trash"></i> Apagar Registro
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -1083,6 +1115,7 @@
             renderReports();
         }
 
+        // RELATÓRIOS: INCLUI TODOS OS VALORES DOS AGENDAMENTOS (INCLUSIVE CANCELADOS) NO CÁLCULO
         function renderReports() {
             const tbody = document.getElementById('costsList');
             tbody.innerHTML = '';
@@ -1099,8 +1132,8 @@
                 `;
             });
 
+            // Soma a receita de todos os agendamentos registrados no sistema
             let grossRevenue = appointments
-                .filter(a => a.status !== 'Cancelado')
                 .reduce((sum, a) => sum + parseFloat(a.price || 0), 0);
 
             let netProfit = grossRevenue - totalCostVal;
