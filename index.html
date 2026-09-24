@@ -192,21 +192,52 @@
             </div>
 
             <!-- SUB-ABA DE GESTÃO DE USUÁRIOS (ADM) -->
-            <div id="admUsersView" class="hidden bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md space-y-4">
-                <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> Usuários Cadastrados</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm text-gray-300">
-                        <thead class="bg-gray-800 text-reggaeYellow uppercase text-xs">
-                            <tr>
-                                <th class="p-3">Nome Completo</th>
-                                <th class="p-3">Celular (Login)</th>
-                                <th class="p-3">E-mail</th>
-                                <th class="p-3">Senha Atual</th>
-                                <th class="p-3">Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminUsersList"></tbody>
-                    </table>
+            <div id="admUsersView" class="hidden space-y-6">
+                <!-- FORMULARIO DE NOVO USUARIO PELO ADM -->
+                <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md">
+                    <h3 class="text-md font-bold text-reggaeYellow mb-4 flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Cliente Manualmente</h3>
+                    <form onsubmit="handleAdminCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase text-gray-400 mb-1">Nome Completo</label>
+                            <input type="text" id="admNewName" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-reggaeYellow">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-400 mb-1">Celular (WhatsApp)</label>
+                            <input type="tel" id="admNewPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-reggaeYellow">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-400 mb-1">E-mail</label>
+                            <input type="email" id="admNewEmail" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-reggaeYellow">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-400 mb-1">Senha Inicial</label>
+                            <input type="text" id="admNewPass" placeholder="Ex: 123456" required class="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-white focus:outline-none focus:border-reggaeYellow">
+                        </div>
+                        <div class="md:col-span-4 text-right">
+                            <button type="submit" class="bg-reggaeGreen hover:bg-green-700 text-white font-bold px-6 py-2 rounded-lg transition">
+                                Salvar Novo Cliente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- TABELA DE USUÁRIOS -->
+                <div class="bg-cardBg p-6 rounded-2xl border border-gray-800 shadow-md space-y-4">
+                    <h3 class="text-lg font-bold text-reggaeYellow flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> Usuários Cadastrados</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-300">
+                            <thead class="bg-gray-800 text-reggaeYellow uppercase text-xs">
+                                <tr>
+                                    <th class="p-3">Nome Completo</th>
+                                    <th class="p-3">Celular (Login)</th>
+                                    <th class="p-3">E-mail</th>
+                                    <th class="p-3">Senha Atual</th>
+                                    <th class="p-3">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersList"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -394,7 +425,7 @@
         }
 
         function cleanPhone(phone) {
-            return phone ? phone.replace(/\D/g, '') : '';
+            return phone ? String(phone).replace(/\D/g, '') : '';
         }
 
         function getWorkingHoursForDate(dateStr) {
@@ -432,7 +463,7 @@
 
         let currentUser = null;
 
-        // LEITURA DIRETA E INTERCEPTAÇÃO JSONP
+        // RECEBIMENTO VIA JSONP
         window.handleCloudResponse = function(data) {
             const syncStatus = document.getElementById('syncStatus');
             const syncIcon = document.getElementById('syncIcon');
@@ -481,7 +512,6 @@
             if (syncStatus) syncStatus.innerText = "(Buscando planilha...)";
             if (syncIcon) syncIcon.classList.add('fa-spin');
 
-            // Injeta script JSONP para evitar bloqueio CORS do navegador
             const oldScript = document.getElementById('jsonpScript');
             if (oldScript) oldScript.remove();
 
@@ -549,6 +579,34 @@
             saveData('newUser', newUser);
             alert(`Cadastro efetuado! Utilize seu celular (${phone}) e senha para acessar.`);
             switchAuthTab('login');
+        }
+
+        function handleAdminCreateUser(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('admNewName').value.trim();
+            const phone = document.getElementById('admNewPhone').value.trim();
+            const email = document.getElementById('admNewEmail').value.trim();
+            const pass = document.getElementById('admNewPass').value.trim();
+
+            const rawPhone = cleanPhone(phone);
+
+            if (users.find(u => cleanPhone(u.phone) === rawPhone)) {
+                alert('Já existe um cliente cadastrado com este número de celular!');
+                return;
+            }
+
+            const newUser = { name: fullName, username: rawPhone, phone: phone, email: email, pass: pass, role: 'client' };
+            users.push(newUser);
+
+            saveData('newUser', newUser);
+
+            document.getElementById('admNewName').value = '';
+            document.getElementById('admNewPhone').value = '';
+            document.getElementById('admNewEmail').value = '';
+            document.getElementById('admNewPass').value = '';
+
+            renderAdminUsers();
+            alert(`Cliente ${fullName} cadastrado com sucesso!`);
         }
 
         function handleLogin(e) {
@@ -666,7 +724,7 @@
                         <td class="p-3 flex items-center gap-2">
                             <span class="${statusColor}">${a.status}</span>
                             ${a.status === 'Agendado' ? `
-                                <button onclick="cancelClientAppointment(${a.id})" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-xs transition">
+                                <button onclick="cancelAppointment(${a.id})" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-xs transition">
                                     Cancelar
                                 </button>
                                 <a href="https://wa.me/?text=${msgWsp}" target="_blank" class="bg-green-600/20 hover:bg-green-600 text-green-400 hover:text-white px-2 py-1 rounded text-xs flex items-center gap-1 transition">
@@ -679,14 +737,20 @@
             });
         }
 
-        function cancelClientAppointment(id) {
-            if (confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará livre para outro cliente.")) {
+        // CANCELAR E LIBERAR HORÁRIO (COMPARTILHADO POR CLIENTE E ADM)
+        function cancelAppointment(id) {
+            if (confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível imediatamente para novos agendamentos.")) {
                 const appt = appointments.find(a => String(a.id) === String(id));
                 if (appt) {
                     appt.status = 'Cancelado';
                     saveData();
-                    renderClientView();
-                    alert('Agendamento cancelado com sucesso.');
+                    
+                    if (currentUser && currentUser.role === 'admin') {
+                        renderAdminAppointments();
+                    } else {
+                        renderClientView();
+                    }
+                    alert('Agendamento cancelado com sucesso! O horário foi liberado.');
                 }
             }
         }
@@ -860,7 +924,7 @@
                             ${a.status === 'Agendado' ? `
                                 <div class="flex gap-1">
                                     <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-green-600/30 text-green-400 px-2 py-1 rounded text-xs hover:bg-green-600 hover:text-white">Concluir</button>
-                                    <button onclick="changeStatus(${a.id}, 'Cancelado')" class="bg-red-600/30 text-red-400 px-2 py-1 rounded text-xs hover:bg-red-600 hover:text-white">Cancelar</button>
+                                    <button onclick="cancelAppointment(${a.id})" class="bg-red-600/30 text-red-400 px-2 py-1 rounded text-xs hover:bg-red-600 hover:text-white">Cancelar</button>
                                 </div>
                             ` : `<span class="text-xs uppercase font-bold ${isCancelled ? 'text-red-500' : 'text-gray-500'}">${a.status}</span>`}
                             ${rawPhone && !isCancelled ? `<a href="https://wa.me/55${rawPhone}?text=${msgLembrete}" target="_blank" class="block text-center bg-green-600/20 text-green-400 hover:bg-green-600 hover:text-white px-2 py-1 rounded text-xs"><i class="fa-brands fa-whatsapp"></i> Lembrete</a>` : ''}
@@ -893,7 +957,7 @@
                                 Reset Senha
                             </button>
                             <button onclick="deleteUser('${u.phone || u.username}')" class="bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white px-2 py-1 rounded text-xs transition">
-                                Excluir
+                                Excluir Conta
                             </button>
                         </td>
                     </tr>
@@ -909,16 +973,19 @@
                     user.pass = newPass.trim();
                     saveData('newUser', user);
                     renderAdminUsers();
-                    alert(`Senha de ${user.name} atualizada com sucesso para: ${newPass}`);
+                    alert(`Senha de ${user.name} alterada para: ${newPass}`);
                 }
             }
         }
 
+        // APAGAR USUÁRIO E BLOQUEAR O ACESSO TOTAL
         function deleteUser(identifier) {
-            if (confirm("Tem certeza que deseja excluir este cadastro de cliente?")) {
+            const userObj = users.find(u => (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier);
+            if (userObj && confirm(`Tem certeza que deseja excluir o cadastro de ${userObj.name}? Ele não conseguirá mais entrar na aplicação.`)) {
                 users = users.filter(u => !( (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier ));
                 saveData();
                 renderAdminUsers();
+                alert(`Cadastro excluído com sucesso. Acesso revogado.`);
             }
         }
 
