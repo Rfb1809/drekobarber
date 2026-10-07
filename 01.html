@@ -1,4654 +1,1032 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Dreko Barbearia</title>
-
-    <!-- Tailwind -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreko Barbearia - Agendamento Premium</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- FontAwesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    >
-
-    <!-- Fontes -->
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts para estilo Old English/Gótico e Condensado Vintage -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
-
-    <link
-        href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Oswald:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
-
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Oswald:wght@500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        parchmentBg: '#E6DCB8',
+                        parchmentCard: '#F5EFE3',
+                        vintageDarkGreen: '#1C3E27',
+                        vintageGoldBtn: '#E4BD68',
+                        vintageGoldText: '#D1A347',
+                        vintageRedBtn: '#AD2B24',
+                        vintageDarkBtn: '#242424',
+                        vintageBorderGreen: '#233827',
+                        vintageTextDark: '#1A1A1A'
+                    },
+                    fontFamily: {
+                        gothic: ['UnifrakturMaguntia', 'serif'],
+                        condensed: ['Oswald', 'sans-serif'],
+                        sans: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-
-        /* =====================================================
-           DREKO BARBEARIA
-           TEMA VINTAGE — REFERÊNCIA DA IMAGEM
-           ===================================================== */
-
-        :root {
-            --verde: #1e3829;
-            --verde-claro: #53643b;
-            --verde-textura: #294432;
-
-            --vermelho: #a72e2b;
-            --vermelho-escuro: #842522;
-
-            --dourado: #c99a32;
-            --dourado-claro: #e1c47b;
-
-            --papel: #eee8d9;
-            --papel-claro: #f5f0e3;
-            --papel-escuro: #ded5c2;
-
-            --preto: #282824;
-            --cinza: #68665d;
+        body { 
+            background-color: #E6DCB8; 
+            background-image: 
+                radial-gradient(#C3B383 1px, transparent 0),
+                linear-gradient(to bottom, rgba(0,0,0,0.03), rgba(0,0,0,0.08));
+            background-size: 16px 16px, 100% 100%;
+            color: #1A1A1A; 
+            font-family: 'Montserrat', sans-serif; 
         }
 
-        * {
-            box-sizing: border-box;
+        .font-gothic {
+            font-family: 'UnifrakturMaguntia', serif;
         }
 
-        html {
-            min-height: 100%;
+        .font-condensed {
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.04em;
         }
 
-        body {
-            min-height: 100vh;
-            margin: 0;
-
-            color: var(--preto);
-
-            font-family: 'Montserrat', sans-serif;
-
-            background-color: var(--papel);
-
-            background-image:
-                radial-gradient(
-                    circle at 20% 20%,
-                    rgba(70,55,30,.08) 0px,
-                    transparent 2px
-                ),
-                radial-gradient(
-                    circle at 70% 70%,
-                    rgba(70,55,30,.06) 0px,
-                    transparent 2px
-                ),
-                repeating-linear-gradient(
-                    0deg,
-                    rgba(80,65,40,.025) 0px,
-                    rgba(80,65,40,.025) 1px,
-                    transparent 1px,
-                    transparent 4px
-                ),
-                linear-gradient(
-                    90deg,
-                    rgba(255,255,255,.15),
-                    rgba(100,80,40,.04),
-                    rgba(255,255,255,.15)
-                );
-
-            background-size:
-                23px 23px,
-                31px 31px,
-                100% 5px,
-                100% 100%;
-
-            position: relative;
+        /* Cartão Principal do Layout com Textura de Papel Antigo */
+        .vintage-main-card {
+            background-color: #F3EBD8;
+            background-image: radial-gradient(#E2D3B3 0.8px, transparent 0);
+            background-size: 12px 12px;
+            border: 2px solid #2B3A2C;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
 
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-
-            pointer-events: none;
-
-            z-index: 9999;
-
-            box-shadow:
-                inset 0 0 80px rgba(60,45,25,.20),
-                inset 0 0 20px rgba(60,45,25,.08);
-        }
-
-        /* =====================================================
-           FONTES
-           ===================================================== */
-
-        .vintage-title {
-            font-family:
-                'UnifrakturMaguntia',
-                serif !important;
-        }
-
-        .vintage-condensed {
-            font-family:
-                'Oswald',
-                sans-serif !important;
-
-            letter-spacing: .055em;
-        }
-
-        /* =====================================================
-           CORES
-           ===================================================== */
-
-        .bg-paperCard {
-            background-color:
-                rgba(245,240,227,.97) !important;
-        }
-
-        .bg-paperBg {
-            background-color:
-                rgba(238,232,217,.92) !important;
-        }
-
-        .bg-forestGreen {
-            background-color:
-                var(--verde) !important;
-        }
-
-        .text-forestGreen {
-            color:
-                var(--verde) !important;
-        }
-
-        .bg-armyGreen {
-            background-color:
-                var(--verde-claro) !important;
-        }
-
-        .text-armyGreen {
-            color:
-                var(--verde-claro) !important;
-        }
-
-        .bg-vintageRed {
-            background-color:
-                var(--vermelho) !important;
-        }
-
-        .text-vintageRed {
-            color:
-                var(--vermelho) !important;
-        }
-
-        .text-vintageGold {
-            color:
-                var(--dourado) !important;
-        }
-
-        .bg-vintageGold {
-            background-color:
-                var(--dourado) !important;
-        }
-
-        .text-charcoal {
-            color:
-                var(--preto) !important;
-        }
-
-        /* =====================================================
-           FAIXA VERDE / DOURADO / VERMELHO
-           ===================================================== */
-
-        .tri-stripe {
-            width: 100%;
-            height: 5px !important;
-
-            background:
-                linear-gradient(
-                    to right,
-
-                    var(--verde) 0%,
-                    var(--verde) 33.33%,
-
-                    var(--dourado) 33.33%,
-                    var(--dourado) 66.66%,
-
-                    var(--vermelho) 66.66%,
-                    var(--vermelho) 100%
-                ) !important;
-
-            box-shadow:
-                0 1px 2px rgba(0,0,0,.25);
-        }
-
-        /* =====================================================
-           HEADER
-           ===================================================== */
-
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-
-            background:
-                linear-gradient(
-                    rgba(245,240,227,.97),
-                    rgba(231,223,205,.97)
-                ) !important;
-
-            border-bottom:
-                1px solid rgba(30,56,41,.35) !important;
-
-            box-shadow:
-                0 3px 12px rgba(40,30,20,.15) !important;
-
+        /* Moldura Estilo Comprovante Vintage */
+        .receipt-box {
+            border: 2px solid #2B3A2C;
+            border-radius: 14px;
             overflow: hidden;
+            background-color: #F7F1E3;
         }
 
-        header .max-w-xl {
-            min-height: 88px;
+        /* Divisória Tricolor Vintage (Verde / Amarelo / Vermelho) */
+        .tri-color-bar {
+            height: 3px;
+            background: linear-gradient(to right, #1C3E27 0%, #1C3E27 33%, #D1A347 33%, #D1A347 66%, #AD2B24 66%, #AD2B24 100%);
         }
 
-        header h1 {
-            font-family:
-                'UnifrakturMaguntia',
-                serif !important;
-
-            color:
-                var(--verde) !important;
-
-            font-size:
-                38px !important;
-
-            line-height:
-                .85 !important;
-
-            text-transform:
-                uppercase;
-
-            text-shadow:
-                1px 1px 0 rgba(255,255,255,.65);
-        }
-
-        header p {
-            color:
-                var(--verde-claro) !important;
-
-            font-family:
-                'Oswald',
-                sans-serif !important;
-
-            font-size:
-                10px !important;
-
-            letter-spacing:
-                .17em !important;
-
-            text-transform:
-                uppercase;
-        }
-
-        header img {
-            border-color:
-                var(--verde) !important;
-
-            box-shadow:
-                0 2px 5px rgba(0,0,0,.25) !important;
-
-            filter:
-                sepia(.08)
-                contrast(1.08);
-        }
-
-        /* =====================================================
-           CARTÕES
-           ===================================================== */
-
-        .vintage-card-frame {
+        /* Estilo das Abas com Linha de Seleção Ativa */
+        .nav-tab-btn {
+            color: #1A1A1A;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
             position: relative;
-
-            background:
-                linear-gradient(
-                    rgba(247,241,228,.96),
-                    rgba(238,231,215,.96)
-                ) !important;
-
-            border:
-                2px solid var(--verde) !important;
-
-            border-radius:
-                18px !important;
-
-            box-shadow:
-                0 2px 0 rgba(201,154,50,.45),
-                0 5px 15px rgba(40,30,20,.13) !important;
-
-            overflow: hidden;
+            padding-bottom: 4px;
         }
 
-        .vintage-card-frame::after {
-            content: "";
+        .nav-tab-btn.active {
+            color: #1C3E27;
+        }
 
+        .nav-tab-btn.active::after {
+            content: '';
             position: absolute;
-
-            inset: 7px;
-
-            border:
-                1px solid rgba(30,56,41,.12);
-
-            border-radius:
-                12px;
-
-            pointer-events:
-                none;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #1C3E27;
+            border-radius: 2px;
         }
 
-        /* =====================================================
-           ABAS
-           ===================================================== */
-
-        .tab-btn {
-            position: relative;
-
-            color:
-                #55534c !important;
-
-            transition:
-                .2s ease;
+        .slot-btn { transition: all 0.2s ease-in-out; }
+        .slot-btn.selected { 
+            background-color: #E4BD68 !important; 
+            color: #1C3E27 !important; 
+            font-weight: bold; 
+            border-color: #1C3E27 !important; 
         }
-
-        .tab-btn:hover {
-            color:
-                var(--verde) !important;
-        }
-
-        .tab-btn.active {
-            color:
-                var(--verde) !important;
-
-            border-bottom:
-                4px solid var(--verde) !important;
-
-            font-weight:
-                700;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    transparent,
-                    rgba(30,56,41,.06)
-                );
-        }
-
-        /* =====================================================
-           ADMIN
-           ===================================================== */
-
-        #adminDashboard > .flex {
-            background:
-                rgba(245,240,227,.97) !important;
-
-            border:
-                1px solid rgba(30,56,41,.25);
-
-            border-radius:
-                15px 15px 0 0;
-
-            box-shadow:
-                0 2px 8px rgba(40,30,20,.08);
-        }
-
-        #adminDashboard > .flex .tab-btn {
-            min-height:
-                62px;
-        }
-
-        #adminDashboard > .flex .tab-btn i {
-            color:
-                var(--preto);
-        }
-
-        /* =====================================================
-           AGENDAMENTOS
-           ===================================================== */
-
-        #adminAppointmentsCards .bg-forestGreen {
-            position:
-                relative;
-
-            background:
-                linear-gradient(
-                    135deg,
-                    #183424,
-                    #294936
-                ) !important;
-
-            color:
-                var(--papel-claro) !important;
-
-            border-bottom:
-                1px solid var(--dourado);
-        }
-
-        #adminAppointmentsCards .bg-forestGreen::before {
-            content: "";
-
-            position:
-                absolute;
-
-            inset:
-                0;
-
-            opacity:
-                .25;
-
-            pointer-events:
-                none;
-
-            background-image:
-                radial-gradient(
-                    rgba(255,255,255,.08) 1px,
-                    transparent 1px
-                );
-
-            background-size:
-                9px 9px;
-        }
-
-        #adminAppointmentsCards .bg-forestGreen::after {
-            content: "";
-
-            position:
-                absolute;
-
-            bottom:
-                0;
-
-            left:
-                0;
-
-            right:
-                0;
-
-            height:
-                4px;
-
-            background:
-                linear-gradient(
-                    to right,
-
-                    var(--verde) 0%,
-                    var(--verde) 33.33%,
-
-                    var(--dourado) 33.33%,
-                    var(--dourado) 66.66%,
-
-                    var(--vermelho) 66.66%,
-                    var(--vermelho) 100%
-                );
-        }
-
-        #adminAppointmentsCards h3 {
-            position:
-                relative;
-
-            z-index:
-                2;
-
-            font-family:
-                'UnifrakturMaguntia',
-                serif !important;
-
-            font-size:
-                clamp(28px,7vw,42px) !important;
-
-            line-height:
-                .9 !important;
-
-            text-transform:
-                uppercase;
-        }
-
-        /* =====================================================
-           BOTÃO ATUALIZAR
-           ===================================================== */
-
-        #adminAppointmentsCards button.bg-\[\#EBD2A0\] {
-            background:
-                linear-gradient(
-                    #f0d9a5,
-                    #d9b875
-                ) !important;
-
-            color:
-                #273126 !important;
-
-            border:
-                1px solid #9d824b !important;
-
-            box-shadow:
-                inset 0 1px rgba(255,255,255,.7),
-                0 2px 4px rgba(0,0,0,.14);
-
-            transform:
-                rotate(-.5deg);
-        }
-
-        /* =====================================================
-           VALORES
-           ===================================================== */
-
-        #adminAppointmentsCards .text-3xl {
-            font-family:
-                'Oswald',
-                sans-serif !important;
-
-            font-weight:
-                900 !important;
-
-            color:
-                var(--preto) !important;
-        }
-
-        /* =====================================================
-           BOTÕES
-           ===================================================== */
-
-        button {
-            font-family:
-                'Oswald',
-                sans-serif;
-        }
-
-        button.bg-forestGreen {
-            background:
-                linear-gradient(
-                    #294a35,
-                    #193a28
-                ) !important;
-
-            box-shadow:
-                inset 0 1px rgba(255,255,255,.08),
-                0 2px 4px rgba(0,0,0,.18);
-        }
-
-        button.bg-vintageRed {
-            background:
-                linear-gradient(
-                    #b03834,
-                    #8f2724
-                ) !important;
-
-            box-shadow:
-                0 2px 4px rgba(0,0,0,.15);
-        }
-
-        /* =====================================================
-           INPUTS
-           ===================================================== */
-
-        input,
-        select {
-            background:
-                rgba(247,241,228,.9) !important;
-
-            color:
-                var(--preto) !important;
-
-            border:
-                1px solid rgba(30,56,41,.48) !important;
-
-            border-radius:
-                7px !important;
-
-            box-shadow:
-                inset 0 1px 3px rgba(60,45,25,.06);
-        }
-
-        input:focus,
-        select:focus {
-            outline:
-                none !important;
-
-            border-color:
-                var(--verde) !important;
-
-            box-shadow:
-                0 0 0 2px rgba(30,56,41,.13) !important;
-        }
-
-        /* =====================================================
-           HORÁRIOS
-           ===================================================== */
-
-        .slot-btn {
-            background:
-                linear-gradient(
-                    #f5efe1,
-                    #e4dac5
-                ) !important;
-
-            color:
-                var(--verde) !important;
-
-            border:
-                1px solid var(--verde) !important;
-
-            border-radius:
-                6px !important;
-
-            box-shadow:
-                0 1px 2px rgba(0,0,0,.10);
-
-            transition:
-                all .15s ease;
-        }
-
-        .slot-btn:hover {
-            background:
-                var(--verde) !important;
-
-            color:
-                var(--papel-claro) !important;
-        }
-
-        .slot-btn.selected {
-            background:
-                var(--dourado) !important;
-
-            color:
-                var(--verde) !important;
-
-            border:
-                2px solid var(--verde) !important;
-
-            font-weight:
-                800 !important;
-        }
-
-        /* =====================================================
-           MODAL
-           ===================================================== */
-
-        #bookingModal {
-            background:
-                rgba(25,31,25,.68) !important;
-
-            backdrop-filter:
-                blur(2px);
-        }
-
-        #bookingModal > div {
-            background:
-                linear-gradient(
-                    rgba(247,241,228,.98),
-                    rgba(237,229,212,.98)
-                ) !important;
-
-            border:
-                2px solid var(--verde) !important;
-
-            box-shadow:
-                0 18px 50px rgba(0,0,0,.38),
-                0 0 0 4px rgba(201,154,50,.14);
-        }
-
-        /* =====================================================
-           TABELAS
-           ===================================================== */
-
-        thead {
-            background:
-                var(--verde) !important;
-        }
-
-        thead th {
-            font-family:
-                'Oswald',
-                sans-serif;
-
-            letter-spacing:
-                .07em;
-        }
-
-        tbody tr {
-            border-color:
-                rgba(30,56,41,.18) !important;
-        }
-
-        /* =====================================================
-           FOOTER
-           ===================================================== */
-
-        footer {
-            background:
-                rgba(245,240,227,.97) !important;
-
-            color:
-                var(--verde-claro) !important;
-
-            border-top:
-                1px solid rgba(30,56,41,.25) !important;
-        }
-
-        /* =====================================================
-           LOGIN
-           ===================================================== */
-
-        #authScreen {
-            margin-top:
-                25px;
-
-            background:
-                linear-gradient(
-                    rgba(247,241,228,.97),
-                    rgba(238,231,215,.97)
-                ) !important;
-        }
-
-        #authScreen h2 {
-            color:
-                var(--verde) !important;
-
-            font-size:
-                38px !important;
-        }
-
-        #authScreen img {
-            border-color:
-                var(--verde) !important;
-
-            box-shadow:
-                0 3px 8px rgba(0,0,0,.18);
-        }
-
-        /* =====================================================
-           RESPONSIVO
-           ===================================================== */
-
-        @media (max-width:640px) {
-
-            body {
-                background-size:
-                    19px 19px,
-                    29px 29px,
-                    100% 5px,
-                    100% 100%;
-            }
-
-            header .max-w-xl {
-                min-height:
-                    82px;
-            }
-
-            header h1 {
-                font-size:
-                    29px !important;
-            }
-
-            header p {
-                font-size:
-                    8px !important;
-
-                letter-spacing:
-                    .13em !important;
-            }
-
-            header img {
-                width:
-                    62px !important;
-
-                height:
-                    62px !important;
-            }
-
-            #adminDashboard > .flex {
-                padding:
-                    3px !important;
-
-                border-radius:
-                    12px 12px 0 0;
-            }
-
-            #adminDashboard > .flex .tab-btn {
-                min-height:
-                    65px;
-
-                padding:
-                    7px 4px !important;
-
-                font-size:
-                    11px !important;
-
-                line-height:
-                    1.05;
-            }
-
-            #adminDashboard > .flex .tab-btn i {
-                font-size:
-                    20px !important;
-
-                margin-bottom:
-                    3px;
-            }
-
-            #adminAppointmentsCards .vintage-card-frame {
-                border-radius:
-                    16px !important;
-            }
-
-            #adminAppointmentsCards .bg-forestGreen {
-                padding:
-                    17px !important;
-            }
-
-            #adminAppointmentsCards h3 {
-                font-size:
-                    29px !important;
-
-                max-width:
-                    68%;
-            }
-
-            #adminAppointmentsCards .p-5 {
-                padding:
-                    17px !important;
-            }
-
-            #adminAppointmentsCards
-            .flex.justify-between.items-end {
-                gap:
-                    10px;
-            }
-
-            #adminAppointmentsCards
-            .flex.justify-between.items-end > div:last-child {
-                width:
-                    58% !important;
-            }
-
-            table {
-                font-size:
-                    11px;
-            }
-
-            .vintage-card-frame::after {
-                inset:
-                    6px;
-            }
-        }
-
-        @media (min-width:641px) {
-
-            main {
-                padding-top:
-                    15px;
-            }
-
-            #adminAppointmentsCards {
-                max-width:
-                    700px;
-
-                margin:
-                    0 auto;
-            }
-        }
-
     </style>
-
 </head>
+<body class="min-h-screen flex flex-col justify-between" onload="initApp()">
 
-
-<body
-    class="min-h-screen flex flex-col justify-between"
-    onload="initApp()"
->
-
-
-    <!-- =====================================================
-         HEADER
-         ===================================================== -->
-
-    <header class="p-3 sticky top-0 z-50">
-
-        <div class="tri-stripe absolute top-0 left-0 w-full"></div>
-
-        <div class="max-w-xl mx-auto flex justify-between items-center mt-1">
-
-            <div class="flex items-center space-x-3">
-
-                <img
-                    src="logo.jpg"
-                    alt="Dreko Barbearia Logo"
-                    class="w-16 h-16 rounded-full border-2 object-cover shadow-sm"
-                    onerror="
-                        this.onerror=null;
-                        this.src='https://via.placeholder.com/150/1e3829/f5f0e3?text=DREKO';
-                    "
-                >
-
-                <div>
-
-                    <h1 class="font-bold vintage-title leading-tight">
-                        Dreko Barbearia
-                    </h1>
-
-                    <p class="font-bold uppercase">
-                        Vibração Positiva & Estilo
-                    </p>
-
+    <!-- HEADER / NAVBAR CORRIGIDO (SEM OVERFLOW E SEM TEXTO COBRINDO BOTÃO) -->
+    <header class="bg-[#F1E7CF] border-b border-[#C8B892] shadow-sm p-3 sticky top-0 z-50">
+        <div class="tri-color-bar absolute top-0 left-0 w-full"></div>
+        <div class="max-w-md mx-auto flex justify-between items-center mt-1 gap-2">
+            <div class="flex items-center space-x-2 min-w-0">
+                <img src="logo.jpg" alt="Dreko Barbearia" class="w-12 h-12 flex-shrink-0 object-contain drop-shadow" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/1C3E27/F5EFE3?text=DREKO';">
+                <div class="min-w-0">
+                    <h1 class="text-xl font-bold text-vintageTextDark font-gothic leading-none truncate">Dreko Barbearia</h1>
+                    <p class="text-[9px] text-vintageDarkGreen font-bold font-condensed uppercase tracking-wider truncate mt-0.5">Vibração Positiva & Estilo</p>
                 </div>
-
             </div>
-
-
-            <div
-                id="userInfo"
-                class="hidden flex items-center space-x-2"
-            >
-
-                <div class="text-right">
-
-                    <span
-                        class="block text-[9px] uppercase font-bold text-gray-500 vintage-condensed"
-                    >
-                        Barbeiro
-                    </span>
-
-                    <span
-                        id="userNameDisplay"
-                        class="text-xs font-bold text-charcoal vintage-condensed"
-                    ></span>
-
+            
+            <div id="userInfo" class="hidden flex items-center space-x-2 flex-shrink-0">
+                <div class="text-right max-w-[100px] truncate">
+                    <span class="block text-[9px] uppercase font-bold text-gray-600 font-condensed leading-none">Barbeiro</span>
+                    <span id="userNameDisplay" class="text-xs font-bold text-vintageTextDark font-condensed truncate block"></span>
                 </div>
-
-                <button
-                    onclick="logout()"
-                    class="bg-forestGreen text-paperCard px-3 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow"
-                >
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    Sair
+                <button onclick="logout()" class="bg-[#2B3A2C] hover:bg-[#1C3E27] text-[#F5EFE3] px-2.5 py-1.5 rounded text-xs font-bold transition flex items-center gap-1 font-condensed flex-shrink-0">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </button>
-
             </div>
-
         </div>
-
     </header>
 
+    <!-- CONTEÚDO PRINCIPAL (MOLDURA CENTRALIZADA) -->
+    <main class="max-w-md mx-auto p-3 w-full flex-grow">
 
-    <!-- =====================================================
-         CONTEÚDO PRINCIPAL
-         ===================================================== -->
-
-    <main
-        class="max-w-xl mx-auto p-3 w-full flex-grow"
-    >
-
-
-        <!-- =================================================
-             LOGIN / CADASTRO
-             ================================================= -->
-
-        <section
-            id="authScreen"
-            class="vintage-card-frame p-6 my-6"
-        >
-
-            <div
-                class="text-center mb-6 border-b border-armyGreen/20 pb-4"
-            >
-
-                <img
-                    src="logo.jpg"
-                    alt="Dreko Barbearia"
-                    class="w-20 h-20 mx-auto rounded-full border-2 border-forestGreen object-cover mb-2 shadow-sm"
-                    onerror="
-                        this.onerror=null;
-                        this.src='https://via.placeholder.com/150/1e3829/f5f0e3?text=DREKO';
-                    "
-                >
-
-                <h2 class="text-3xl font-bold vintage-title">
-                    Área de Acesso
-                </h2>
-
-                <p
-                    class="text-charcoal text-xs font-bold vintage-condensed uppercase tracking-wide"
-                >
-                    Entre com seu telefone ou cadastre-se
-                </p>
-
+        <!-- 1. TELA DE LOGIN / CADASTRO -->
+        <section id="authScreen" class="vintage-main-card p-5 my-4">
+            <div class="text-center mb-5 border-b border-[#C8B892] pb-3">
+                <img src="logo.jpg" alt="Dreko Barbearia" class="w-16 h-16 mx-auto object-contain mb-2" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/1C3E27/F5EFE3?text=DREKO';">
+                <h2 class="text-3xl font-bold text-vintageTextDark font-gothic">Área de Acesso</h2>
+                <p class="text-xs font-bold text-vintageDarkGreen font-condensed uppercase">Entre com seu número ou cadastre-se</p>
             </div>
 
-
-            <div
-                class="flex border-b border-armyGreen/20 mb-6"
-            >
-
-                <button
-                    id="tabLoginBtn"
-                    onclick="switchAuthTab('login')"
-                    class="tab-btn active w-1/2 py-2 font-bold text-center vintage-condensed uppercase"
-                >
-                    Login
-                </button>
-
-                <button
-                    id="tabRegisterBtn"
-                    onclick="switchAuthTab('register')"
-                    class="tab-btn w-1/2 py-2 font-bold text-center text-gray-500 vintage-condensed uppercase"
-                >
-                    Cadastrar
-                </button>
-
+            <div class="flex border-b border-[#C8B892] mb-5">
+                <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="nav-tab-btn active w-1/2 text-center text-sm">Login</button>
+                <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="nav-tab-btn w-1/2 text-center text-sm opacity-60">Cadastrar</button>
             </div>
 
-
-            <!-- LOGIN -->
-
-            <form
-                id="loginForm"
-                onsubmit="handleLogin(event)"
-                class="space-y-4"
-            >
-
+            <!-- FORMULÁRIO DE LOGIN -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-3">
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        Telefone (Celular) ou Usuário ADM
-                    </label>
-
-                    <input
-                        type="text"
-                        id="loginUsername"
-                        placeholder="(00) 00000-0000 ou admin"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">Telefone (Celular) ou ADM</label>
+                    <input type="text" id="loginUsername" placeholder="(00) 00000-0000 ou admin" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        Senha
-                    </label>
-
-                    <input
-                        type="password"
-                        id="loginPassword"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">Senha</label>
+                    <input type="password" id="loginPassword" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
-                <button
-                    type="submit"
-                    class="w-full bg-forestGreen text-paperCard font-bold py-3 rounded-lg transition shadow vintage-condensed uppercase tracking-wider"
-                >
-                    Entrar
-                </button>
-
+                <button type="submit" class="w-full bg-[#1C3E27] hover:bg-[#2B3A2C] text-[#F5EFE3] font-bold py-2.5 rounded shadow transition font-condensed uppercase tracking-wider text-sm">Entrar</button>
             </form>
 
-
-            <!-- CADASTRO -->
-
-            <form
-                id="registerForm"
-                onsubmit="handleRegister(event)"
-                class="space-y-4 hidden"
-            >
-
+            <!-- FORMULÁRIO DE CADASTRO -->
+            <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-3 hidden">
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        Nome Completo
-                    </label>
-
-                    <input
-                        type="text"
-                        id="regFullName"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">Nome Completo</label>
+                    <input type="text" id="regFullName" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        Telefone (WhatsApp)
-                    </label>
-
-                    <input
-                        type="tel"
-                        id="regPhone"
-                        placeholder="(00) 00000-0000"
-                        oninput="maskPhone(this)"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">Telefone (WhatsApp)</label>
+                    <input type="tel" id="regPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        E-mail
-                    </label>
-
-                    <input
-                        type="email"
-                        id="regEmail"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">E-mail</label>
+                    <input type="email" id="regEmail" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
                 <div>
-
-                    <label
-                        class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed"
-                    >
-                        Senha
-                    </label>
-
-                    <input
-                        type="password"
-                        id="regPassword"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3"
-                    >
-
+                    <label class="block text-xs font-bold uppercase text-vintageTextDark mb-1 font-condensed">Senha</label>
+                    <input type="password" id="regPassword" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2.5 text-xs font-medium text-vintageTextDark focus:outline-none focus:border-vintageDarkGreen">
                 </div>
-
-
-                <button
-                    type="submit"
-                    class="w-full bg-vintageGold text-forestGreen font-bold py-3 rounded-lg transition shadow vintage-condensed uppercase tracking-wider"
-                >
-                    Criar Conta
-                </button>
-
+                <button type="submit" class="w-full bg-[#E4BD68] hover:bg-[#D1A347] text-[#1C3E27] font-bold py-2.5 rounded shadow transition font-condensed uppercase tracking-wider text-sm">Criar Conta</button>
             </form>
-
         </section>
 
-
-        <!-- =================================================
-             CLIENTE
-             ================================================= -->
-
-        <section
-            id="clientDashboard"
-            class="hidden space-y-6"
-        >
-
-            <div
-                class="flex flex-col md:flex-row md:items-center justify-between gap-4 vintage-card-frame p-5"
-            >
-
+        <!-- 2. PAINEL DO CLIENTE -->
+        <section id="clientDashboard" class="hidden space-y-4">
+            <div class="vintage-main-card p-4 flex justify-between items-center">
                 <div>
-
-                    <h2
-                        class="text-3xl font-bold vintage-title"
-                    >
-                        Bem-vindo,
-                        <span id="clientGreetingName"></span>!
-                    </h2>
-
-                    <p
-                        class="text-xs font-bold text-armyGreen vintage-condensed uppercase tracking-wider"
-                    >
-                        Escolha o dia e horário para o seu atendimento.
-                    </p>
-
+                    <h2 class="text-2xl font-bold text-vintageDarkGreen font-gothic">Bem-vindo, <span id="clientGreetingName"></span>!</h2>
+                    <p class="text-[11px] font-bold text-vintageTextDark font-condensed uppercase">Escolha um horário para atendimento.</p>
                 </div>
-
-
-                <button
-                    onclick="showBookingModal()"
-                    class="bg-forestGreen text-paperCard font-bold px-5 py-2.5 rounded-lg flex items-center justify-center gap-2 vintage-condensed uppercase"
-                >
-                    <i class="fa-solid fa-calendar-plus"></i>
-                    Novo Agendamento
+                <button onclick="showBookingModal()" class="bg-[#1C3E27] text-[#F5EFE3] font-bold px-3 py-2 rounded text-xs transition font-condensed uppercase flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-plus"></i> Agendar
                 </button>
-
             </div>
 
-
-            <!-- AGENDA SEMANAL -->
-
-            <div class="vintage-card-frame p-5">
-
-                <div
-                    class="flex justify-between items-center mb-4 border-b border-armyGreen/30 pb-2"
-                >
-
-                    <h3
-                        class="text-lg font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"
-                    >
-                        <i class="fa-solid fa-calendar-week text-vintageGold"></i>
-                        Agenda da Semana
-                    </h3>
-
-                    <span
-                        class="text-[10px] font-bold text-armyGreen vintage-condensed"
-                    >
-                        Seg-Sex: 18:30-22:00 | Sáb: 08:00-12:00
-                    </span>
-
-                </div>
-
-                <div
-                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2"
-                    id="clientWeeklySchedule"
-                ></div>
-
+            <!-- AGENDA DA SEMANA -->
+            <div class="vintage-main-card p-4">
+                <h3 class="text-base font-bold text-vintageDarkGreen mb-3 font-condensed uppercase border-b border-[#C8B892] pb-1"><i class="fa-solid fa-calendar-week text-[#D1A347]"></i> Agenda da Semana</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="clientWeeklySchedule"></div>
             </div>
-
 
             <!-- MEUS AGENDAMENTOS -->
-
-            <div class="vintage-card-frame p-5">
-
-                <h3
-                    class="text-lg font-bold text-forestGreen mb-4 flex items-center gap-2 vintage-condensed uppercase border-b border-armyGreen/30 pb-2"
-                >
-                    <i class="fa-solid fa-clock text-vintageGold"></i>
-                    Meus Agendamentos Ativos
-                </h3>
-
+            <div class="vintage-main-card p-4">
+                <h3 class="text-base font-bold text-vintageDarkGreen mb-3 font-condensed uppercase border-b border-[#C8B892] pb-1"><i class="fa-solid fa-clock text-[#D1A347]"></i> Meus Agendamentos Ativos</h3>
                 <div class="overflow-x-auto">
-
-                    <table
-                        class="w-full text-left text-sm text-charcoal"
-                    >
-
-                        <thead
-                            class="bg-forestGreen text-paperCard vintage-condensed uppercase text-xs"
-                        >
-
+                    <table class="w-full text-left text-xs text-vintageTextDark">
+                        <thead class="bg-[#1C3E27] text-[#F5EFE3] font-condensed uppercase">
                             <tr>
-
-                                <th class="p-2">
-                                    Data/Hora
-                                </th>
-
-                                <th class="p-2">
-                                    Barbeiro
-                                </th>
-
-                                <th class="p-2">
-                                    Serviço
-                                </th>
-
-                                <th class="p-2">
-                                    Valor
-                                </th>
-
-                                <th class="p-2">
-                                    Status / Ação
-                                </th>
-
+                                <th class="p-2">Data/Hora</th>
+                                <th class="p-2">Serviço</th>
+                                <th class="p-2">Valor</th>
+                                <th class="p-2">Ação</th>
                             </tr>
-
                         </thead>
-
-                        <tbody
-                            id="clientAppointmentsList"
-                            class="divide-y divide-armyGreen/20"
-                        ></tbody>
-
+                        <tbody id="clientAppointmentsList" class="divide-y divide-[#C8B892]"></tbody>
                     </table>
-
                 </div>
-
             </div>
-
         </section>
 
-
-        <!-- =================================================
-             ADMIN
-             ================================================= -->
-
-        <section
-            id="adminDashboard"
-            class="hidden space-y-4"
-        >
-
-            <!-- MENU -->
-
-            <div
-                class="flex border-b border-armyGreen/30 justify-around bg-paperCard rounded-t-xl p-2 text-center shadow-sm"
-            >
-
-                <button
-                    onclick="switchAdminTab('agenda')"
-                    id="admAgendaTab"
-                    class="tab-btn active py-2 px-3 font-bold flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"
-                >
-                    <i class="fa-solid fa-calendar-days text-lg"></i>
-                    Agenda
-                </button>
-
-
-                <button
-                    onclick="switchAdminTab('users')"
-                    id="admUsersTab"
-                    class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"
-                >
-                    <i class="fa-solid fa-users text-lg"></i>
-                    Gerenciar Usuários
-                </button>
-
-
-                <button
-                    onclick="switchAdminTab('config')"
-                    id="admConfigTab"
-                    class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"
-                >
-                    <i class="fa-solid fa-sliders text-lg"></i>
-                    Serviços
-                </button>
-
-
-                <button
-                    onclick="switchAdminTab('lock')"
-                    id="admLockTab"
-                    class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"
-                >
-                    <i class="fa-solid fa-clock text-lg"></i>
-                    Horários
-                </button>
-
+        <!-- 3. PAINEL ADMIN - IDÊNTICO À FOTO DE REFERÊNCIA -->
+        <section id="adminDashboard" class="hidden space-y-3">
+            <!-- ABA DE NAVEGAÇÃO SUPERIOR -->
+            <div class="flex justify-between items-center bg-[#F1E7CF] border border-[#C8B892] rounded-lg p-2 text-center text-xs">
+                <button onclick="switchAdminTab('agenda')" id="admAgendaTab" class="nav-tab-btn active flex items-center gap-1"><i class="fa-solid fa-calendar-days"></i> Agenda</button>
+                <button onclick="switchAdminTab('users')" id="admUsersTab" class="nav-tab-btn opacity-60 flex items-center gap-1"><i class="fa-solid fa-users"></i> Gerenciar Usuários</button>
+                <button onclick="switchAdminTab('config')" id="admConfigTab" class="nav-tab-btn opacity-60 flex items-center gap-1"><i class="fa-solid fa-sliders"></i> Serviços</button>
+                <button onclick="switchAdminTab('lock')" id="admLockTab" class="nav-tab-btn opacity-60 flex items-center gap-1"><i class="fa-solid fa-clock"></i> Horários</button>
             </div>
 
-
-            <!-- AGENDA -->
-
-            <div
-                id="admAgendaView"
-                class="space-y-4"
-            >
-
-                <div
-                    id="adminAppointmentsCards"
-                    class="space-y-4"
-                ></div>
-
+            <!-- CARTÃO DE AGENDAMENTOS REALIZADOS (DESIGN IGUAL AO ORIGINAL) -->
+            <div id="admAgendaView" class="space-y-3">
+                <div id="adminAppointmentsCards" class="space-y-3"></div>
             </div>
 
-
-            <!-- USUÁRIOS -->
-
-            <div
-                id="admUsersView"
-                class="hidden space-y-4"
-            >
-
-                <div class="vintage-card-frame p-5">
-
-                    <h3
-                        class="text-md font-bold text-forestGreen mb-3 flex items-center gap-2 vintage-condensed uppercase"
-                    >
-                        <i class="fa-solid fa-user-plus"></i>
-                        Cadastrar Novo Cliente
-                    </h3>
-
-
-                    <form
-                        onsubmit="handleAdminCreateUser(event)"
-                        class="grid grid-cols-1 md:grid-cols-2 gap-3"
-                    >
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                Nome Completo
-                            </label>
-
-                            <input
-                                type="text"
-                                id="admNewName"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                Celular
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="admNewPhone"
-                                placeholder="(00) 00000-0000"
-                                oninput="maskPhone(this)"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                E-mail
-                            </label>
-
-                            <input
-                                type="email"
-                                id="admNewEmail"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                Senha Inicial
-                            </label>
-
-                            <input
-                                type="text"
-                                id="admNewPass"
-                                placeholder="Ex: 123456"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <div class="md:col-span-2 text-right">
-
-                            <button
-                                type="submit"
-                                class="bg-forestGreen text-paperCard font-bold px-4 py-2 rounded text-xs transition vintage-condensed uppercase"
-                            >
-                                Salvar Cliente
-                            </button>
-
-                        </div>
-
+            <!-- GERENCIAR USUÁRIOS -->
+            <div id="admUsersView" class="hidden space-y-3">
+                <div class="vintage-main-card p-4">
+                    <h3 class="text-sm font-bold text-vintageDarkGreen mb-2 font-condensed uppercase"><i class="fa-solid fa-user-plus"></i> Novo Cliente</h3>
+                    <form onsubmit="handleAdminCreateUser(event)" class="grid grid-cols-2 gap-2">
+                        <input type="text" id="admNewName" placeholder="Nome" required class="bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                        <input type="tel" id="admNewPhone" placeholder="WhatsApp" oninput="maskPhone(this)" required class="bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                        <input type="email" id="admNewEmail" placeholder="E-mail" required class="bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                        <input type="text" id="admNewPass" placeholder="Senha" required class="bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                        <button type="submit" class="col-span-2 bg-[#1C3E27] text-white font-bold p-2 rounded text-xs font-condensed uppercase">Cadastrar</button>
                     </form>
-
                 </div>
-
-
-                <div
-                    class="vintage-card-frame p-5 space-y-3"
-                >
-
-                    <h3
-                        class="text-md font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"
-                    >
-                        <i class="fa-solid fa-users-gear"></i>
-                        Usuários Cadastrados
-                    </h3>
-
-
+                <div class="vintage-main-card p-4">
+                    <h3 class="text-sm font-bold text-vintageDarkGreen mb-2 font-condensed uppercase"><i class="fa-solid fa-users"></i> Usuários</h3>
                     <div class="overflow-x-auto">
-
-                        <table
-                            class="w-full text-left text-xs text-charcoal"
-                        >
-
-                            <thead
-                                class="bg-forestGreen text-paperCard vintage-condensed uppercase"
-                            >
-
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-[#1C3E27] text-white font-condensed uppercase">
                                 <tr>
-
-                                    <th class="p-2">
-                                        Nome
-                                    </th>
-
-                                    <th class="p-2">
-                                        Celular
-                                    </th>
-
-                                    <th class="p-2">
-                                        Senha
-                                    </th>
-
-                                    <th class="p-2">
-                                        Ações
-                                    </th>
-
+                                    <th class="p-1.5">Nome</th>
+                                    <th class="p-1.5">Telefone</th>
+                                    <th class="p-1.5">Ação</th>
                                 </tr>
-
                             </thead>
-
-                            <tbody
-                                id="adminUsersList"
-                                class="divide-y divide-armyGreen/20"
-                            ></tbody>
-
+                            <tbody id="adminUsersList" class="divide-y divide-[#C8B892]"></tbody>
                         </table>
-
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- SERVIÇOS -->
-
-            <div
-                id="admConfigView"
-                class="hidden space-y-4"
-            >
-
-                <div
-                    class="vintage-card-frame p-5 space-y-3"
-                >
-
-                    <h3
-                        class="text-md font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"
-                    >
-                        <i class="fa-solid fa-scissors"></i>
-                        Adicionar/Editar Serviços
-                    </h3>
-
-
-                    <form
-                        onsubmit="handleAddService(event)"
-                        class="space-y-3"
-                    >
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                Nome do Serviço
-                            </label>
-
-                            <input
-                                type="text"
-                                id="newServiceName"
-                                placeholder="Ex: Corte Degradê"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <div>
-
-                            <label
-                                class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                            >
-                                Preço
-                            </label>
-
-                            <input
-                                type="number"
-                                step="0.01"
-                                id="newServicePrice"
-                                placeholder="Ex: 40.00"
-                                required
-                                class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs"
-                            >
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="w-full bg-forestGreen text-paperCard font-bold py-2 rounded text-xs transition vintage-condensed uppercase"
-                        >
-                            Adicionar Serviço
-                        </button>
-
-                    </form>
-
-
-                    <h4
-                        class="text-xs font-bold text-charcoal pt-3 border-t border-armyGreen/20 vintage-condensed uppercase"
-                    >
-                        Serviços Atuais
-                    </h4>
-
-
-                    <div
-                        id="servicesList"
-                        class="space-y-2 max-h-48 overflow-y-auto"
-                    ></div>
-
-                </div>
-
-            </div>
-
-
-            <!-- HORÁRIOS -->
-
-            <div
-                id="admLockView"
-                class="hidden vintage-card-frame p-5 space-y-3 max-w-md mx-auto"
-            >
-
-                <h3
-                    class="text-md font-bold text-vintageRed mb-2 flex items-center gap-2 vintage-condensed uppercase"
-                >
-                    <i class="fa-solid fa-ban"></i>
-                    Trancar Horário
-                </h3>
-
-
-                <form
-                    onsubmit="handleLockSlot(event)"
-                    class="space-y-3"
-                >
-
-                    <div>
-
-                        <label
-                            class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                        >
-                            Barbeiro
-                        </label>
-
-                        <select
-                            id="lockBarber"
-                            required
-                            class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium"
-                        >
-
-                            <option value="Dreko">
-                                Dreko
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div>
-
-                        <label
-                            class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                        >
-                            Data
-                        </label>
-
-                        <input
-                            type="date"
-                            id="lockDate"
-                            onchange="populateLockTimes()"
-                            required
-                            class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium"
-                        >
-
-                    </div>
-
-
-                    <div>
-
-                        <label
-                            class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                        >
-                            Horário
-                        </label>
-
-                        <select
-                            id="lockTime"
-                            required
-                            class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium"
-                        ></select>
-
-                    </div>
-
-
-                    <button
-                        type="submit"
-                        class="w-full bg-vintageRed text-white font-bold py-2.5 rounded text-xs transition shadow vintage-condensed uppercase"
-                    >
-                        Trancar Horário
-                    </button>
-
+            <!-- CONFIGURAÇÃO DE SERVIÇOS -->
+            <div id="admConfigView" class="hidden vintage-main-card p-4 space-y-3">
+                <h3 class="text-sm font-bold text-vintageDarkGreen font-condensed uppercase"><i class="fa-solid fa-scissors"></i> Adicionar Serviço</h3>
+                <form onsubmit="handleAddService(event)" class="space-y-2">
+                    <input type="text" id="newServiceName" placeholder="Nome do Serviço" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                    <input type="number" step="0.01" id="newServicePrice" placeholder="Preço (R$)" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                    <button type="submit" class="w-full bg-[#1C3E27] text-white font-bold p-2 rounded text-xs font-condensed uppercase">Salvar</button>
                 </form>
-
+                <div id="servicesList" class="space-y-1 pt-2 border-t border-[#C8B892]"></div>
             </div>
 
+            <!-- BLOQUEAR HORÁRIOS -->
+            <div id="admLockView" class="hidden vintage-main-card p-4 space-y-3">
+                <h3 class="text-sm font-bold text-vintageRedBtn font-condensed uppercase"><i class="fa-solid fa-ban"></i> Bloquear Horário</h3>
+                <form onsubmit="handleLockSlot(event)" class="space-y-2">
+                    <select id="lockBarber" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium">
+                        <option value="Dreko">Dreko</option>
+                    </select>
+                    <input type="date" id="lockDate" onchange="populateLockTimes()" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs">
+                    <select id="lockTime" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium"></select>
+                    <button type="submit" class="w-full bg-[#AD2B24] text-white font-bold p-2 rounded text-xs font-condensed uppercase">Trancar Horário</button>
+                </form>
+            </div>
         </section>
 
     </main>
 
-
-    <!-- =====================================================
-         MODAL AGENDAMENTO
-         ===================================================== -->
-
-    <div
-        id="bookingModal"
-        class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50"
-    >
-
-        <div
-            class="vintage-card-frame p-5 max-w-md w-full space-y-4 shadow-2xl"
-        >
-
-            <div
-                class="flex justify-between items-center border-b border-armyGreen/20 pb-2"
-            >
-
-                <h3
-                    class="text-xl font-bold text-forestGreen flex items-center gap-2 vintage-title"
-                >
-                    <i class="fa-solid fa-scissors text-vintageGold"></i>
-                    Agendar Atendimento
-                </h3>
-
-
-                <button
-                    onclick="closeBookingModal()"
-                    class="text-charcoal hover:text-vintageRed text-2xl font-bold"
-                >
-                    &times;
-                </button>
-
+    <!-- MODAL DE AGENDAMENTO -->
+    <div id="bookingModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-3 z-50">
+        <div class="receipt-box p-4 max-w-sm w-full space-y-3 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-[#C8B892] pb-2">
+                <h3 class="text-lg font-bold text-vintageDarkGreen font-gothic"><i class="fa-solid fa-scissors text-[#D1A347]"></i> Agendar Horário</h3>
+                <button onclick="closeBookingModal()" class="text-vintageTextDark text-xl font-bold">&times;</button>
             </div>
 
-
-            <form
-                onsubmit="handleCreateAppointment(event)"
-                class="space-y-3"
-            >
-
+            <form onsubmit="handleCreateAppointment(event)" class="space-y-2.5">
                 <div>
-
-                    <label
-                        class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                    >
-                        Barbeiro
-                    </label>
-
-                    <select
-                        id="bookBarber"
-                        onchange="loadAvailableSlots()"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium"
-                    >
-
-                        <option value="Dreko">
-                            Dreko
-                        </option>
-
+                    <label class="block text-[10px] uppercase font-bold text-vintageTextDark mb-0.5 font-condensed">Barbeiro</label>
+                    <select id="bookBarber" onchange="loadAvailableSlots()" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium">
+                        <option value="Dreko">Dreko</option>
                     </select>
-
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                    >
-                        Serviço
-                    </label>
-
-                    <select
-                        id="bookService"
-                        onchange="updateServicePrice()"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium"
-                    ></select>
-
+                    <label class="block text-[10px] uppercase font-bold text-vintageTextDark mb-0.5 font-condensed">Serviço</label>
+                    <select id="bookService" onchange="updateServicePrice()" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium"></select>
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                    >
-                        Data
-                    </label>
-
-                    <input
-                        type="date"
-                        id="bookDate"
-                        onchange="loadAvailableSlots()"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium"
-                    >
-
+                    <label class="block text-[10px] uppercase font-bold text-vintageTextDark mb-0.5 font-condensed">Data</label>
+                    <input type="date" id="bookDate" onchange="loadAvailableSlots()" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium">
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                    >
-                        Horários Disponíveis
-                    </label>
-
-                    <div
-                        id="slotsContainer"
-                        class="grid grid-cols-4 gap-1.5 max-h-36 overflow-y-auto p-1"
-                    ></div>
-
-                    <input
-                        type="hidden"
-                        id="selectedTime"
-                        required
-                    >
-
+                    <label class="block text-[10px] uppercase font-bold text-vintageTextDark mb-0.5 font-condensed">Horários Disponíveis</label>
+                    <div id="slotsContainer" class="grid grid-cols-4 gap-1 max-h-32 overflow-y-auto p-1"></div>
+                    <input type="hidden" id="selectedTime" required>
                 </div>
 
-
                 <div>
-
-                    <label
-                        class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed"
-                    >
-                        Forma de Pagamento
-                    </label>
-
-                    <select
-                        id="bookPayment"
-                        required
-                        class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium"
-                    >
-
-                        <option value="Pix">
-                            Pix
-                        </option>
-
-                        <option value="Cartão de Crédito">
-                            Cartão de Crédito
-                        </option>
-
-                        <option value="Cartão de Débito">
-                            Cartão de Débito
-                        </option>
-
-                        <option value="Dinheiro">
-                            Dinheiro
-                        </option>
-
+                    <label class="block text-[10px] uppercase font-bold text-vintageTextDark mb-0.5 font-condensed">Forma de Pagamento</label>
+                    <select id="bookPayment" required class="w-full bg-[#FAF5EB] border border-[#C8B892] rounded p-2 text-xs font-medium">
+                        <option value="Pix">Pix</option>
+                        <option value="Cartão de Crédito">Cartão de Crédito</option>
+                        <option value="Cartão de Débito">Cartão de Débito</option>
+                        <option value="Dinheiro">Dinheiro</option>
                     </select>
-
                 </div>
 
-
-                <div
-                    class="pt-2 border-t border-armyGreen/20 flex justify-between items-center"
-                >
-
-                    <span
-                        class="text-xs font-bold text-charcoal vintage-condensed uppercase"
-                    >
-                        Total:
-                    </span>
-
-                    <span
-                        id="bookTotalPrice"
-                        class="text-xl font-bold text-forestGreen"
-                    >
-                        R$ 0,00
-                    </span>
-
+                <div class="pt-2 border-t border-[#C8B892] flex justify-between items-center">
+                    <span class="text-xs font-bold text-vintageTextDark font-condensed uppercase">Total:</span>
+                    <span id="bookTotalPrice" class="text-lg font-bold text-vintageDarkGreen">R$ 0,00</span>
                 </div>
 
-
-                <button
-                    type="submit"
-                    class="w-full bg-forestGreen text-paperCard font-bold py-2.5 rounded text-xs transition shadow vintage-condensed uppercase tracking-wider"
-                >
-                    Confirmar Agendamento
-                </button>
-
+                <button type="submit" class="w-full bg-[#1C3E27] text-[#F5EFE3] font-bold py-2 rounded text-xs font-condensed uppercase tracking-wider">Confirmar Agendamento</button>
             </form>
-
         </div>
-
     </div>
 
-
-    <!-- =====================================================
-         FOOTER
-         ===================================================== -->
-
-    <footer
-        class="border-t py-3 text-center text-[10px] font-bold vintage-condensed uppercase tracking-wider"
-    >
-
-        <div class="tri-stripe mb-2"></div>
-
+    <!-- RODAPÉ DA PÁGINA -->
+    <footer class="bg-[#F1E7CF] border-t border-[#C8B892] py-2 text-center text-[10px] font-bold text-vintageDarkGreen font-condensed uppercase tracking-wider">
+        <div class="tri-color-bar mb-2"></div>
         &copy; Dreko Barbearia - Todos os direitos reservados.
-
     </footer>
 
-
-    <!-- =====================================================
-         JAVASCRIPT
-         ===================================================== -->
-
+    <!-- LÓGICA JAVASCRIPT INTEGRADA -->
     <script>
-
-        /* =====================================================
-           GOOGLE SHEETS
-           ===================================================== */
-
-        const GOOGLE_SHEETS_API_URL =
-            "https://script.google.com/macros/s/AKfycbzQGG51M69REcuCdUQ7xf2YM-HQFAaOSMY3_930I4E3e-0fNa-mXAHc25wzrmvxHsmY/exec";
-
-
-        /* =====================================================
-           INICIALIZAÇÃO
-           ===================================================== */
+        const GOOGLE_SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbzQGG51M69REcuCdUQ7xf2YM-HQFAaOSMY3_930I4E3e-0fNa-mXAHc25wzrmvxHsmY/exec";
 
         function initApp() {
-
             fetchFromCloud();
-
             setInterval(() => {
-
                 fetchFromCloud(false);
-
             }, 5000);
-
         }
 
-
-        /* =====================================================
-           MÁSCARA TELEFONE
-           ===================================================== */
-
         function maskPhone(input) {
-
-            let v =
-                input.value.replace(/\D/g, '');
-
-            if (v.length > 11) {
-
-                v =
-                    v.substring(0,11);
-
-            }
-
-            v =
-                v.replace(
-                    /^(\d{2})(\d)/g,
-                    '($1) $2'
-                );
-
-            v =
-                v.replace(
-                    /(\d)(\d{4})$/,
-                    '$1-$2'
-                );
-
+            let v = input.value.replace(/\D/g, '');
+            if (v.length > 11) v = v.substring(0, 11);
+            v = v.replace(/^(\d{2})(\d)/g, '($1) $2');
+            v = v.replace(/(\d)(\d{4})$/, '$1-$2');
             input.value = v;
         }
 
-
         function cleanPhone(phone) {
-
-            return phone
-                ? String(phone).replace(/\D/g,'')
-                : '';
-
+            return phone ? String(phone).replace(/\D/g, '') : '';
         }
 
-
-        /* =====================================================
-           DATAS
-           ===================================================== */
-
         function formatDateClean(dateVal) {
-
-            if (!dateVal)
-                return "";
-
-            if (
-                String(dateVal).includes('GMT') ||
-                String(dateVal).includes('1899')
-            ) {
-
-                let d =
-                    new Date(dateVal);
-
+            if (!dateVal) return "";
+            if (String(dateVal).includes('GMT') || String(dateVal).includes('1899')) {
+                let d = new Date(dateVal);
                 if (!isNaN(d.getTime())) {
-
-                    let year =
-                        d.getFullYear();
-
-                    let month =
-                        ("0" + (d.getMonth()+1))
-                        .slice(-2);
-
-                    let day =
-                        ("0" + d.getDate())
-                        .slice(-2);
-
+                    let year = d.getFullYear();
+                    let month = ("0" + (d.getMonth() + 1)).slice(-2);
+                    let day = ("0" + d.getDate()).slice(-2);
                     return `${year}-${month}-${day}`;
                 }
             }
-
-            return String(dateVal)
-                .split('T')[0];
+            return String(dateVal).split('T')[0];
         }
-
-
-        /* =====================================================
-           HORÁRIOS DE FUNCIONAMENTO
-           ===================================================== */
 
         function getWorkingHoursForDate(dateStr) {
+            let clean = formatDateClean(dateStr);
+            let parts = clean.split('-');
+            if(parts.length < 3) return ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+            
+            let d = new Date(parts[0], parts[1] - 1, parts[2]);
+            let day = d.getDay();
 
-            let clean =
-                formatDateClean(dateStr);
-
-            let parts =
-                clean.split('-');
-
-            if(parts.length < 3) {
-
-                return [
-                    "18:30",
-                    "19:00",
-                    "19:30",
-                    "20:00",
-                    "20:30",
-                    "21:00",
-                    "21:30",
-                    "22:00"
-                ];
-
+            if (day >= 1 && day <= 5) {
+                return ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
+            } else if (day === 6) {
+                return ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", "12:00"];
+            } else {
+                return [];
             }
-
-            let d =
-                new Date(
-                    parts[0],
-                    parts[1]-1,
-                    parts[2]
-                );
-
-            let day =
-                d.getDay();
-
-
-            if(day >= 1 && day <= 5) {
-
-                return [
-                    "18:30",
-                    "19:00",
-                    "19:30",
-                    "20:00",
-                    "20:30",
-                    "21:00",
-                    "21:30",
-                    "22:00"
-                ];
-
-            }
-
-
-            if(day === 6) {
-
-                return [
-                    "08:00",
-                    "08:30",
-                    "09:00",
-                    "09:30",
-                    "10:00",
-                    "10:30",
-                    "11:00",
-                    "11:30",
-                    "12:00"
-                ];
-
-            }
-
-
-            return [];
-
         }
-
-
-        /* =====================================================
-           USUÁRIOS PADRÃO
-           ===================================================== */
 
         const defaultUsers = [
-
-            {
-                name: "Admin Geral",
-                username: "admin",
-                role: "admin",
-                pass: "Rafa180993",
-                email: "admin@drekobarber.com",
-                phone: "admin"
-            },
-
-            {
-                name: "Barbeiro Dreko",
-                username: "dreko",
-                role: "admin",
-                pass: "Dreko123",
-                email: "dreko@drekobarber.com",
-                phone: "dreko"
-            }
-
+            { name: "Admin Geral", username: "admin", role: "admin", pass: "Rafa180993", email: "admin@drekobarber.com", phone: "admin" },
+            { name: "Barbeiro Dreko", username: "dreko", role: "admin", pass: "Dreko123", email: "dreko@drekobarber.com", phone: "dreko" }
         ];
-
-
-        /* =====================================================
-           SERVIÇOS PADRÃO
-           ===================================================== */
 
         const defaultServices = [
-
-            {
-                id: 1,
-                name: "Corte",
-                price: 40.00
-            },
-
-            {
-                id: 2,
-                name: "Barba",
-                price: 35.00
-            },
-
-            {
-                id: 3,
-                name: "Corte e Barba",
-                price: 60.00
-            },
-
-            {
-                id: 4,
-                name: "Sobrancelha",
-                price: 5.00
-            },
-
-            {
-                id: 5,
-                name: "Selagem (Consultar tamanho)",
-                price: 0.00
-            }
-
+            { id: 1, name: "Corte", price: 40.00 },
+            { id: 2, name: "Barba", price: 35.00 },
+            { id: 3, name: "Corte e Barba", price: 60.00 },
+            { id: 4, name: "Sobrancelha", price: 5.00 },
+            { id: 5, name: "Selagem", price: 0.00 }
         ];
 
-
-        /* =====================================================
-           BANCO LOCAL
-           ===================================================== */
-
-        let users =
-            JSON.parse(
-                localStorage.getItem('dreko_users')
-            ) || defaultUsers;
-
-
-        let services =
-            JSON.parse(
-                localStorage.getItem('dreko_services')
-            ) || defaultServices;
-
-
-        let appointments =
-            JSON.parse(
-                localStorage.getItem('dreko_appointments')
-            ) || [];
-
-
-        let lockedSlots =
-            JSON.parse(
-                localStorage.getItem('dreko_locked_slots')
-            ) || [];
-
-
-        let currentUser =
-            null;
-
-
-        /* =====================================================
-           RESPOSTA GOOGLE SHEETS
-           ===================================================== */
-
-        window.handleCloudResponse =
-            function(data) {
-
-                const syncStatus =
-                    document.getElementById('syncStatus');
-
-                const syncIcon =
-                    document.getElementById('syncIcon');
-
-
-                if (
-                    data &&
-                    data.appointments &&
-                    Array.isArray(data.appointments)
-                ) {
-
-                    appointments =
-                        data.appointments;
-
-                    localStorage.setItem(
-                        'dreko_appointments',
-                        JSON.stringify(appointments)
-                    );
-
-                }
-
-
-                if (
-                    data &&
-                    data.users &&
-                    Array.isArray(data.users)
-                ) {
-
-                    data.users.forEach(
-                        cloudUser => {
-
-                            let idx =
-                                users.findIndex(
-                                    u =>
-                                        cleanPhone(u.phone) ===
-                                        cleanPhone(cloudUser.phone)
-                                        ||
-                                        u.username.toLowerCase() ===
-                                        cloudUser.username.toLowerCase()
-                                );
-
-
-                            if(idx !== -1) {
-
-                                users[idx] =
-                                    cloudUser;
-
-                            } else {
-
-                                users.push(
-                                    cloudUser
-                                );
-
-                            }
-
-                        }
-                    );
-
-
-                    localStorage.setItem(
-                        'dreko_users',
-                        JSON.stringify(users)
-                    );
-
-                }
-
-
-                if(syncStatus)
-                    syncStatus.innerText =
-                        "(Sincronizado)";
-
-
-                if(syncIcon)
-                    syncIcon.classList.remove(
-                        'fa-spin'
-                    );
-
-
-                if(
-                    currentUser &&
-                    (
-                        currentUser.role === 'admin' ||
-                        currentUser.username.toLowerCase() === 'dreko' ||
-                        currentUser.username.toLowerCase() === 'admin'
-                    )
-                ) {
-
-                    renderAdminAppointments();
-                    renderAdminUsers();
-
-                }
-
-                else if(currentUser) {
-
-                    renderClientView();
-
-                }
-
-            };
-
-
-        /* =====================================================
-           BUSCAR DADOS
-           ===================================================== */
-
-        function fetchFromCloud(
-            userClicked = false
-        ) {
-
-            if(!GOOGLE_SHEETS_API_URL)
-                return;
-
-
-            const syncStatus =
-                document.getElementById('syncStatus');
-
-            const syncIcon =
-                document.getElementById('syncIcon');
-
-
-            if(syncStatus)
-                syncStatus.innerText =
-                    "(Sincronizando...)";
-
-
-            if(syncIcon)
-                syncIcon.classList.add(
-                    'fa-spin'
-                );
-
-
-            const oldScript =
-                document.getElementById('jsonpScript');
-
-
-            if(oldScript)
-                oldScript.remove();
-
-
-            const script =
-                document.createElement('script');
-
-
-            script.id =
-                'jsonpScript';
-
-
-            script.src =
-                GOOGLE_SHEETS_API_URL +
-                "?callback=handleCloudResponse&ts=" +
-                Date.now();
-
-
-            document.body.appendChild(
-                script
-            );
-
-
-            if(userClicked)
-                alert(
-                    'Sincronizando dados com a planilha...'
-                );
-
-        }
-
-
-        /* =====================================================
-           SALVAR
-           ===================================================== */
-
-        function saveData(
-            actionType = 'sync',
-            payloadData = {}
-        ) {
-
-            localStorage.setItem(
-                'dreko_users',
-                JSON.stringify(users)
-            );
-
-            localStorage.setItem(
-                'dreko_services',
-                JSON.stringify(services)
-            );
-
-            localStorage.setItem(
-                'dreko_appointments',
-                JSON.stringify(appointments)
-            );
-
-            localStorage.setItem(
-                'dreko_locked_slots',
-                JSON.stringify(lockedSlots)
-            );
-
-
-            if(GOOGLE_SHEETS_API_URL) {
-
-                fetch(
-                    GOOGLE_SHEETS_API_URL,
-                    {
-                        method: 'POST',
-                        mode: 'no-cors',
-
-                        headers: {
-                            'Content-Type':
-                                'application/json'
-                        },
-
-                        body:
-                            JSON.stringify({
-                                action:
-                                    actionType,
-
-                                payload:
-                                    payloadData
-                            })
-                    }
-                )
-                .then(() => {
-
-                    setTimeout(
-                        () =>
-                            fetchFromCloud(false),
-                        1500
-                    );
-
-                })
-                .catch(
-                    err =>
-                        console.log(
-                            "Erro no envio:",
-                            err
-                        )
-                );
-
+        let users = JSON.parse(localStorage.getItem('dreko_users')) || defaultUsers;
+        let services = JSON.parse(localStorage.getItem('dreko_services')) || defaultServices;
+        let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
+        let lockedSlots = JSON.parse(localStorage.getItem('dreko_locked_slots')) || [];
+
+        let currentUser = null;
+
+        window.handleCloudResponse = function(data) {
+            const syncStatus = document.getElementById('syncStatus');
+
+            if (data && data.appointments && Array.isArray(data.appointments)) {
+                appointments = data.appointments;
+                localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
             }
 
+            if (data && data.users && Array.isArray(data.users)) {
+                data.users.forEach(cloudUser => {
+                    let idx = users.findIndex(u => cleanPhone(u.phone) === cleanPhone(cloudUser.phone) || u.username.toLowerCase() === cloudUser.username.toLowerCase());
+                    if (idx !== -1) {
+                        users[idx] = cloudUser;
+                    } else {
+                        users.push(cloudUser);
+                    }
+                });
+                localStorage.setItem('dreko_users', JSON.stringify(users));
+            }
+
+            if (syncStatus) syncStatus.innerText = "(Sincronizado)";
+
+            if (currentUser && (currentUser.role === 'admin' || currentUser.username.toLowerCase() === 'dreko' || currentUser.username.toLowerCase() === 'admin')) {
+                renderAdminAppointments();
+                renderAdminUsers();
+            } else if (currentUser) {
+                renderClientView();
+            }
+        };
+
+        function fetchFromCloud(userClicked = false) {
+            if (!GOOGLE_SHEETS_API_URL) return;
+
+            const syncStatus = document.getElementById('syncStatus');
+            if (syncStatus) syncStatus.innerText = "(Sincronizando...)";
+
+            const oldScript = document.getElementById('jsonpScript');
+            if (oldScript) oldScript.remove();
+
+            const script = document.createElement('script');
+            script.id = 'jsonpScript';
+            script.src = GOOGLE_SHEETS_API_URL + "?callback=handleCloudResponse&ts=" + Date.now();
+            document.body.appendChild(script);
+
+            if (userClicked) alert('Sincronizando dados com a planilha...');
         }
 
+        function saveData(actionType = 'sync', payloadData = {}) {
+            localStorage.setItem('dreko_users', JSON.stringify(users));
+            localStorage.setItem('dreko_services', JSON.stringify(services));
+            localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
+            localStorage.setItem('dreko_locked_slots', JSON.stringify(lockedSlots));
 
-        /* =====================================================
-           LOGIN / CADASTRO
-           ===================================================== */
+            if (GOOGLE_SHEETS_API_URL) {
+                fetch(GOOGLE_SHEETS_API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: actionType,
+                        payload: payloadData
+                    })
+                }).then(() => {
+                    setTimeout(() => fetchFromCloud(false), 1500);
+                }).catch(err => console.log("Erro no envio:", err));
+            }
+        }
 
         function switchAuthTab(type) {
-
             if(type === 'login') {
-
-                document
-                    .getElementById('loginForm')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('registerForm')
-                    .classList
-                    .add('hidden');
-
-                document
-                    .getElementById('tabLoginBtn')
-                    .classList
-                    .add('active');
-
-                document
-                    .getElementById('tabRegisterBtn')
-                    .classList
-                    .remove('active');
-
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+                document.getElementById('tabLoginBtn').classList.add('active');
+                document.getElementById('tabLoginBtn').classList.remove('opacity-60');
+                document.getElementById('tabRegisterBtn').classList.remove('active');
+                document.getElementById('tabRegisterBtn').classList.add('opacity-60');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+                document.getElementById('tabRegisterBtn').classList.add('active');
+                document.getElementById('tabRegisterBtn').classList.remove('opacity-60');
+                document.getElementById('tabLoginBtn').classList.remove('active');
+                document.getElementById('tabLoginBtn').classList.add('opacity-60');
             }
-
-            else {
-
-                document
-                    .getElementById('loginForm')
-                    .classList
-                    .add('hidden');
-
-                document
-                    .getElementById('registerForm')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('tabRegisterBtn')
-                    .classList
-                    .add('active');
-
-                document
-                    .getElementById('tabLoginBtn')
-                    .classList
-                    .remove('active');
-
-            }
-
         }
-
 
         function handleRegister(e) {
-
             e.preventDefault();
+            const fullName = document.getElementById('regFullName').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPassword').value.trim();
 
+            const rawPhone = cleanPhone(phone);
 
-            const fullName =
-                document.getElementById(
-                    'regFullName'
-                ).value.trim();
-
-
-            const phone =
-                document.getElementById(
-                    'regPhone'
-                ).value.trim();
-
-
-            const email =
-                document.getElementById(
-                    'regEmail'
-                ).value.trim();
-
-
-            const pass =
-                document.getElementById(
-                    'regPassword'
-                ).value.trim();
-
-
-            const rawPhone =
-                cleanPhone(phone);
-
-
-            if(
-                users.find(
-                    u =>
-                        cleanPhone(u.phone) ===
-                        rawPhone
-                )
-            ) {
-
-                alert(
-                    'Já existe uma conta cadastrada com este celular!'
-                );
-
+            if (users.find(u => cleanPhone(u.phone) === rawPhone)) {
+                alert('Já existe uma conta com este celular!');
                 return;
-
             }
 
-
-            const newUser = {
-
-                name:
-                    fullName,
-
-                username:
-                    rawPhone,
-
-                phone:
-                    phone,
-
-                email:
-                    email,
-
-                pass:
-                    pass,
-
-                role:
-                    'client'
-
-            };
-
-
-            users.push(
-                newUser
-            );
-
-
-            saveData(
-                'newUser',
-                newUser
-            );
-
-
-            alert(
-                `Cadastro efetuado! Utilize seu celular (${phone}) para acessar.`
-            );
-
-
-            switchAuthTab(
-                'login'
-            );
-
+            const newUser = { name: fullName, username: rawPhone, phone: phone, email: email, pass: pass, role: 'client' };
+            users.push(newUser);
+            
+            saveData('newUser', newUser);
+            alert(`Conta criada com sucesso! Acesse com seu número.`);
+            switchAuthTab('login');
         }
-
 
         function handleAdminCreateUser(e) {
-
             e.preventDefault();
+            const fullName = document.getElementById('admNewName').value.trim();
+            const phone = document.getElementById('admNewPhone').value.trim();
+            const email = document.getElementById('admNewEmail').value.trim();
+            const pass = document.getElementById('admNewPass').value.trim();
 
+            const rawPhone = cleanPhone(phone);
 
-            const fullName =
-                document.getElementById(
-                    'admNewName'
-                ).value.trim();
-
-
-            const phone =
-                document.getElementById(
-                    'admNewPhone'
-                ).value.trim();
-
-
-            const email =
-                document.getElementById(
-                    'admNewEmail'
-                ).value.trim();
-
-
-            const pass =
-                document.getElementById(
-                    'admNewPass'
-                ).value.trim();
-
-
-            const rawPhone =
-                cleanPhone(phone);
-
-
-            if(
-                users.find(
-                    u =>
-                        cleanPhone(u.phone) ===
-                        rawPhone
-                )
-            ) {
-
-                alert(
-                    'Já existe um cliente cadastrado com este celular!'
-                );
-
+            if (users.find(u => cleanPhone(u.phone) === rawPhone)) {
+                alert('Celular já cadastrado!');
                 return;
-
             }
 
+            const newUser = { name: fullName, username: rawPhone, phone: phone, email: email, pass: pass, role: 'client' };
+            users.push(newUser);
 
-            const newUser = {
-
-                name:
-                    fullName,
-
-                username:
-                    rawPhone,
-
-                phone:
-                    phone,
-
-                email:
-                    email,
-
-                pass:
-                    pass,
-
-                role:
-                    'client'
-
-            };
-
-
-            users.push(
-                newUser
-            );
-
-
-            saveData(
-                'newUser',
-                newUser
-            );
-
-
-            document.getElementById(
-                'admNewName'
-            ).value = '';
-
-
-            document.getElementById(
-                'admNewPhone'
-            ).value = '';
-
-
-            document.getElementById(
-                'admNewEmail'
-            ).value = '';
-
-
-            document.getElementById(
-                'admNewPass'
-            ).value = '';
-
-
+            saveData('newUser', newUser);
             renderAdminUsers();
-
-
-            alert(
-                `Cliente ${fullName} cadastrado com sucesso!`
-            );
-
+            alert(`Cliente ${fullName} salvo!`);
         }
-
 
         function handleLogin(e) {
-
             e.preventDefault();
+            const userIn = document.getElementById('loginUsername').value.trim();
+            const passIn = document.getElementById('loginPassword').value.trim();
 
+            const rawUserIn = cleanPhone(userIn);
 
-            const userIn =
-                document.getElementById(
-                    'loginUsername'
-                ).value.trim();
+            const user = users.find(u => 
+                (cleanPhone(u.phone) === rawUserIn && rawUserIn.length > 0) || 
+                u.username.toLowerCase() === userIn.toLowerCase() ||
+                (u.phone && u.phone.toLowerCase() === userIn.toLowerCase())
+            );
 
-
-            const passIn =
-                document.getElementById(
-                    'loginPassword'
-                ).value.trim();
-
-
-            const rawUserIn =
-                cleanPhone(userIn);
-
-
-            const user =
-                users.find(
-                    u =>
-                        (
-                            cleanPhone(u.phone) ===
-                            rawUserIn &&
-                            rawUserIn.length > 0
-                        )
-                        ||
-                        u.username.toLowerCase() ===
-                        userIn.toLowerCase()
-                        ||
-                        (
-                            u.phone &&
-                            u.phone.toLowerCase() ===
-                            userIn.toLowerCase()
-                        )
-                );
-
-
-            if(
-                !user ||
-                user.pass !== passIn
-            ) {
-
-                alert(
-                    'Celular/Usuário ou senha incorretos!'
-                );
-
+            if (!user || user.pass !== passIn) {
+                alert('Telefone/Usuário ou senha incorretos!');
                 return;
-
             }
 
+            currentUser = user;
+            document.getElementById('authScreen').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('userNameDisplay').innerText = user.name;
 
-            currentUser =
-                user;
-
-
-            document
-                .getElementById('authScreen')
-                .classList
-                .add('hidden');
-
-
-            document
-                .getElementById('userInfo')
-                .classList
-                .remove('hidden');
-
-
-            document.getElementById(
-                'userNameDisplay'
-            ).innerText =
-                user.name;
-
-
-            if(
-                user.role === 'admin' ||
-                user.username.toLowerCase() === 'dreko' ||
-                user.username.toLowerCase() === 'admin'
-            ) {
-
-                document
-                    .getElementById('adminDashboard')
-                    .classList
-                    .remove('hidden');
-
-
+            if (user.role === 'admin' || user.username.toLowerCase() === 'dreko' || user.username.toLowerCase() === 'admin') {
+                document.getElementById('adminDashboard').classList.remove('hidden');
                 renderAdminView();
-
                 fetchFromCloud();
-
-            }
-
-            else {
-
-                document
-                    .getElementById('clientDashboard')
-                    .classList
-                    .remove('hidden');
-
-
-                document.getElementById(
-                    'clientGreetingName'
-                ).innerText =
-                    user.name.split(' ')[0];
-
-
+            } else {
+                document.getElementById('clientDashboard').classList.remove('hidden');
+                document.getElementById('clientGreetingName').innerText = user.name.split(' ')[0];
                 renderClientView();
-
             }
-
         }
-
 
         function logout() {
-
-            currentUser =
-                null;
-
-
-            document
-                .getElementById('authScreen')
-                .classList
-                .remove('hidden');
-
-
-            document
-                .getElementById('userInfo')
-                .classList
-                .add('hidden');
-
-
-            document
-                .getElementById('clientDashboard')
-                .classList
-                .add('hidden');
-
-
-            document
-                .getElementById('adminDashboard')
-                .classList
-                .add('hidden');
-
+            currentUser = null;
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('clientDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
         }
-
-
-        /* =====================================================
-           CLIENTE
-           ===================================================== */
 
         function renderClientView() {
-
             renderClientWeeklySchedule();
-
             renderClientAppointments();
-
         }
-
 
         function renderClientWeeklySchedule() {
+            const container = document.getElementById('clientWeeklySchedule');
+            container.innerHTML = '';
+            const today = new Date();
 
-            const container =
-                document.getElementById(
-                    'clientWeeklySchedule'
-                );
+            for(let i = 0; i < 6; i++) {
+                let d = new Date();
+                d.setDate(today.getDate() + i);
+                let dateStr = d.toISOString().split('T')[0];
+                let dayName = d.toLocaleDateString('pt-BR', { weekday: 'short' });
 
+                let hoursForDay = getWorkingHoursForDate(dateStr);
 
-            container.innerHTML =
-                '';
+                let colHtml = `<div class="bg-[#FAF5EB] p-2 rounded border border-[#C8B892]">
+                    <h4 class="text-[10px] uppercase font-bold text-vintageDarkGreen text-center mb-1 font-condensed">${dayName} - ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}</h4>
+                    <div class="space-y-1 max-h-32 overflow-y-auto">`;
 
+                if(hoursForDay.length === 0) {
+                    colHtml += `<div class="text-[10px] p-1 text-center text-gray-500 font-semibold">Fechado</div>`;
+                } else {
+                    hoursForDay.forEach(h => {
+                        let isTaken = appointments.some(a => formatDateClean(a.date) === dateStr && a.time === h && a.status !== 'Cancelado');
+                        let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateStr && l.time === h);
 
-            const today =
-                new Date();
-
-
-            for(
-                let i = 0;
-                i < 6;
-                i++
-            ) {
-
-                let d =
-                    new Date();
-
-
-                d.setDate(
-                    today.getDate() + i
-                );
-
-
-                let dateStr =
-                    d.toISOString()
-                    .split('T')[0];
-
-
-                let dayName =
-                    d.toLocaleDateString(
-                        'pt-BR',
-                        {
-                            weekday:
-                                'short'
+                        if (isTaken) {
+                            colHtml += `<div class="text-[9px] p-0.5 text-center bg-[#AD2B24] text-white rounded font-bold">Ocupado</div>`;
+                        } else if (isLocked) {
+                            colHtml += `<div class="text-[9px] p-0.5 text-center bg-gray-300 text-gray-600 rounded">Trancado</div>`;
+                        } else {
+                            colHtml += `<div class="text-[9px] p-0.5 text-center bg-[#1C3E27]/10 text-vintageDarkGreen rounded font-bold border border-[#1C3E27]/20">${h}</div>`;
                         }
-                    );
-
-
-                let hoursForDay =
-                    getWorkingHoursForDate(
-                        dateStr
-                    );
-
-
-                let colHtml = `
-
-                    <div
-                        class="bg-paperBg p-2 rounded border border-armyGreen/30"
-                    >
-
-                        <h4
-                            class="text-[10px] uppercase font-bold text-forestGreen text-center mb-1 vintage-condensed"
-                        >
-                            ${dayName} -
-                            ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}
-                        </h4>
-
-                        <div
-                            class="space-y-1 max-h-36 overflow-y-auto"
-                        >
-                `;
-
-
-                if(
-                    hoursForDay.length === 0
-                ) {
-
-                    colHtml += `
-
-                        <div
-                            class="text-[10px] p-1 text-center text-gray-500 font-semibold"
-                        >
-                            Fechado
-                        </div>
-
-                    `;
-
+                    });
                 }
 
-                else {
-
-                    hoursForDay.forEach(
-                        h => {
-
-                            let isTaken =
-                                appointments.some(
-                                    a =>
-                                        formatDateClean(a.date) === dateStr &&
-                                        a.time === h &&
-                                        a.status !== 'Cancelado'
-                                );
-
-
-                            let isLocked =
-                                lockedSlots.some(
-                                    l =>
-                                        formatDateClean(l.date) === dateStr &&
-                                        l.time === h
-                                );
-
-
-                            if(isTaken) {
-
-                                colHtml += `
-
-                                    <div
-                                        class="text-[10px] p-0.5 text-center bg-vintageRed text-white rounded font-bold"
-                                    >
-                                        Ocupado
-                                    </div>
-
-                                `;
-
-                            }
-
-                            else if(isLocked) {
-
-                                colHtml += `
-
-                                    <div
-                                        class="text-[10px] p-0.5 text-center bg-gray-300 text-gray-600 rounded"
-                                    >
-                                        Trancado
-                                    </div>
-
-                                `;
-
-                            }
-
-                            else {
-
-                                colHtml += `
-
-                                    <div
-                                        class="text-[10px] p-0.5 text-center bg-forestGreen/10 text-forestGreen rounded font-bold border border-forestGreen/20"
-                                    >
-                                        ${h}
-                                    </div>
-
-                                `;
-
-                            }
-
-                        }
-                    );
-
-                }
-
-
-                colHtml += `
-                        </div>
-                    </div>
-                `;
-
-
-                container.innerHTML +=
-                    colHtml;
-
+                colHtml += `</div></div>`;
+                container.innerHTML += colHtml;
             }
-
         }
-
 
         function renderClientAppointments() {
-
-            const tbody =
-                document.getElementById(
-                    'clientAppointmentsList'
-                );
-
-
-            tbody.innerHTML =
-                '';
-
-
-            const myAppts =
-                appointments.filter(
-                    a =>
-
-                        (
-                            (
-                                a.clientUsername &&
-                                cleanPhone(a.clientUsername) ===
-                                cleanPhone(currentUser.phone)
-                            )
-
-                            ||
-
-                            (
-                                a.clientPhone &&
-                                cleanPhone(a.clientPhone) ===
-                                cleanPhone(currentUser.phone)
-                            )
-
-                            ||
-
-                            a.clientName ===
-                            currentUser.name
-                        )
-
-                        &&
-
-                        a.status !==
-                        'Cancelado'
-                );
-
-
-            if(
-                myAppts.length === 0
-            ) {
-
-                tbody.innerHTML = `
-
-                    <tr>
-
-                        <td
-                            colspan="5"
-                            class="p-4 text-center text-gray-500 font-semibold"
-                        >
-                            Nenhum agendamento ativo encontrado.
-                        </td>
-
-                    </tr>
-
-                `;
-
-                return;
-
-            }
-
-
-            myAppts.forEach(
-                a => {
-
-                    let formattedDate =
-                        formatDateClean(
-                            a.date
-                        );
-
-
-                    tbody.innerHTML += `
-
-                        <tr
-                            class="border-b border-armyGreen/20"
-                        >
-
-                            <td class="p-2 font-medium">
-                                ${formattedDate} -
-                                ${a.time}
-                            </td>
-
-                            <td
-                                class="p-2 font-bold text-forestGreen"
-                            >
-                                ${a.barber}
-                            </td>
-
-                            <td class="p-2 font-semibold">
-                                ${a.service}
-                            </td>
-
-                            <td
-                                class="p-2 font-bold text-forestGreen"
-                            >
-                                R$
-                                ${parseFloat(a.price || 0).toFixed(2)}
-                            </td>
-
-                            <td class="p-2">
-
-                                <button
-                                    onclick="cancelAppointment(${a.id})"
-                                    class="bg-vintageRed text-white px-2 py-1 rounded text-xs font-bold"
-                                >
-                                    Cancelar
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
+            const tbody = document.getElementById('clientAppointmentsList');
+            tbody.innerHTML = '';
+            
+            const myAppts = appointments.filter(a => 
+                ((a.clientUsername && cleanPhone(a.clientUsername) === cleanPhone(currentUser.phone)) ||
+                (a.clientPhone && cleanPhone(a.clientPhone) === cleanPhone(currentUser.phone)) ||
+                a.clientName === currentUser.name) &&
+                a.status !== 'Cancelado'
             );
 
+            if(myAppts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500 font-medium">Nenhum agendamento ativo.</td></tr>`;
+                return;
+            }
+
+            myAppts.forEach(a => {
+                let formattedDate = formatDateClean(a.date);
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-2 font-medium">${formattedDate} - ${a.time}</td>
+                        <td class="p-2 font-semibold">${a.service}</td>
+                        <td class="p-2 font-bold text-vintageDarkGreen">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
+                        <td class="p-2">
+                            <button onclick="cancelAppointment(${a.id})" class="bg-[#AD2B24] text-white px-2 py-0.5 rounded text-[10px] font-bold">Cancelar</button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
-
-
-        /* =====================================================
-           CANCELAR
-           ===================================================== */
 
         function cancelAppointment(id) {
-
-            if(
-                confirm(
-                    "Tem certeza que deseja cancelar este agendamento?"
-                )
-            ) {
-
-                const appt =
-                    appointments.find(
-                        a =>
-                            String(a.id) ===
-                            String(id)
-                    );
-
-
-                if(appt) {
-
-                    appt.status =
-                        'Cancelado';
-
-
+            if (confirm("Cancelar este agendamento?")) {
+                const appt = appointments.find(a => String(a.id) === String(id));
+                if (appt) {
+                    appt.status = 'Cancelado';
                     saveData();
-
-
-                    if(
-                        currentUser &&
-                        (
-                            currentUser.role === 'admin' ||
-                            currentUser.username === 'dreko'
-                        )
-                    ) {
-
+                    if (currentUser && (currentUser.role === 'admin' || currentUser.username === 'dreko')) {
                         renderAdminAppointments();
-
-                    }
-
-                    else {
-
+                    } else {
                         renderClientView();
-
                     }
-
-
-                    alert(
-                        'Agendamento cancelado.'
-                    );
-
                 }
-
             }
-
         }
-
-
-        /* =====================================================
-           EXCLUIR
-           ===================================================== */
 
         function deleteAppointmentPermanently(id) {
-
-            if(
-                confirm(
-                    "Tem certeza que deseja APAGAR este registro definitivamente?"
-                )
-            ) {
-
-                appointments =
-                    appointments.filter(
-                        a =>
-                            String(a.id) !==
-                            String(id)
-                    );
-
-
-                saveData(
-                    'deleteAppointment',
-                    {
-                        id:
-                            id
-                    }
-                );
-
-
+            if (confirm("Deseja apagar permanentemente este registro?")) {
+                appointments = appointments.filter(a => String(a.id) !== String(id));
+                saveData('deleteAppointment', { id: id });
                 renderAdminAppointments();
-
-
-                alert(
-                    'Registro excluído.'
-                );
-
             }
-
         }
-
-
-        /* =====================================================
-           MODAL
-           ===================================================== */
 
         function showBookingModal() {
-
-            document
-                .getElementById('bookingModal')
-                .classList
-                .remove('hidden');
-
-
-            document
-                .getElementById('bookingModal')
-                .classList
-                .add('flex');
-
-
-            let today =
-                new Date()
-                .toISOString()
-                .split('T')[0];
-
-
-            document.getElementById(
-                'bookDate'
-            ).value =
-                today;
-
-
-            document.getElementById(
-                'bookDate'
-            ).min =
-                today;
-
-
+            document.getElementById('bookingModal').classList.remove('hidden');
+            document.getElementById('bookingModal').classList.add('flex');
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookDate').value = today;
+            document.getElementById('bookDate').min = today;
             renderServicesSelect();
-
             loadAvailableSlots();
-
             updateServicePrice();
-
         }
-
 
         function closeBookingModal() {
-
-            document
-                .getElementById('bookingModal')
-                .classList
-                .add('hidden');
-
-
-            document
-                .getElementById('bookingModal')
-                .classList
-                .remove('flex');
-
+            document.getElementById('bookingModal').classList.add('hidden');
+            document.getElementById('bookingModal').classList.remove('flex');
         }
-
-
-        /* =====================================================
-           SERVIÇOS
-           ===================================================== */
 
         function renderServicesSelect() {
-
-            const select =
-                document.getElementById(
-                    'bookService'
-                );
-
-
-            select.innerHTML =
-                '';
-
-
-            services.forEach(
-                s => {
-
-                    select.innerHTML += `
-
-                        <option
-                            value="${s.name}|${s.price}"
-                        >
-                            ${s.name} -
-                            R$ ${s.price.toFixed(2)}
-                        </option>
-
-                    `;
-
-                }
-            );
-
+            const select = document.getElementById('bookService');
+            select.innerHTML = '';
+            services.forEach(s => {
+                select.innerHTML += `<option value="${s.name}|${s.price}">${s.name} - R$ ${s.price.toFixed(2)}</option>`;
+            });
         }
-
 
         function updateServicePrice() {
-
-            const val =
-                document.getElementById(
-                    'bookService'
-                ).value;
-
-
+            const val = document.getElementById('bookService').value;
             if(val) {
-
-                const price =
-                    val.split('|')[1];
-
-
-                document.getElementById(
-                    'bookTotalPrice'
-                ).innerText =
-                    `R$ ${parseFloat(price).toFixed(2)}`;
-
+                const price = val.split('|')[1];
+                document.getElementById('bookTotalPrice').innerText = `R$ ${parseFloat(price).toFixed(2)}`;
             }
-
         }
-
-
-        /* =====================================================
-           HORÁRIOS DISPONÍVEIS
-           ===================================================== */
 
         function loadAvailableSlots() {
+            const dateVal = document.getElementById('bookDate').value;
+            const barberVal = document.getElementById('bookBarber').value;
+            const container = document.getElementById('slotsContainer');
+            document.getElementById('selectedTime').value = '';
+            container.innerHTML = '';
 
-            const dateVal =
-                document.getElementById(
-                    'bookDate'
-                ).value;
+            if(!dateVal) return;
 
+            let hoursForDay = getWorkingHoursForDate(dateVal);
 
-            const barberVal =
-                document.getElementById(
-                    'bookBarber'
-                ).value;
-
-
-            const container =
-                document.getElementById(
-                    'slotsContainer'
-                );
-
-
-            document.getElementById(
-                'selectedTime'
-            ).value =
-                '';
-
-
-            container.innerHTML =
-                '';
-
-
-            if(!dateVal)
+            if (hoursForDay.length === 0) {
+                container.innerHTML = `<p class="col-span-4 text-xs font-bold text-[#AD2B24] text-center py-1 font-condensed">Fechado aos domingos.</p>`;
                 return;
-
-
-            let hoursForDay =
-                getWorkingHoursForDate(
-                    dateVal
-                );
-
-
-            if(
-                hoursForDay.length === 0
-            ) {
-
-                container.innerHTML = `
-
-                    <p
-                        class="col-span-4 text-xs font-bold text-vintageRed text-center py-2 vintage-condensed uppercase"
-                    >
-                        Fechado aos domingos.
-                    </p>
-
-                `;
-
-                return;
-
             }
 
+            hoursForDay.forEach(h => {
+                let isTaken = appointments.some(a => formatDateClean(a.date) === dateVal && a.time === h && a.barber === barberVal && a.status !== 'Cancelado');
+                let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
 
-            hoursForDay.forEach(
-                h => {
-
-                    let isTaken =
-                        appointments.some(
-                            a =>
-                                formatDateClean(a.date) === dateVal &&
-                                a.time === h &&
-                                a.barber === barberVal &&
-                                a.status !== 'Cancelado'
-                        );
-
-
-                    let isLocked =
-                        lockedSlots.some(
-                            l =>
-                                formatDateClean(l.date) === dateVal &&
-                                l.time === h &&
-                                (
-                                    l.barber === barberVal ||
-                                    l.barber === 'Todos'
-                                )
-                        );
-
-
-                    if(isTaken) {
-
-                        container.innerHTML += `
-
-                            <button
-                                type="button"
-                                disabled
-                                class="p-1.5 text-xs rounded bg-vintageRed text-white font-bold cursor-not-allowed"
-                            >
-                                Ocupado
-                            </button>
-
-                        `;
-
-                    }
-
-                    else if(isLocked) {
-
-                        container.innerHTML += `
-
-                            <button
-                                type="button"
-                                disabled
-                                class="p-1.5 text-xs rounded bg-gray-300 text-gray-500 font-semibold cursor-not-allowed"
-                            >
-                                Bloqueado
-                            </button>
-
-                        `;
-
-                    }
-
-                    else {
-
-                        container.innerHTML += `
-
-                            <button
-                                type="button"
-                                onclick="selectSlot('${h}', this)"
-                                class="slot-btn p-1.5 text-xs rounded bg-paperBg text-forestGreen border border-armyGreen font-bold"
-                            >
-                                ${h}
-                            </button>
-
-                        `;
-
-                    }
-
+                if (isTaken) {
+                    container.innerHTML += `<button type="button" disabled class="p-1 text-[10px] rounded bg-[#AD2B24] text-white font-bold cursor-not-allowed">Ocupado</button>`;
+                } else if (isLocked) {
+                    container.innerHTML += `<button type="button" disabled class="p-1 text-[10px] rounded bg-gray-300 text-gray-500 font-semibold cursor-not-allowed">Trancado</button>`;
+                } else {
+                    container.innerHTML += `<button type="button" onclick="selectSlot('${h}', this)" class="slot-btn p-1 text-[10px] rounded bg-[#FAF5EB] text-vintageDarkGreen border border-[#C8B892] font-bold hover:bg-[#1C3E27] hover:text-white">${h}</button>`;
                 }
-            );
-
+            });
         }
 
-
-        function selectSlot(
-            time,
-            element
-        ) {
-
-            document
-                .querySelectorAll(
-                    '.slot-btn'
-                )
-                .forEach(
-                    btn =>
-                        btn.classList
-                        .remove('selected')
-                );
-
-
-            element.classList.add(
-                'selected'
-            );
-
-
-            document.getElementById(
-                'selectedTime'
-            ).value =
-                time;
-
+        function selectSlot(time, element) {
+            document.querySelectorAll('.slot-btn').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('selectedTime').value = time;
         }
-
-
-        /* =====================================================
-           CRIAR AGENDAMENTO
-           ===================================================== */
 
         function handleCreateAppointment(e) {
-
             e.preventDefault();
+            const serviceData = document.getElementById('bookService').value.split('|');
+            const date = document.getElementById('bookDate').value;
+            const time = document.getElementById('selectedTime').value;
+            const barber = document.getElementById('bookBarber').value;
+            const payment = document.getElementById('bookPayment').value;
 
-
-            const serviceData =
-                document.getElementById(
-                    'bookService'
-                ).value.split('|');
-
-
-            const date =
-                document.getElementById(
-                    'bookDate'
-                ).value;
-
-
-            const time =
-                document.getElementById(
-                    'selectedTime'
-                ).value;
-
-
-            const barber =
-                document.getElementById(
-                    'bookBarber'
-                ).value;
-
-
-            const payment =
-                document.getElementById(
-                    'bookPayment'
-                ).value;
-
-
-            if(!time) {
-
-                alert(
-                    'Por favor, selecione um horário.'
-                );
-
+            if (!time) {
+                alert('Selecione um horário!');
                 return;
-
             }
-
-
-            let isTaken =
-                appointments.some(
-                    a =>
-                        formatDateClean(a.date) === date &&
-                        a.time === time &&
-                        a.barber === barber &&
-                        a.status !== 'Cancelado'
-                );
-
-
-            if(isTaken) {
-
-                alert(
-                    'Este horário já está ocupado!'
-                );
-
-                loadAvailableSlots();
-
-                return;
-
-            }
-
 
             const newAppt = {
-
-                id:
-                    Date.now(),
-
-                clientName:
-                    currentUser.name,
-
-                clientUsername:
-                    currentUser.phone ||
-                    currentUser.username,
-
-                clientPhone:
-                    currentUser.phone ||
-                    'Não informado',
-
-                barber:
-                    barber,
-
-                service:
-                    serviceData[0],
-
-                price:
-                    parseFloat(
-                        serviceData[1]
-                    ),
-
-                date:
-                    date,
-
-                time:
-                    time,
-
-                payment:
-                    payment,
-
-                status:
-                    'Agendado'
-
+                id: Date.now(),
+                clientName: currentUser.name,
+                clientUsername: currentUser.phone || currentUser.username,
+                clientPhone: currentUser.phone || 'Não informado',
+                barber,
+                service: serviceData[0],
+                price: parseFloat(serviceData[1]),
+                date,
+                time,
+                payment,
+                status: 'Agendado'
             };
 
-
-            appointments.push(
-                newAppt
-            );
-
-
-            saveData(
-                'newAppointment',
-                newAppt
-            );
-
-
-            alert(
-                'Agendamento realizado!'
-            );
-
-
+            appointments.push(newAppt);
+            saveData('newAppointment', newAppt);
+            alert('Agendado com sucesso!');
             closeBookingModal();
-
             renderClientView();
-
         }
-
-
-        /* =====================================================
-           ABAS ADMIN
-           ===================================================== */
 
         function switchAdminTab(tab) {
+            document.getElementById('admAgendaView').classList.add('hidden');
+            document.getElementById('admUsersView').classList.add('hidden');
+            document.getElementById('admConfigView').classList.add('hidden');
+            document.getElementById('admLockView').classList.add('hidden');
 
-            document
-                .getElementById('admAgendaView')
-                .classList.add('hidden');
-
-            document
-                .getElementById('admUsersView')
-                .classList.add('hidden');
-
-            document
-                .getElementById('admConfigView')
-                .classList.add('hidden');
-
-            document
-                .getElementById('admLockView')
-                .classList.add('hidden');
-
-
-            document
-                .getElementById('admAgendaTab')
-                .classList.remove('active');
-
-            document
-                .getElementById('admUsersTab')
-                .classList.remove('active');
-
-            document
-                .getElementById('admConfigTab')
-                .classList.remove('active');
-
-            document
-                .getElementById('admLockTab')
-                .classList.remove('active');
-
+            document.getElementById('admAgendaTab').classList.remove('active');
+            document.getElementById('admUsersTab').classList.remove('active');
+            document.getElementById('admConfigTab').classList.remove('active');
+            document.getElementById('admLockTab').classList.remove('active');
 
             if(tab === 'agenda') {
-
-                document
-                    .getElementById('admAgendaView')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('admAgendaTab')
-                    .classList
-                    .add('active');
-
-            }
-
-
-            else if(tab === 'users') {
-
-                document
-                    .getElementById('admUsersView')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('admUsersTab')
-                    .classList
-                    .add('active');
-
+                document.getElementById('admAgendaView').classList.remove('hidden');
+                document.getElementById('admAgendaTab').classList.add('active');
+            } else if(tab === 'users') {
+                document.getElementById('admUsersView').classList.remove('hidden');
+                document.getElementById('admUsersTab').classList.add('active');
                 renderAdminUsers();
-
-            }
-
-
-            else if(tab === 'config') {
-
-                document
-                    .getElementById('admConfigView')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('admConfigTab')
-                    .classList
-                    .add('active');
-
+            } else if(tab === 'config') {
+                document.getElementById('admConfigView').classList.remove('hidden');
+                document.getElementById('admConfigTab').classList.add('active');
                 renderAdminConfig();
-
-            }
-
-
-            else if(tab === 'lock') {
-
-                document
-                    .getElementById('admLockView')
-                    .classList
-                    .remove('hidden');
-
-                document
-                    .getElementById('admLockTab')
-                    .classList
-                    .add('active');
-
+            } else if(tab === 'lock') {
+                document.getElementById('admLockView').classList.remove('hidden');
+                document.getElementById('admLockTab').classList.add('active');
                 populateLockTimes();
-
             }
-
         }
-
 
         function renderAdminView() {
-
             renderAdminAppointments();
-
         }
 
-
-        /* =====================================================
-           AGENDA ADMIN
-           ===================================================== */
-
+        /* RENDERING FIEL À IMAGEM DE REFERÊNCIA */
         function renderAdminAppointments() {
+            const container = document.getElementById('adminAppointmentsCards');
+            container.innerHTML = '';
 
-            const container =
-                document.getElementById(
-                    'adminAppointmentsCards'
-                );
-
-
-            container.innerHTML =
-                '';
-
-
-            if(
-                appointments.length === 0
-            ) {
-
-                container.innerHTML = `
-
-                    <div
-                        class="vintage-card-frame p-8 text-center text-gray-500 font-bold vintage-condensed uppercase"
-                    >
-                        Nenhum agendamento ativo
-                    </div>
-
-                `;
-
+            if (appointments.length === 0) {
+                container.innerHTML = `<div class="receipt-box p-6 text-center text-gray-500 font-bold font-condensed uppercase">Nenhum agendamento encontrado</div>`;
                 return;
-
             }
 
+            appointments.forEach(a => {
+                let rawPhone = cleanPhone(a.clientPhone);
+                let isCancelled = a.status === 'Cancelado';
+                let formattedDate = formatDateClean(a.date);
+                let msgLembrete = encodeURIComponent(`Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia (${formattedDate}) às ${a.time}. Aguardamos você!`);
 
-            appointments.forEach(
-                a => {
-
-                    let rawPhone =
-                        cleanPhone(
-                            a.clientPhone
-                        );
-
-
-                    let isCancelled =
-                        a.status ===
-                        'Cancelado';
-
-
-                    let formattedDate =
-                        formatDateClean(
-                            a.date
-                        );
-
-
-                    let msgLembrete =
-                        encodeURIComponent(
-                            `Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia no dia ${formattedDate} às ${a.time}. Aguardamos você!`
-                        );
-
-
-                    container.innerHTML += `
-
-                        <div
-                            class="vintage-card-frame overflow-hidden relative shadow-md"
-                        >
-
-                            <div
-                                class="bg-forestGreen text-paperCard px-5 py-4 border-b border-vintageGold"
-                            >
-
-                                <div
-                                    class="flex justify-between items-start"
-                                >
-
-                                    <h3
-                                        class="text-3xl font-bold vintage-title leading-tight"
-                                    >
-                                        Agendamentos
-                                        Realizados
-                                    </h3>
-
-
-                                    <span
-                                        id="syncStatus"
-                                        class="text-xs text-paperCard/80 vintage-condensed mt-1 font-semibold"
-                                    >
-                                        (Sincronizado)
-
-                                        <i
-                                            class="fa-solid fa-rotate text-xs cursor-pointer"
-                                            onclick="fetchFromCloud(true)"
-                                        ></i>
-
-                                    </span>
-
-                                </div>
-
+                container.innerHTML += `
+                    <div class="receipt-box shadow-md relative">
+                        <!-- BANNER VERDE SUPERIOR -->
+                        <div class="bg-[#1C3E27] text-[#F5EFE3] px-4 py-3 border-b border-[#D1A347]">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-2xl font-bold font-gothic tracking-wide leading-tight">Agendamentos Realizados</h3>
+                                <span id="syncStatus" class="text-[10px] text-paperCard/80 font-condensed font-semibold">(Sincronizando...) <i class="fa-solid fa-rotate text-[10px] cursor-pointer" onclick="fetchFromCloud(true)"></i></span>
                             </div>
-
-
-                            <div
-                                class="p-5 space-y-4"
-                            >
-
-                                <div>
-
-                                    <button
-                                        onclick="fetchFromCloud(true)"
-                                        class="bg-[#EBD2A0] hover:bg-vintageGold text-charcoal font-bold text-xs px-4 py-2 rounded-lg border border-armyGreen/40 flex items-center gap-2 vintage-condensed uppercase shadow-sm"
-                                    >
-
-                                        <i
-                                            class="fa-solid fa-rotate"
-                                        ></i>
-
-                                        Atualizar Planilha
-
-                                    </button>
-
-                                </div>
-
-
-                                <div
-                                    class="bg-forestGreen text-paperCard px-4 py-2 rounded-md font-bold text-[11px] vintage-condensed uppercase tracking-wider flex justify-between items-center border border-armyGreen"
-                                >
-
-                                    <span
-                                        class="w-1/3"
-                                    >
-                                        Agendamento
-                                    </span>
-
-                                    <span
-                                        class="w-1/3 text-center"
-                                    >
-                                        Valor
-                                    </span>
-
-                                    <span
-                                        class="w-1/3 text-right"
-                                    >
-                                        Ações / Lembrete
-                                    </span>
-
-                                </div>
-
-
-                                <div
-                                    class="text-xs font-bold text-charcoal"
-                                >
-
-                                    <p
-                                        class="text-sm font-extrabold text-forestGreen"
-                                    >
-                                        ${a.clientName}
-                                    </p>
-
-                                    <p
-                                        class="text-gray-600"
-                                    >
-                                        ${a.service}
-                                        com
-                                        <span
-                                            class="text-forestGreen"
-                                        >
-                                            ${a.barber}
-                                        </span>
-                                    </p>
-
-                                    <p
-                                        class="text-gray-500"
-                                    >
-                                        ${formattedDate}
-                                        às
-                                        ${a.time}
-                                    </p>
-
-                                </div>
-
-
-                                <div
-                                    class="flex justify-between items-end pt-2"
-                                >
-
-                                    <div
-                                        class="space-y-0"
-                                    >
-
-                                        <span
-                                            class="block text-sm font-extrabold text-charcoal leading-none"
-                                        >
-                                            R$
-                                        </span>
-
-                                        <span
-                                            class="block text-3xl font-black text-charcoal vintage-condensed leading-none"
-                                        >
-                                            ${parseFloat(a.price || 0).toFixed(2)}
-                                        </span>
-
-                                        <div
-                                            class="tri-stripe w-16 mt-1 rounded-full"
-                                        ></div>
-
-                                    </div>
-
-
-                                    <div
-                                        class="space-y-1.5 w-1/2"
-                                    >
-
-                                        ${
-                                            a.status === 'Agendado'
-                                            ?
-
-                                            `
-
-                                            <div
-                                                class="grid grid-cols-2 gap-1.5"
-                                            >
-
-                                                <button
-                                                    onclick="changeStatus(${a.id}, 'Concluído')"
-                                                    class="bg-forestGreen text-white text-[10px] font-bold py-1.5 px-2 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed"
-                                                >
-
-                                                    <i
-                                                        class="fa-regular fa-circle-check"
-                                                    ></i>
-
-                                                    Concluir
-
-                                                </button>
-
-
-                                                <button
-                                                    onclick="cancelAppointment(${a.id})"
-                                                    class="bg-vintageRed text-white text-[10px] font-bold py-1.5 px-2 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed"
-                                                >
-
-                                                    <i
-                                                        class="fa-regular fa-circle-xmark"
-                                                    ></i>
-
-                                                    Cancelar
-
-                                                </button>
-
-                                            </div>
-
-                                            `
-
-                                            :
-
-                                            `
-
-                                            <div
-                                                class="text-center py-1 bg-gray-200 rounded text-xs font-bold text-gray-600 uppercase vintage-condensed"
-                                            >
-                                                ${a.status}
-                                            </div>
-
-                                            `
-                                        }
-
-
-                                        ${
-                                            rawPhone && !isCancelled
-                                            ?
-
-                                            `
-
-                                            <a
-                                                href="https://wa.me/55${rawPhone}?text=${msgLembrete}"
-                                                target="_blank"
-                                                class="block w-full text-center bg-forestGreen/80 text-white text-[11px] font-bold py-1.5 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed"
-                                            >
-
-                                                <i
-                                                    class="fa-brands fa-whatsapp text-sm"
-                                                ></i>
-
-                                                Lembrete
-
-                                            </a>
-
-                                            `
-
-                                            :
-
-                                            ''
-                                        }
-
-
-                                        <button
-                                            onclick="deleteAppointmentPermanently(${a.id})"
-                                            class="w-full bg-[#353535] hover:bg-black text-white text-[10px] font-bold py-1.5 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed"
-                                        >
-
-                                            <i
-                                                class="fa-regular fa-trash-can"
-                                            ></i>
-
-                                            Apagar Registro
-
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                            <div
-                                class="text-center pt-2 pb-3 border-t border-armyGreen/20"
-                            >
-
-                                <i
-                                    class="fa-solid fa-compass-drafting text-armyGreen/40 text-xs mb-1"
-                                ></i>
-
-                                <p
-                                    class="text-[10px] font-bold text-armyGreen/80 vintage-condensed uppercase tracking-widest"
-                                >
-                                    QUALIDADE
-                                    &nbsp;★&nbsp;
-                                    RESPEITO
-                                    &nbsp;★&nbsp;
-                                    ESTILO
-                                </p>
-
-                            </div>
-
                         </div>
 
-                    `;
+                        <div class="p-4 space-y-3">
+                            <!-- BOTÃO DE ATUALIZAR PLANILHA -->
+                            <div>
+                                <button onclick="fetchFromCloud(true)" class="bg-[#E4BD68] hover:bg-[#D1A347] text-[#1A1A1A] font-bold text-xs px-3 py-1.5 rounded border border-[#233827]/40 flex items-center gap-1.5 font-condensed uppercase shadow-sm">
+                                    <i class="fa-solid fa-rotate"></i> Atualizar Planilha
+                                </button>
+                            </div>
 
-                }
-            );
+                            <!-- BANNER HEADER "AGENDAMENTO | VALOR | AÇÕES / LEMBRETE" -->
+                            <div class="bg-[#1C3E27] text-[#F5EFE3] px-3 py-1.5 rounded font-bold text-[10px] font-condensed uppercase tracking-wider flex justify-between items-center border border-[#233827]">
+                                <span class="w-1/3">Agendamento</span>
+                                <span class="w-1/3 text-center">Valor</span>
+                                <span class="w-1/3 text-right">Ações / Lembrete</span>
+                            </div>
 
+                            <!-- DETALHES DO CLIENTE E HORÁRIO -->
+                            <div class="text-xs font-bold text-vintageTextDark">
+                                <p class="text-sm font-extrabold text-[#1C3E27]">${a.clientName}</p>
+                                <p class="text-gray-700">${a.service} com <span class="text-[#1C3E27]">${a.barber}</span></p>
+                                <p class="text-gray-600">${formattedDate} às ${a.time}</p>
+                            </div>
+
+                            <!-- ÁREA DE VALOR E BOTÕES IGUAL AO PRINT -->
+                            <div class="flex justify-between items-end pt-1">
+                                <!-- VALOR EM DESTAQUE -->
+                                <div>
+                                    <span class="block text-xs font-extrabold text-vintageTextDark leading-none">R$</span>
+                                    <span class="block text-2xl font-black text-vintageTextDark font-condensed leading-none">${parseFloat(a.price || 0).toFixed(2)}</span>
+                                    <div class="tri-color-bar w-12 mt-1 rounded"></div>
+                                </div>
+
+                                <!-- GRADE DE BOTÕES -->
+                                <div class="space-y-1 w-1/2">
+                                    ${a.status === 'Agendado' ? `
+                                        <div class="grid grid-cols-2 gap-1">
+                                            <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-[#1C3E27] hover:bg-[#233827] text-white text-[9px] font-bold py-1 px-1.5 rounded transition flex items-center justify-center gap-1 font-condensed">
+                                                <i class="fa-regular fa-circle-check"></i> Concluir
+                                            </button>
+                                            <button onclick="cancelAppointment(${a.id})" class="bg-[#AD2B24] hover:bg-red-800 text-white text-[9px] font-bold py-1 px-1.5 rounded transition flex items-center justify-center gap-1 font-condensed">
+                                                <i class="fa-regular fa-circle-xmark"></i> Cancelar
+                                            </button>
+                                        </div>
+                                    ` : `<div class="text-center py-1 bg-gray-200 rounded text-[10px] font-bold text-gray-700 uppercase font-condensed">${a.status}</div>`}
+
+                                    ${rawPhone && !isCancelled ? `
+                                        <a href="https://wa.me/55${rawPhone}?text=${msgLembrete}" target="_blank" class="block w-full text-center bg-[#1C3E27]/90 hover:bg-[#1C3E27] text-white text-[10px] font-bold py-1 rounded transition flex items-center justify-center gap-1 font-condensed">
+                                            <i class="fa-brands fa-whatsapp text-xs"></i> Lembrete
+                                        </a>
+                                    ` : ''}
+
+                                    <button onclick="deleteAppointmentPermanently(${a.id})" class="w-full bg-[#242424] hover:bg-black text-white text-[9px] font-bold py-1 rounded transition flex items-center justify-center gap-1 font-condensed">
+                                        <i class="fa-regular fa-trash-can"></i> Apagar Registro
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RODAPÉ VINTAGE -->
+                        <div class="text-center py-2 border-t border-[#C8B892]">
+                            <i class="fa-solid fa-compass text-[#C8B892] text-xs mb-0.5"></i>
+                            <p class="text-[9px] font-bold text-[#1C3E27] font-condensed uppercase tracking-widest">
+                                QUALIDADE &nbsp;★&nbsp; RESPEITO &nbsp;★&nbsp; ESTILO
+                            </p>
+                        </div>
+                    </div>
+                `;
+            });
         }
-
-
-        /* =====================================================
-           USUÁRIOS
-           ===================================================== */
 
         function renderAdminUsers() {
+            const tbody = document.getElementById('adminUsersList');
+            tbody.innerHTML = '';
 
-            const tbody =
-                document.getElementById(
-                    'adminUsersList'
-                );
+            const clientUsers = users.filter(u => u.role !== 'admin');
 
-
-            tbody.innerHTML =
-                '';
-
-
-            const clientUsers =
-                users.filter(
-                    u =>
-                        u.role !== 'admin'
-                );
-
-
-            if(
-                clientUsers.length === 0
-            ) {
-
-                tbody.innerHTML = `
-
-                    <tr>
-
-                        <td
-                            colspan="4"
-                            class="p-3 text-center text-gray-500"
-                        >
-                            Nenhum cliente cadastrado.
-                        </td>
-
-                    </tr>
-
-                `;
-
+            if (clientUsers.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-2 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>`;
                 return;
-
             }
 
-
-            clientUsers.forEach(
-                u => {
-
-                    tbody.innerHTML += `
-
-                        <tr
-                            class="border-b border-armyGreen/20"
-                        >
-
-                            <td
-                                class="p-2 text-forestGreen font-bold"
-                            >
-                                ${u.name}
-                            </td>
-
-                            <td
-                                class="p-2 font-semibold"
-                            >
-                                ${u.phone || u.username}
-                            </td>
-
-                            <td class="p-2">
-
-                                <code
-                                    class="bg-paperBg border border-armyGreen/30 px-1.5 py-0.5 rounded text-charcoal font-bold"
-                                >
-                                    ${u.pass}
-                                </code>
-
-                            </td>
-
-                            <td class="p-2">
-
-                                <button
-                                    onclick="deleteUser('${u.phone || u.username}')"
-                                    class="bg-vintageRed text-white font-bold px-2 py-1 rounded text-[10px]"
-                                >
-                                    Excluir
-                                </button>
-
-                            </td>
-
-                        </tr>
-
-                    `;
-
-                }
-            );
-
+            clientUsers.forEach(u => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-1.5 font-bold text-[#1C3E27]">${u.name}</td>
+                        <td class="p-1.5 font-medium">${u.phone || u.username}</td>
+                        <td class="p-1.5">
+                            <button onclick="deleteUser('${u.phone || u.username}')" class="bg-[#AD2B24] text-white font-bold px-1.5 py-0.5 rounded text-[9px]">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            });
         }
 
-
-        function deleteUser(
-            identifier
-        ) {
-
-            const userObj =
-                users.find(
-                    u =>
-                        (
-                            u.phone &&
-                            cleanPhone(u.phone) ===
-                            cleanPhone(identifier)
-                        )
-                        ||
-                        u.username ===
-                        identifier
-                );
-
-
-            if(
-                userObj &&
-                confirm(
-                    `Excluir ${userObj.name}?`
-                )
-            ) {
-
-                users =
-                    users.filter(
-                        u =>
-                            !(
-                                (
-                                    u.phone &&
-                                    cleanPhone(u.phone) ===
-                                    cleanPhone(identifier)
-                                )
-                                ||
-                                u.username ===
-                                identifier
-                            )
-                    );
-
-
+        function deleteUser(identifier) {
+            const userObj = users.find(u => (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier);
+            if (userObj && confirm(`Excluir ${userObj.name}?`)) {
+                users = users.filter(u => !( (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier ));
                 saveData();
-
                 renderAdminUsers();
-
             }
-
         }
 
-
-        /* =====================================================
-           STATUS
-           ===================================================== */
-
-        function changeStatus(
-            id,
-            newStatus
-        ) {
-
-            const appt =
-                appointments.find(
-                    a =>
-                        String(a.id) ===
-                        String(id)
-                );
-
-
+        function changeStatus(id, newStatus) {
+            const appt = appointments.find(a => String(a.id) === String(id));
             if(appt) {
-
-                appt.status =
-                    newStatus;
-
-
+                appt.status = newStatus;
                 saveData();
-
                 renderAdminAppointments();
-
             }
-
         }
-
-
-        /* =====================================================
-           CONFIGURAÇÃO SERVIÇOS
-           ===================================================== */
 
         function renderAdminConfig() {
-
-            const servicesContainer =
-                document.getElementById(
-                    'servicesList'
-                );
-
-
-            servicesContainer.innerHTML =
-                '';
-
-
-            services.forEach(
-                s => {
-
-                    servicesContainer.innerHTML += `
-
-                        <div
-                            class="flex justify-between items-center bg-paperBg p-2 rounded border border-armyGreen/20 text-xs"
-                        >
-
-                            <span
-                                class="font-bold text-charcoal"
-                            >
-
-                                ${s.name}
-                                -
-
-                                <b
-                                    class="text-forestGreen"
-                                >
-                                    R$ ${s.price.toFixed(2)}
-                                </b>
-
-                            </span>
-
-
-                            <button
-                                onclick="removeService(${s.id})"
-                                class="text-vintageRed font-bold"
-                            >
-
-                                <i
-                                    class="fa-solid fa-trash"
-                                ></i>
-
-                            </button>
-
-                        </div>
-
-                    `;
-
-                }
-            );
-
+            const servicesContainer = document.getElementById('servicesList');
+            servicesContainer.innerHTML = '';
+            services.forEach(s => {
+                servicesContainer.innerHTML += `
+                    <div class="flex justify-between items-center bg-[#FAF5EB] p-1.5 rounded border border-[#C8B892] text-xs">
+                        <span class="font-bold text-vintageTextDark">${s.name} - <b class="text-[#1C3E27]">R$ ${s.price.toFixed(2)}</b></span>
+                        <button onclick="removeService(${s.id})" class="text-[#AD2B24] font-bold"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
         }
-
 
         function handleAddService(e) {
-
             e.preventDefault();
+            const name = document.getElementById('newServiceName').value.trim();
+            const price = parseFloat(document.getElementById('newServicePrice').value);
 
-
-            const name =
-                document.getElementById(
-                    'newServiceName'
-                ).value.trim();
-
-
-            const price =
-                parseFloat(
-                    document.getElementById(
-                        'newServicePrice'
-                    ).value
-                );
-
-
-            services.push({
-
-                id:
-                    Date.now(),
-
-                name:
-                    name,
-
-                price:
-                    price
-
-            });
-
-
+            services.push({ id: Date.now(), name, price });
             saveData();
-
-
-            document.getElementById(
-                'newServiceName'
-            ).value =
-                '';
-
-
-            document.getElementById(
-                'newServicePrice'
-            ).value =
-                '';
-
-
+            document.getElementById('newServiceName').value = '';
+            document.getElementById('newServicePrice').value = '';
             renderAdminConfig();
-
         }
-
 
         function removeService(id) {
-
-            services =
-                services.filter(
-                    s =>
-                        s.id !== id
-                );
-
-
+            services = services.filter(s => s.id !== id);
             saveData();
-
             renderAdminConfig();
-
         }
-
-
-        /* =====================================================
-           BLOQUEIO DE HORÁRIOS
-           ===================================================== */
 
         function populateLockTimes() {
+            const select = document.getElementById('lockTime');
+            const lockDateVal = document.getElementById('lockDate').value;
+            select.innerHTML = '';
 
-            const select =
-                document.getElementById(
-                    'lockTime'
-                );
+            let hoursForDay = lockDateVal ? getWorkingHoursForDate(lockDateVal) : ["18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
 
-
-            const lockDateVal =
-                document.getElementById(
-                    'lockDate'
-                ).value;
-
-
-            select.innerHTML =
-                '';
-
-
-            let hoursForDay =
-                lockDateVal
-
-                ?
-
-                getWorkingHoursForDate(
-                    lockDateVal
-                )
-
-                :
-
-                [
-                    "18:30",
-                    "19:00",
-                    "19:30",
-                    "20:00",
-                    "20:30",
-                    "21:00",
-                    "21:30",
-                    "22:00"
-                ];
-
-
-            hoursForDay.forEach(
-                h => {
-
-                    select.innerHTML += `
-
-                        <option
-                            value="${h}"
-                        >
-                            ${h}
-                        </option>
-
-                    `;
-
-                }
-            );
-
+            hoursForDay.forEach(h => {
+                select.innerHTML += `<option value="${h}">${h}</option>`;
+            });
         }
-
 
         function handleLockSlot(e) {
-
             e.preventDefault();
+            const date = document.getElementById('lockDate').value;
+            const time = document.getElementById('lockTime').value;
+            const barber = document.getElementById('lockBarber').value;
 
-
-            const date =
-                document.getElementById(
-                    'lockDate'
-                ).value;
-
-
-            const time =
-                document.getElementById(
-                    'lockTime'
-                ).value;
-
-
-            const barber =
-                document.getElementById(
-                    'lockBarber'
-                ).value;
-
-
-            lockedSlots.push({
-
-                id:
-                    Date.now(),
-
-                date:
-                    date,
-
-                time:
-                    time,
-
-                barber:
-                    barber
-
-            });
-
-
+            lockedSlots.push({ id: Date.now(), date, time, barber });
             saveData();
-
-
-            alert(
-                `Horário das ${time} no dia ${date} foi trancado.`
-            );
-
+            alert(`Horário das ${time} no dia ${date} foi trancado.`);
         }
-
     </script>
-
 </body>
-
 </html>
