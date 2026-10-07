@@ -20,11 +20,11 @@
                     colors: {
                         armyGreen: '#586B3A',
                         forestGreen: '#184D2E',
-                        vintageRed: '#D1282B',
-                        vintageGold: '#F0A51A',
-                        paperBg: '#EFECE6',
-                        paperCard: '#F8F8F5',
-                        charcoal: '#3A3A3A'
+                        vintageRed: '#B02626',
+                        vintageGold: '#DDA029',
+                        paperBg: '#E9E4D9',
+                        paperCard: '#F4EFE6',
+                        charcoal: '#232323'
                     },
                     fontFamily: {
                         oldEnglish: ['UnifrakturMaguntia', 'serif'],
@@ -37,10 +37,10 @@
     </script>
     <style>
         body { 
-            background-color: #EFECE6; 
-            background-image: radial-gradient(#d3cecf 1px, transparent 0);
-            background-size: 24px 24px;
-            color: #3A3A3A; 
+            background-color: #E2DDD2; 
+            background-image: radial-gradient(#c5bfb4 1px, transparent 0);
+            background-size: 20px 20px;
+            color: #232323; 
             font-family: 'Montserrat', sans-serif; 
         }
         .vintage-title {
@@ -55,40 +55,45 @@
             color: #184D2E; 
             font-weight: bold;
         }
-        .vintage-border-stripe {
-            border-image: linear-gradient(to right, #586B3A 33%, #F0A51A 33%, #F0A51A 66%, #D1282B 66%) 1;
-        }
-        .vintage-card {
-            background-color: #F8F8F5;
-            border: 2px solid #586B3A;
-            box-shadow: 4px 4px 0px rgba(58, 58, 58, 0.15);
+        .vintage-card-frame {
+            background-color: #F4EFE6;
+            border: 2px solid #184D2E;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
         .slot-btn { transition: all 0.2s ease-in-out; }
         .slot-btn.selected { 
-            background-color: #F0A51A !important; 
+            background-color: #DDA029 !important; 
             color: #184D2E !important; 
             font-weight: bold; 
             border-color: #184D2E !important; 
+        }
+        .tri-stripe {
+            height: 3px;
+            background: linear-gradient(to right, #184D2E 33%, #DDA029 33%, #DDA029 66%, #B02626 66%);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between" onload="initApp()">
 
     <!-- Header / Navbar -->
-    <header class="bg-paperCard border-b-4 border-forestGreen shadow-md p-4 sticky top-0 z-50">
-        <div class="h-1 w-full bg-gradient-to-r from-armyGreen via-vintageGold to-vintageRed absolute top-0 left-0"></div>
-        <div class="max-w-6xl mx-auto flex justify-between items-center mt-1">
+    <header class="bg-paperCard border-b border-armyGreen/30 shadow-sm p-3 sticky top-0 z-50">
+        <div class="tri-stripe absolute top-0 left-0 w-full"></div>
+        <div class="max-w-xl mx-auto flex justify-between items-center mt-1">
             <div class="flex items-center space-x-3">
-                <img src="logo.jpg" alt="Dreko Barbearia Logo" class="w-14 h-14 rounded-full border-2 border-forestGreen object-cover shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/184D2E/F8F8F5?text=DREKO';">
+                <img src="logo.jpg" alt="Dreko Barbearia Logo" class="w-12 h-12 rounded-full border-2 border-forestGreen object-cover shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/184D2E/F4EFE6?text=DREKO';">
                 <div>
-                    <h1 class="text-2xl font-bold tracking-wider text-forestGreen vintage-title leading-none">Dreko Barbearia</h1>
-                    <p class="text-xs text-armyGreen font-semibold vintage-condensed uppercase tracking-widest mt-1">Vibração Positiva & Estilo • Since 2015</p>
+                    <h1 class="text-2xl font-bold text-forestGreen vintage-title leading-tight">Dreko Barbearia</h1>
+                    <p class="text-[10px] text-armyGreen font-bold vintage-condensed uppercase tracking-widest">Vibração Positiva & Estilo</p>
                 </div>
             </div>
             
-            <div id="userInfo" class="hidden flex items-center space-x-4">
-                <span id="userNameDisplay" class="text-sm font-bold text-charcoal vintage-condensed"></span>
-                <button onclick="logout()" class="bg-vintageRed hover:bg-red-800 text-white px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1 shadow">
+            <div id="userInfo" class="hidden flex items-center space-x-3">
+                <div class="text-right">
+                    <span class="block text-[10px] uppercase font-bold text-gray-500 vintage-condensed">Barbeiro</span>
+                    <span id="userNameDisplay" class="text-xs font-bold text-charcoal vintage-condensed"></span>
+                </div>
+                <button onclick="logout()" class="bg-forestGreen/90 hover:bg-forestGreen text-paperCard px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow">
                     <i class="fa-solid fa-right-from-bracket"></i> Sair
                 </button>
             </div>
@@ -96,17 +101,17 @@
     </header>
 
     <!-- MAIN CONTENT -->
-    <main class="max-w-6xl mx-auto p-4 w-full flex-grow">
+    <main class="max-w-xl mx-auto p-3 w-full flex-grow">
 
         <!-- 1. LOGIN / CADASTRO SCREEN -->
-        <section id="authScreen" class="max-w-md mx-auto my-8 vintage-card p-6 rounded-lg">
-            <div class="text-center mb-6 border-b border-armyGreen/30 pb-4">
-                <img src="logo.jpg" alt="Dreko Barbearia" class="w-24 h-24 mx-auto rounded-full border-2 border-forestGreen object-cover mb-3 shadow" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/184D2E/F8F8F5?text=DREKO';">
+        <section id="authScreen" class="vintage-card-frame p-6 my-6">
+            <div class="text-center mb-6 border-b border-armyGreen/20 pb-4">
+                <img src="logo.jpg" alt="Dreko Barbearia" class="w-20 h-20 mx-auto rounded-full border-2 border-forestGreen object-cover mb-2 shadow-sm" onerror="this.onerror=null; this.src='https://via.placeholder.com/150/184D2E/F4EFE6?text=DREKO';">
                 <h2 class="text-3xl font-bold text-forestGreen vintage-title">Área de Acesso</h2>
-                <p class="text-charcoal text-xs font-medium vintage-condensed uppercase">Entre com seu telefone ou cadastre-se</p>
+                <p class="text-charcoal text-xs font-bold vintage-condensed uppercase tracking-wide">Entre com seu telefone ou cadastre-se</p>
             </div>
 
-            <div class="flex border-b border-armyGreen/30 mb-6">
+            <div class="flex border-b border-armyGreen/20 mb-6">
                 <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="tab-btn active w-1/2 py-2 font-bold text-center vintage-condensed uppercase">Login</button>
                 <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="tab-btn w-1/2 py-2 font-bold text-center text-gray-500 vintage-condensed uppercase">Cadastrar</button>
             </div>
@@ -115,175 +120,132 @@
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">Telefone (Celular) ou Usuário ADM</label>
-                    <input type="text" id="loginUsername" placeholder="(00) 00000-0000 ou admin" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="text" id="loginUsername" placeholder="(00) 00000-0000 ou admin" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">Senha</label>
-                    <input type="password" id="loginPassword" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="password" id="loginPassword" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
-                <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-3 rounded transition shadow vintage-condensed uppercase tracking-wider">Entrar</button>
+                <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-3 rounded-lg transition shadow vintage-condensed uppercase tracking-wider">Entrar</button>
             </form>
 
             <!-- CADASTRO FORM -->
             <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">Nome Completo</label>
-                    <input type="text" id="regFullName" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="text" id="regFullName" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">Telefone (WhatsApp)</label>
-                    <input type="tel" id="regPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="tel" id="regPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">E-mail</label>
-                    <input type="email" id="regEmail" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="email" id="regEmail" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-charcoal mb-1 vintage-condensed">Senha</label>
-                    <input type="password" id="regPassword" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
+                    <input type="password" id="regPassword" required class="w-full bg-paperBg border border-armyGreen/50 rounded-lg p-3 text-charcoal font-medium focus:outline-none focus:border-forestGreen">
                 </div>
-                <button type="submit" class="w-full bg-vintageGold hover:bg-yellow-600 text-forestGreen font-bold py-3 rounded transition shadow vintage-condensed uppercase tracking-wider">Criar Conta</button>
+                <button type="submit" class="w-full bg-vintageGold hover:bg-yellow-600 text-forestGreen font-bold py-3 rounded-lg transition shadow vintage-condensed uppercase tracking-wider">Criar Conta</button>
             </form>
         </section>
 
         <!-- 2. CLIENT DASHBOARD -->
-        <section id="clientDashboard" class="hidden space-y-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 vintage-card p-6 rounded-lg">
+        <section id="clientDashboard" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 vintage-card-frame p-5">
                 <div>
                     <h2 class="text-3xl font-bold text-forestGreen vintage-title">Bem-vindo, <span id="clientGreetingName"></span>!</h2>
                     <p class="text-xs font-bold text-armyGreen vintage-condensed uppercase tracking-wider">Escolha o dia e horário para o seu atendimento.</p>
                 </div>
-                <button onclick="showBookingModal()" class="bg-forestGreen text-paperCard font-bold px-6 py-3 rounded hover:bg-armyGreen transition shadow flex items-center justify-center gap-2 vintage-condensed uppercase">
+                <button onclick="showBookingModal()" class="bg-forestGreen text-paperCard font-bold px-5 py-2.5 rounded-lg hover:bg-armyGreen transition shadow flex items-center justify-center gap-2 vintage-condensed uppercase">
                     <i class="fa-solid fa-calendar-plus"></i> Novo Agendamento
                 </button>
             </div>
 
             <!-- AGENDA DA SEMANA -->
-            <div class="vintage-card p-6 rounded-lg">
+            <div class="vintage-card-frame p-5">
                 <div class="flex justify-between items-center mb-4 border-b border-armyGreen/30 pb-2">
-                    <h3 class="text-xl font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-calendar-week text-vintageGold"></i> Agenda da Semana</h3>
-                    <span class="text-xs font-bold text-armyGreen vintage-condensed">Seg-Sex: 18:30 às 22:00 | Sáb: 08:00 às 12:00</span>
+                    <h3 class="text-lg font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-calendar-week text-vintageGold"></i> Agenda da Semana</h3>
+                    <span class="text-[10px] font-bold text-armyGreen vintage-condensed">Seg-Sex: 18:30-22:00 | Sáb: 08:00-12:00</span>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-6 gap-4" id="clientWeeklySchedule"></div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2" id="clientWeeklySchedule"></div>
             </div>
 
             <!-- MEUS AGENDAMENTOS -->
-            <div class="vintage-card p-6 rounded-lg">
-                <h3 class="text-xl font-bold text-forestGreen mb-4 flex items-center gap-2 vintage-condensed uppercase border-b border-armyGreen/30 pb-2"><i class="fa-solid fa-clock text-vintageGold"></i> Meus Agendamentos Ativos</h3>
+            <div class="vintage-card-frame p-5">
+                <h3 class="text-lg font-bold text-forestGreen mb-4 flex items-center gap-2 vintage-condensed uppercase border-b border-armyGreen/30 pb-2"><i class="fa-solid fa-clock text-vintageGold"></i> Meus Agendamentos Ativos</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-charcoal">
                         <thead class="bg-forestGreen text-paperCard vintage-condensed uppercase text-xs">
                             <tr>
-                                <th class="p-3">Data/Hora</th>
-                                <th class="p-3">Barbeiro</th>
-                                <th class="p-3">Serviço</th>
-                                <th class="p-3">Pagamento</th>
-                                <th class="p-3">Valor</th>
-                                <th class="p-3">Status / Ação</th>
+                                <th class="p-2">Data/Hora</th>
+                                <th class="p-2">Barbeiro</th>
+                                <th class="p-2">Serviço</th>
+                                <th class="p-2">Valor</th>
+                                <th class="p-2">Status / Ação</th>
                             </tr>
                         </thead>
-                        <tbody id="clientAppointmentsList"></tbody>
+                        <tbody id="clientAppointmentsList" class="divide-y divide-armyGreen/20"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
         <!-- 3. ADMIN DASHBOARD -->
-        <section id="adminDashboard" class="hidden space-y-6">
-            <!-- ABA DE NAVEGAÇÃO ESTILO FOTO DE REFERÊNCIA -->
-            <div class="flex border-b-2 border-forestGreen space-x-2 md:space-x-6 overflow-x-auto bg-paperCard p-2 rounded-t-lg shadow-sm">
-                <button onclick="switchAdminTab('agenda')" id="admAgendaTab" class="tab-btn active py-2 px-4 font-bold flex items-center gap-2 vintage-condensed uppercase text-base"><i class="fa-solid fa-calendar-alt"></i> Agenda</button>
-                <button onclick="switchAdminTab('users')" id="admUsersTab" class="tab-btn py-2 px-4 font-bold text-gray-600 flex items-center gap-2 vintage-condensed uppercase text-base"><i class="fa-solid fa-users"></i> Gerenciar Usuários</button>
-                <button onclick="switchAdminTab('config')" id="admConfigTab" class="tab-btn py-2 px-4 font-bold text-gray-600 flex items-center gap-2 vintage-condensed uppercase text-base"><i class="fa-solid fa-sliders"></i> Serviços</button>
-                <button onclick="switchAdminTab('lock')" id="admLockTab" class="tab-btn py-2 px-4 font-bold text-gray-600 flex items-center gap-2 vintage-condensed uppercase text-base"><i class="fa-solid fa-lock"></i> Horários</button>
-                <button onclick="switchAdminTab('reports')" id="admReportsTab" class="tab-btn py-2 px-4 font-bold text-gray-600 flex items-center gap-2 vintage-condensed uppercase text-base"><i class="fa-solid fa-chart-line"></i> Relatórios</button>
+        <section id="adminDashboard" class="hidden space-y-4">
+            <!-- ABA DE NAVEGAÇÃO SUPERIOR IGUAL AO PRINT -->
+            <div class="flex border-b border-armyGreen/30 justify-around bg-paperCard rounded-t-xl p-2 text-center shadow-sm">
+                <button onclick="switchAdminTab('agenda')" id="admAgendaTab" class="tab-btn active py-2 px-3 font-bold flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"><i class="fa-solid fa-calendar-days text-lg"></i> Agenda</button>
+                <button onclick="switchAdminTab('users')" id="admUsersTab" class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"><i class="fa-solid fa-users text-lg"></i> Gerenciar Usuários</button>
+                <button onclick="switchAdminTab('config')" id="admConfigTab" class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"><i class="fa-solid fa-sliders text-lg"></i> Serviços</button>
+                <button onclick="switchAdminTab('lock')" id="admLockTab" class="tab-btn py-2 px-3 font-bold text-gray-500 flex flex-col md:flex-row items-center gap-1 vintage-condensed text-sm"><i class="fa-solid fa-clock text-lg"></i> Horários</button>
             </div>
 
-            <!-- SUB-ABA 1: AGENDA ADM -->
-            <div id="admAgendaView" class="space-y-6">
-                <div class="vintage-card rounded-lg overflow-hidden">
-                    <!-- HEADER CARTÃO IGUAL FOTO -->
-                    <div class="bg-forestGreen text-paperCard p-4 border-b-2 border-vintageGold">
-                        <div class="flex flex-col md:flex-row justify-between md:items-center gap-2">
-                            <h3 class="text-2xl font-bold vintage-title tracking-wide flex items-center gap-2">
-                                Agendamentos Realizados
-                            </h3>
-                            <span id="syncStatus" class="text-xs font-semibold text-vintageGold vintage-condensed uppercase"></span>
-                        </div>
-                    </div>
-
-                    <div class="p-6 space-y-4">
-                        <div class="flex items-center gap-2">
-                            <button onclick="fetchFromCloud(true)" class="bg-vintageGold hover:bg-yellow-600 text-forestGreen font-bold text-xs px-4 py-2 rounded shadow flex items-center gap-2 transition vintage-condensed uppercase">
-                                <i class="fa-solid fa-rotate" id="syncIcon"></i> Atualizar Planilha
-                            </button>
-                        </div>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left text-sm text-charcoal border-collapse">
-                                <thead class="bg-forestGreen text-paperCard vintage-condensed uppercase text-xs">
-                                    <tr>
-                                        <th class="p-3 border-r border-armyGreen">Cliente / Telefone</th>
-                                        <th class="p-3 border-r border-armyGreen">Barbeiro</th>
-                                        <th class="p-3 border-r border-armyGreen">Serviço</th>
-                                        <th class="p-3 border-r border-armyGreen">Data / Hora</th>
-                                        <th class="p-3 border-r border-armyGreen">Pagamento</th>
-                                        <th class="p-3 border-r border-armyGreen">Valor</th>
-                                        <th class="p-3">Ações / Lembrete</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="adminAppointmentsList" class="divide-y divide-armyGreen/20"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- FOOTER CARTÃO ESTILO FOTO -->
-                    <div class="border-t border-armyGreen/30 p-2 text-center text-xs font-bold text-armyGreen vintage-condensed uppercase tracking-widest">
-                        QUALIDADE ★ RESPEITO ★ ESTILO
-                    </div>
-                </div>
+            <!-- SUB-ABA 1: AGENDA ADM (ESTILO EXATO DA FOTO) -->
+            <div id="admAgendaView" class="space-y-4">
+                <div id="adminAppointmentsCards" class="space-y-4"></div>
             </div>
 
             <!-- SUB-ABA DE GESTÃO DE USUÁRIOS (ADM) -->
-            <div id="admUsersView" class="hidden space-y-6">
-                <div class="vintage-card p-6 rounded-lg">
-                    <h3 class="text-lg font-bold text-forestGreen mb-4 flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Cliente Manualmente</h3>
-                    <form onsubmit="handleAdminCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div id="admUsersView" class="hidden space-y-4">
+                <div class="vintage-card-frame p-5">
+                    <h3 class="text-md font-bold text-forestGreen mb-3 flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-user-plus"></i> Cadastrar Novo Cliente</h3>
+                    <form onsubmit="handleAdminCreateUser(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Nome Completo</label>
-                            <input type="text" id="admNewName" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Nome Completo</label>
+                            <input type="text" id="admNewName" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Celular (WhatsApp)</label>
-                            <input type="tel" id="admNewPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Celular (WhatsApp)</label>
+                            <input type="tel" id="admNewPhone" placeholder="(00) 00000-0000" oninput="maskPhone(this)" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">E-mail</label>
-                            <input type="email" id="admNewEmail" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">E-mail</label>
+                            <input type="email" id="admNewEmail" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Senha Inicial</label>
-                            <input type="text" id="admNewPass" placeholder="Ex: 123456" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Senha Inicial</label>
+                            <input type="text" id="admNewPass" placeholder="Ex: 123456" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
-                        <div class="md:col-span-4 text-right">
-                            <button type="submit" class="bg-forestGreen hover:bg-armyGreen text-paperCard font-bold px-6 py-2 rounded transition vintage-condensed uppercase">
-                                Salvar Novo Cliente
+                        <div class="md:col-span-2 text-right">
+                            <button type="submit" class="bg-forestGreen hover:bg-armyGreen text-paperCard font-bold px-4 py-2 rounded text-xs transition vintage-condensed uppercase">
+                                Salvar Cliente
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <div class="vintage-card p-6 rounded-lg space-y-4">
-                    <h3 class="text-lg font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-users-gear"></i> Usuários Cadastrados</h3>
+                <div class="vintage-card-frame p-5 space-y-3">
+                    <h3 class="text-md font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-users-gear"></i> Usuários Cadastrados</h3>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm text-charcoal">
-                            <thead class="bg-forestGreen text-paperCard vintage-condensed uppercase text-xs">
+                        <table class="w-full text-left text-xs text-charcoal">
+                            <thead class="bg-forestGreen text-paperCard vintage-condensed uppercase">
                                 <tr>
-                                    <th class="p-3">Nome Completo</th>
-                                    <th class="p-3">Celular (Login)</th>
-                                    <th class="p-3">E-mail</th>
-                                    <th class="p-3">Senha Atual</th>
-                                    <th class="p-3">Ações</th>
+                                    <th class="p-2">Nome</th>
+                                    <th class="p-2">Celular</th>
+                                    <th class="p-2">Senha</th>
+                                    <th class="p-2">Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="adminUsersList" class="divide-y divide-armyGreen/20"></tbody>
@@ -293,114 +255,46 @@
             </div>
 
             <!-- SUB-ABA CONFIGURAÇÃO DE SERVIÇOS E HORÁRIOS -->
-            <div id="admConfigView" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="vintage-card p-6 rounded-lg space-y-4">
-                    <h3 class="text-lg font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-scissors"></i> Adicionar/Editar Serviços</h3>
+            <div id="admConfigView" class="hidden space-y-4">
+                <div class="vintage-card-frame p-5 space-y-3">
+                    <h3 class="text-md font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-scissors"></i> Adicionar/Editar Serviços</h3>
                     <form onsubmit="handleAddService(event)" class="space-y-3">
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Nome do Serviço</label>
-                            <input type="text" id="newServiceName" placeholder="Ex: Corte Degradê" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Nome do Serviço</label>
+                            <input type="text" id="newServiceName" placeholder="Ex: Corte Degradê" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Preço (R$)</label>
-                            <input type="number" step="0.01" id="newServicePrice" placeholder="Ex: 40.00" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
+                            <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Preço (R$)</label>
+                            <input type="number" step="0.01" id="newServicePrice" placeholder="Ex: 40.00" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs">
                         </div>
-                        <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-2 rounded transition vintage-condensed uppercase">Adicionar Serviço</button>
+                        <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-2 rounded text-xs transition vintage-condensed uppercase">Adicionar Serviço</button>
                     </form>
 
-                    <h4 class="text-sm font-bold text-charcoal pt-4 border-t border-armyGreen/30 vintage-condensed uppercase">Serviços Atuais</h4>
+                    <h4 class="text-xs font-bold text-charcoal pt-3 border-t border-armyGreen/20 vintage-condensed uppercase">Serviços Atuais</h4>
                     <div id="servicesList" class="space-y-2 max-h-48 overflow-y-auto"></div>
-                </div>
-
-                <div class="vintage-card p-6 rounded-lg space-y-4">
-                    <h3 class="text-lg font-bold text-forestGreen flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-clock"></i> Horários Padrão</h3>
-                    <div class="text-sm text-charcoal space-y-2">
-                        <p><b class="text-forestGreen">Segunda a Sexta:</b> 18:30 às 22:00</p>
-                        <p><b class="text-forestGreen">Sábado:</b> 08:00 às 12:00</p>
-                        <p><b class="text-forestGreen">Domingo:</b> Fechado</p>
-                    </div>
                 </div>
             </div>
 
             <!-- SUB-ABA TRANCAR HORÁRIOS -->
-            <div id="admLockView" class="hidden vintage-card p-6 rounded-lg space-y-4 max-w-lg mx-auto">
-                <h3 class="text-lg font-bold text-vintageRed mb-2 flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-ban"></i> Trancar / Bloquear Horário</h3>
-                <form onsubmit="handleLockSlot(event)" class="space-y-4">
+            <div id="admLockView" class="hidden vintage-card-frame p-5 space-y-3 max-w-md mx-auto">
+                <h3 class="text-md font-bold text-vintageRed mb-2 flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-ban"></i> Trancar Horário</h3>
+                <form onsubmit="handleLockSlot(event)" class="space-y-3">
                     <div>
-                        <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Barbeiro</label>
-                        <select id="lockBarber" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
+                        <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Barbeiro</label>
+                        <select id="lockBarber" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium">
                             <option value="Dreko">Dreko</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Data</label>
-                        <input type="date" id="lockDate" onchange="populateLockTimes()" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
+                        <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Data</label>
+                        <input type="date" id="lockDate" onchange="populateLockTimes()" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium">
                     </div>
                     <div>
-                        <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Horário</label>
-                        <select id="lockTime" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium"></select>
+                        <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Horário</label>
+                        <select id="lockTime" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2 text-xs font-medium"></select>
                     </div>
-                    <div>
-                        <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Motivo do Bloqueio</label>
-                        <input type="text" id="lockReason" placeholder="Ex: Intervalo ou Manutenção" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
-                    </div>
-                    <button type="submit" class="w-full bg-vintageRed hover:bg-red-800 text-white font-bold py-3 rounded transition shadow vintage-condensed uppercase">Trancar Horário</button>
+                    <button type="submit" class="w-full bg-vintageRed hover:bg-red-800 text-white font-bold py-2.5 rounded text-xs transition shadow vintage-condensed uppercase">Trancar Horário</button>
                 </form>
-            </div>
-
-            <!-- SUB-ABA RELATÓRIOS -->
-            <div id="admReportsView" class="hidden space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div class="vintage-card p-4 rounded-lg">
-                        <p class="text-xs font-bold text-armyGreen uppercase vintage-condensed">Receita Bruta</p>
-                        <h4 id="calcGrossRevenue" class="text-2xl font-bold text-forestGreen">R$ 0,00</h4>
-                    </div>
-                    <div class="vintage-card p-4 rounded-lg">
-                        <p class="text-xs font-bold text-armyGreen uppercase vintage-condensed">Custos / Insumos</p>
-                        <h4 id="calcTotalCosts" class="text-2xl font-bold text-vintageRed">R$ 0,00</h4>
-                    </div>
-                    <div class="vintage-card p-4 rounded-lg">
-                        <p class="text-xs font-bold text-armyGreen uppercase vintage-condensed">Lucro Líquido</p>
-                        <h4 id="calcNetProfit" class="text-2xl font-bold text-forestGreen">R$ 0,00</h4>
-                    </div>
-                    <div class="vintage-card p-4 rounded-lg">
-                        <p class="text-xs font-bold text-armyGreen uppercase vintage-condensed">Margem Lucro</p>
-                        <h4 id="calcGrossMargin" class="text-2xl font-bold text-vintageGold">0%</h4>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="vintage-card p-6 rounded-lg">
-                        <h3 class="text-md font-bold text-forestGreen mb-4 flex items-center gap-2 vintage-condensed uppercase"><i class="fa-solid fa-plus-circle"></i> Adicionar Custo</h3>
-                        <form onsubmit="handleAddCost(event)" class="space-y-3">
-                            <div>
-                                <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Descrição</label>
-                                <input type="text" id="costName" placeholder="Ex: Lâminas, Pomada" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Valor (R$)</label>
-                                <input type="number" step="0.01" id="costValue" required class="w-full bg-paperBg border border-armyGreen rounded p-2 text-charcoal">
-                            </div>
-                            <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-2 rounded transition vintage-condensed uppercase">Lançar Custo</button>
-                        </form>
-                    </div>
-
-                    <div class="vintage-card p-6 rounded-lg md:col-span-2">
-                        <h3 class="text-md font-bold text-forestGreen mb-4 vintage-condensed uppercase">Lista de Custos</h3>
-                        <div class="max-h-56 overflow-y-auto">
-                            <table class="w-full text-left text-sm text-charcoal">
-                                <thead class="bg-forestGreen text-paperCard vintage-condensed uppercase text-xs">
-                                    <tr>
-                                        <th class="p-2">Item</th>
-                                        <th class="p-2">Valor</th>
-                                        <th class="p-2">Ação</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="costsList" class="divide-y divide-armyGreen/20"></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
             </div>
         </section>
 
@@ -408,39 +302,39 @@
 
     <!-- MODAL DE AGENDAMENTO CLIENTE -->
     <div id="bookingModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
-        <div class="vintage-card p-6 rounded-lg max-w-md w-full space-y-4 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-armyGreen/30 pb-3">
+        <div class="vintage-card-frame p-5 max-w-md w-full space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-armyGreen/20 pb-2">
                 <h3 class="text-xl font-bold text-forestGreen flex items-center gap-2 vintage-title"><i class="fa-solid fa-scissors text-vintageGold"></i> Agendar Atendimento</h3>
                 <button onclick="closeBookingModal()" class="text-charcoal hover:text-vintageRed text-2xl font-bold">&times;</button>
             </div>
 
-            <form onsubmit="handleCreateAppointment(event)" class="space-y-4">
+            <form onsubmit="handleCreateAppointment(event)" class="space-y-3">
                 <div>
-                    <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Barbeiro</label>
-                    <select id="bookBarber" onchange="loadAvailableSlots()" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
+                    <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Barbeiro</label>
+                    <select id="bookBarber" onchange="loadAvailableSlots()" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium">
                         <option value="Dreko">Dreko</option>
                     </select>
                 </div>
 
                 <div>
-                    <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Serviço</label>
-                    <select id="bookService" onchange="updateServicePrice()" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium"></select>
+                    <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Serviço</label>
+                    <select id="bookService" onchange="updateServicePrice()" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium"></select>
                 </div>
 
                 <div>
-                    <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Data</label>
-                    <input type="date" id="bookDate" onchange="loadAvailableSlots()" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
+                    <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Data</label>
+                    <input type="date" id="bookDate" onchange="loadAvailableSlots()" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium">
                 </div>
 
                 <div>
-                    <label class="block text-xs uppercase font-bold text-charcoal mb-2 vintage-condensed">Horários Disponíveis</label>
-                    <div id="slotsContainer" class="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1"></div>
+                    <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Horários Disponíveis</label>
+                    <div id="slotsContainer" class="grid grid-cols-4 gap-1.5 max-h-36 overflow-y-auto p-1"></div>
                     <input type="hidden" id="selectedTime" required>
                 </div>
 
                 <div>
-                    <label class="block text-xs uppercase font-bold text-charcoal mb-1 vintage-condensed">Forma de Pagamento</label>
-                    <select id="bookPayment" required class="w-full bg-paperBg border border-armyGreen rounded p-3 text-charcoal font-medium">
+                    <label class="block text-[10px] uppercase font-bold text-charcoal mb-1 vintage-condensed">Forma de Pagamento</label>
+                    <select id="bookPayment" required class="w-full bg-paperBg border border-armyGreen/40 rounded p-2.5 text-xs font-medium">
                         <option value="Pix">Pix</option>
                         <option value="Cartão de Crédito">Cartão de Crédito</option>
                         <option value="Cartão de Débito">Cartão de Débito</option>
@@ -448,19 +342,19 @@
                     </select>
                 </div>
 
-                <div class="pt-2 border-t border-armyGreen/30 flex justify-between items-center">
-                    <span class="text-sm font-bold text-charcoal vintage-condensed uppercase">Total:</span>
-                    <span id="bookTotalPrice" class="text-2xl font-bold text-forestGreen">R$ 0,00</span>
+                <div class="pt-2 border-t border-armyGreen/20 flex justify-between items-center">
+                    <span class="text-xs font-bold text-charcoal vintage-condensed uppercase">Total:</span>
+                    <span id="bookTotalPrice" class="text-xl font-bold text-forestGreen">R$ 0,00</span>
                 </div>
 
-                <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-3 rounded transition shadow vintage-condensed uppercase tracking-wider">Confirmar Agendamento</button>
+                <button type="submit" class="w-full bg-forestGreen hover:bg-armyGreen text-paperCard font-bold py-2.5 rounded text-xs transition shadow vintage-condensed uppercase tracking-wider">Confirmar Agendamento</button>
             </form>
         </div>
     </div>
 
     <!-- Footer -->
-    <footer class="bg-paperCard border-t-2 border-forestGreen py-4 text-center text-xs font-bold text-armyGreen vintage-condensed uppercase tracking-wider">
-        <div class="h-1 w-full bg-gradient-to-r from-armyGreen via-vintageGold to-vintageRed mb-3"></div>
+    <footer class="bg-paperCard border-t border-armyGreen/20 py-3 text-center text-[10px] font-bold text-armyGreen vintage-condensed uppercase tracking-wider">
+        <div class="tri-stripe mb-2"></div>
         &copy; Dreko Barbearia - Todos os direitos reservados.
     </footer>
 
@@ -535,7 +429,6 @@
         let services = JSON.parse(localStorage.getItem('dreko_services')) || defaultServices;
         let appointments = JSON.parse(localStorage.getItem('dreko_appointments')) || [];
         let lockedSlots = JSON.parse(localStorage.getItem('dreko_locked_slots')) || [];
-        let costs = JSON.parse(localStorage.getItem('dreko_costs')) || [];
 
         let currentUser = null;
 
@@ -596,7 +489,6 @@
             localStorage.setItem('dreko_services', JSON.stringify(services));
             localStorage.setItem('dreko_appointments', JSON.stringify(appointments));
             localStorage.setItem('dreko_locked_slots', JSON.stringify(lockedSlots));
-            localStorage.setItem('dreko_costs', JSON.stringify(costs));
 
             if (GOOGLE_SHEETS_API_URL) {
                 fetch(GOOGLE_SHEETS_API_URL, {
@@ -637,7 +529,7 @@
             const rawPhone = cleanPhone(phone);
 
             if (users.find(u => cleanPhone(u.phone) === rawPhone)) {
-                alert('Já existe uma conta cadastrada com este número de celular!');
+                alert('Já existe uma conta cadastrada com este celular!');
                 return;
             }
 
@@ -645,7 +537,7 @@
             users.push(newUser);
             
             saveData('newUser', newUser);
-            alert(`Cadastro efetuado! Utilize seu celular (${phone}) e senha para acessar.`);
+            alert(`Cadastro efetuado! Utilize seu celular (${phone}) para acessar.`);
             switchAuthTab('login');
         }
 
@@ -659,7 +551,7 @@
             const rawPhone = cleanPhone(phone);
 
             if (users.find(u => cleanPhone(u.phone) === rawPhone)) {
-                alert('Já existe um cliente cadastrado com este número de celular!');
+                alert('Já existe um cliente cadastrado com este celular!');
                 return;
             }
 
@@ -737,23 +629,23 @@
 
                 let hoursForDay = getWorkingHoursForDate(dateStr);
 
-                let colHtml = `<div class="bg-paperBg p-3 rounded border border-armyGreen/40">
-                    <h4 class="text-xs uppercase font-bold text-forestGreen text-center mb-2 vintage-condensed">${dayName} - ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}</h4>
-                    <div class="space-y-1 max-h-48 overflow-y-auto">`;
+                let colHtml = `<div class="bg-paperBg p-2 rounded border border-armyGreen/30">
+                    <h4 class="text-[10px] uppercase font-bold text-forestGreen text-center mb-1 vintage-condensed">${dayName} - ${dateStr.slice(8,10)}/${dateStr.slice(5,7)}</h4>
+                    <div class="space-y-1 max-h-36 overflow-y-auto">`;
 
                 if(hoursForDay.length === 0) {
-                    colHtml += `<div class="text-xs p-2 text-center text-gray-500 font-semibold">Fechado</div>`;
+                    colHtml += `<div class="text-[10px] p-1 text-center text-gray-500 font-semibold">Fechado</div>`;
                 } else {
                     hoursForDay.forEach(h => {
                         let isTaken = appointments.some(a => formatDateClean(a.date) === dateStr && a.time === h && a.status !== 'Cancelado');
                         let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateStr && l.time === h);
 
                         if (isTaken) {
-                            colHtml += `<div class="text-xs p-1 text-center bg-vintageRed text-white rounded font-bold">Ocupado (${h})</div>`;
+                            colHtml += `<div class="text-[10px] p-0.5 text-center bg-vintageRed text-white rounded font-bold">Ocupado</div>`;
                         } else if (isLocked) {
-                            colHtml += `<div class="text-xs p-1 text-center bg-gray-300 text-gray-600 rounded font-semibold">Trancado</div>`;
+                            colHtml += `<div class="text-[10px] p-0.5 text-center bg-gray-300 text-gray-600 rounded">Trancado</div>`;
                         } else {
-                            colHtml += `<div class="text-xs p-1 text-center bg-forestGreen/10 text-forestGreen rounded font-bold border border-forestGreen/30">Vago (${h})</div>`;
+                            colHtml += `<div class="text-[10px] p-0.5 text-center bg-forestGreen/10 text-forestGreen rounded font-bold border border-forestGreen/20">${h}</div>`;
                         }
                     });
                 }
@@ -775,32 +667,22 @@
             );
 
             if(myAppts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-gray-500 font-semibold">Nenhum agendamento ativo encontrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500 font-semibold">Nenhum agendamento ativo encontrado.</td></tr>`;
                 return;
             }
 
             myAppts.forEach(a => {
-                let statusColor = a.status === 'Concluído' ? 'text-forestGreen' : 'text-vintageGold';
                 let formattedDate = formatDateClean(a.date);
-                let msgWsp = encodeURIComponent(`Olá Dreko Barbearia, sou ${a.clientName}. Gostaria de confirmar meu agendamento de ${a.service} no dia ${formattedDate} às ${a.time}.`);
-
                 tbody.innerHTML += `
                     <tr class="border-b border-armyGreen/20">
-                        <td class="p-3 font-medium">${formattedDate} às ${a.time}</td>
-                        <td class="p-3 font-bold text-forestGreen">${a.barber}</td>
-                        <td class="p-3 font-semibold">${a.service}</td>
-                        <td class="p-3">${a.payment || 'Não especificado'}</td>
-                        <td class="p-3 font-bold text-forestGreen">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
-                        <td class="p-3 flex items-center gap-2">
-                            <span class="${statusColor} font-bold vintage-condensed uppercase">${a.status}</span>
-                            ${a.status === 'Agendado' ? `
-                                <button onclick="cancelAppointment(${a.id})" class="bg-vintageRed text-white px-2 py-1 rounded text-xs font-bold transition">
-                                    Cancelar
-                                </button>
-                                <a href="https://wa.me/?text=${msgWsp}" target="_blank" class="bg-forestGreen text-white px-2 py-1 rounded text-xs font-bold flex items-center gap-1 transition">
-                                    <i class="fa-brands fa-whatsapp"></i> Confirmar
-                                </a>
-                            ` : ''}
+                        <td class="p-2 font-medium">${formattedDate} - ${a.time}</td>
+                        <td class="p-2 font-bold text-forestGreen">${a.barber}</td>
+                        <td class="p-2 font-semibold">${a.service}</td>
+                        <td class="p-2 font-bold text-forestGreen">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
+                        <td class="p-2">
+                            <button onclick="cancelAppointment(${a.id})" class="bg-vintageRed text-white px-2 py-1 rounded text-xs font-bold transition">
+                                Cancelar
+                            </button>
                         </td>
                     </tr>
                 `;
@@ -808,7 +690,7 @@
         }
 
         function cancelAppointment(id) {
-            if (confirm("Tem certeza que deseja cancelar este agendamento? O horário ficará disponível imediatamente.")) {
+            if (confirm("Tem certeza que deseja cancelar este agendamento?")) {
                 const appt = appointments.find(a => String(a.id) === String(id));
                 if (appt) {
                     appt.status = 'Cancelado';
@@ -819,7 +701,7 @@
                     } else {
                         renderClientView();
                     }
-                    alert('Agendamento cancelado com sucesso!');
+                    alert('Agendamento cancelado.');
                 }
             }
         }
@@ -829,8 +711,7 @@
                 appointments = appointments.filter(a => String(a.id) !== String(id));
                 saveData('deleteAppointment', { id: id });
                 renderAdminAppointments();
-                renderReports();
-                alert('Registro excluído com sucesso.');
+                alert('Registro excluído.');
             }
         }
 
@@ -888,11 +769,11 @@
                 let isLocked = lockedSlots.some(l => formatDateClean(l.date) === dateVal && l.time === h && (l.barber === barberVal || l.barber === 'Todos'));
 
                 if (isTaken) {
-                    container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded bg-vintageRed text-white font-bold cursor-not-allowed">Ocupado</button>`;
+                    container.innerHTML += `<button type="button" disabled class="p-1.5 text-xs rounded bg-vintageRed text-white font-bold cursor-not-allowed">Ocupado</button>`;
                 } else if (isLocked) {
-                    container.innerHTML += `<button type="button" disabled class="p-2 text-xs rounded bg-gray-300 text-gray-500 font-semibold cursor-not-allowed">Bloqueado</button>`;
+                    container.innerHTML += `<button type="button" disabled class="p-1.5 text-xs rounded bg-gray-300 text-gray-500 font-semibold cursor-not-allowed">Bloqueado</button>`;
                 } else {
-                    container.innerHTML += `<button type="button" onclick="selectSlot('${h}', this)" class="slot-btn p-2 text-xs rounded bg-paperBg text-forestGreen border border-armyGreen font-bold hover:bg-forestGreen hover:text-paperCard">${h}</button>`;
+                    container.innerHTML += `<button type="button" onclick="selectSlot('${h}', this)" class="slot-btn p-1.5 text-xs rounded bg-paperBg text-forestGreen border border-armyGreen font-bold hover:bg-forestGreen hover:text-paperCard">${h}</button>`;
                 }
             });
         }
@@ -918,7 +799,7 @@
 
             let isTaken = appointments.some(a => formatDateClean(a.date) === date && a.time === time && a.barber === barber && a.status !== 'Cancelado');
             if(isTaken) {
-                alert('Este horário acabou de ser agendado por outro cliente!');
+                alert('Este horário já está ocupado!');
                 loadAvailableSlots();
                 return;
             }
@@ -939,7 +820,7 @@
 
             appointments.push(newAppt);
             saveData('newAppointment', newAppt);
-            alert('Agendamento realizado com sucesso!');
+            alert('Agendamento realizado!');
             closeBookingModal();
             renderClientView();
         }
@@ -949,13 +830,11 @@
             document.getElementById('admUsersView').classList.add('hidden');
             document.getElementById('admConfigView').classList.add('hidden');
             document.getElementById('admLockView').classList.add('hidden');
-            document.getElementById('admReportsView').classList.add('hidden');
 
             document.getElementById('admAgendaTab').classList.remove('active');
             document.getElementById('admUsersTab').classList.remove('active');
             document.getElementById('admConfigTab').classList.remove('active');
             document.getElementById('admLockTab').classList.remove('active');
-            document.getElementById('admReportsTab').classList.remove('active');
 
             if(tab === 'agenda') {
                 document.getElementById('admAgendaView').classList.remove('hidden');
@@ -972,10 +851,6 @@
                 document.getElementById('admLockView').classList.remove('hidden');
                 document.getElementById('admLockTab').classList.add('active');
                 populateLockTimes();
-            } else if(tab === 'reports') {
-                document.getElementById('admReportsView').classList.remove('hidden');
-                document.getElementById('admReportsTab').classList.add('active');
-                renderReports();
             }
         }
 
@@ -983,13 +858,13 @@
             renderAdminAppointments();
         }
 
-        /* RENDERIZAÇÃO ESTILO O CARTÃO DA FOTO */
+        /* RENDERING EXATO CONFORME A IMAGEM DE REFERÊNCIA */
         function renderAdminAppointments() {
-            const tbody = document.getElementById('adminAppointmentsList');
-            tbody.innerHTML = '';
+            const container = document.getElementById('adminAppointmentsCards');
+            container.innerHTML = '';
 
             if (appointments.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-gray-500 font-bold vintage-condensed">NENHUM AGENDAMENTO ENCONTRADO</td></tr>`;
+                container.innerHTML = `<div class="vintage-card-frame p-8 text-center text-gray-500 font-bold vintage-condensed uppercase">Nenhum agendamento ativo</div>`;
                 return;
             }
 
@@ -998,37 +873,83 @@
                 let isCancelled = a.status === 'Cancelado';
                 let formattedDate = formatDateClean(a.date);
 
-                let msgLembrete = encodeURIComponent(`Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia (${formattedDate}) às ${a.time}. Aguardamos você!`);
-                let msgCancelamentoADM = encodeURIComponent(`Olá ${a.clientName}, informamos que o seu agendamento do dia ${formattedDate} às ${a.time} foi CANCELADO.`);
+                let msgLembrete = encodeURIComponent(`Olá ${a.clientName}! Lembramos do seu agendamento na Dreko Barbearia no dia ${formattedDate} às ${a.time}. Aguardamos você!`);
 
-                tbody.innerHTML += `
-                    <tr class="${isCancelled ? 'bg-red-100/50' : 'hover:bg-armyGreen/5'} font-medium">
-                        <td class="p-3 border-r border-armyGreen/20">
-                            <div class="font-bold text-forestGreen">${a.clientName}</div>
-                            <div class="text-xs text-charcoal/80">${a.clientPhone}</div>
-                        </td>
-                        <td class="p-3 border-r border-armyGreen/20 font-bold text-forestGreen">${a.barber}</td>
-                        <td class="p-3 border-r border-armyGreen/20">${a.service}</td>
-                        <td class="p-3 border-r border-armyGreen/20 font-bold">${formattedDate} - ${a.time}</td>
-                        <td class="p-3 border-r border-armyGreen/20">${a.payment || 'Pix'}</td>
-                        <td class="p-3 border-r border-armyGreen/20 font-bold text-forestGreen text-lg">R$ ${parseFloat(a.price || 0).toFixed(2)}</td>
-                        <td class="p-3 space-y-1">
-                            ${a.status === 'Agendado' ? `
-                                <div class="flex gap-1">
-                                    <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-forestGreen text-paperCard px-2 py-1 rounded text-xs font-bold transition flex items-center gap-1 shadow-sm"><i class="fa-solid fa-circle-check"></i> Concluir</button>
-                                    <button onclick="cancelAppointment(${a.id})" class="bg-vintageRed text-white px-2 py-1 rounded text-xs font-bold transition flex items-center gap-1 shadow-sm"><i class="fa-solid fa-circle-xmark"></i> Cancelar</button>
+                container.innerHTML += `
+                    <div class="vintage-card-frame overflow-hidden relative shadow-md">
+                        <!-- BANNER VERDE SUPERIOR DO CARTÃO -->
+                        <div class="bg-forestGreen text-paperCard px-5 py-4 border-b border-vintageGold">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-3xl font-bold vintage-title leading-tight">Agendamentos Realizados</h3>
+                                <span id="syncStatus" class="text-xs text-paperCard/80 vintage-condensed mt-1 font-semibold">(Sincronizado) <i class="fa-solid fa-rotate text-xs cursor-pointer" onclick="fetchFromCloud(true)"></i></span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 space-y-4">
+                            <!-- BOTÃO DE ATUALIZAR PLANILHA -->
+                            <div>
+                                <button onclick="fetchFromCloud(true)" class="bg-[#EBD2A0] hover:bg-vintageGold text-charcoal font-bold text-xs px-4 py-2 rounded-lg border border-armyGreen/40 flex items-center gap-2 vintage-condensed uppercase shadow-sm">
+                                    <i class="fa-solid fa-rotate"></i> Atualizar Planilha
+                                </button>
+                            </div>
+
+                            <!-- FAIPINHA HEADER "AGENDAMENTO | VALOR | AÇÕES" -->
+                            <div class="bg-forestGreen text-paperCard px-4 py-2 rounded-md font-bold text-[11px] vintage-condensed uppercase tracking-wider flex justify-between items-center border border-armyGreen">
+                                <span class="w-1/3">Agendamento</span>
+                                <span class="w-1/3 text-center">Valor</span>
+                                <span class="w-1/3 text-right">Ações / Lembrete</span>
+                            </div>
+
+                            <!-- DETALHES DO CLIENTE -->
+                            <div class="text-xs font-bold text-charcoal">
+                                <p class="text-sm font-extrabold text-forestGreen">${a.clientName}</p>
+                                <p class="text-gray-600">${a.service} com <span class="text-forestGreen">${a.barber}</span></p>
+                                <p class="text-gray-500">${formattedDate} às ${a.time}</p>
+                            </div>
+
+                            <!-- ÁREA DE VALOR E BOTÕES IGUAL AO PRINT -->
+                            <div class="flex justify-between items-end pt-2">
+                                <!-- LADO ESQUERDO: VALOR -->
+                                <div class="space-y-0">
+                                    <span class="block text-sm font-extrabold text-charcoal leading-none">R$</span>
+                                    <span class="block text-3xl font-black text-charcoal vintage-condensed leading-none">${parseFloat(a.price || 0).toFixed(2)}</span>
+                                    <div class="tri-stripe w-16 mt-1 rounded-full"></div>
                                 </div>
-                            ` : `<span class="text-xs uppercase font-bold ${isCancelled ? 'text-vintageRed bg-red-200 px-2 py-1 rounded' : 'text-gray-500'}">${a.status}</span>`}
-                            
-                            ${rawPhone && !isCancelled ? `<a href="https://wa.me/55${rawPhone}?text=${msgLembrete}" target="_blank" class="block text-center bg-forestGreen/20 text-forestGreen hover:bg-forestGreen hover:text-white px-2 py-1 rounded text-xs font-bold transition"><i class="fa-brands fa-whatsapp"></i> Lembrete</a>` : ''}
-                            
-                            ${rawPhone && isCancelled ? `<a href="https://wa.me/55${rawPhone}?text=${msgCancelamentoADM}" target="_blank" class="block text-center bg-vintageRed/20 text-vintageRed hover:bg-vintageRed hover:text-white px-2 py-1 rounded text-xs font-bold transition"><i class="fa-brands fa-whatsapp"></i> Avisar Cancelamento</a>` : ''}
 
-                            <button onclick="deleteAppointmentPermanently(${a.id})" class="block w-full text-center bg-charcoal text-paperCard hover:bg-black px-2 py-1 rounded text-xs transition mt-1 font-bold">
-                                <i class="fa-solid fa-trash"></i> Apagar Registro
-                            </button>
-                        </td>
-                    </tr>
+                                <!-- LADO DIREITO: GRADE DE BOTÕES -->
+                                <div class="space-y-1.5 w-1/2">
+                                    ${a.status === 'Agendado' ? `
+                                        <div class="grid grid-cols-2 gap-1.5">
+                                            <button onclick="changeStatus(${a.id}, 'Concluído')" class="bg-forestGreen hover:bg-armyGreen text-white text-[10px] font-bold py-1.5 px-2 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed">
+                                                <i class="fa-regular fa-circle-check"></i> Concluir
+                                            </button>
+                                            <button onclick="cancelAppointment(${a.id})" class="bg-vintageRed hover:bg-red-800 text-white text-[10px] font-bold py-1.5 px-2 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed">
+                                                <i class="fa-regular fa-circle-xmark"></i> Cancelar
+                                            </button>
+                                        </div>
+                                    ` : `<div class="text-center py-1 bg-gray-200 rounded text-xs font-bold text-gray-600 uppercase vintage-condensed">${a.status}</div>`}
+
+                                    ${rawPhone && !isCancelled ? `
+                                        <a href="https://wa.me/55${rawPhone}?text=${msgLembrete}" target="_blank" class="block w-full text-center bg-forestGreen/80 hover:bg-forestGreen text-white text-[11px] font-bold py-1.5 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed">
+                                            <i class="fa-brands fa-whatsapp text-sm"></i> Lembrete
+                                        </a>
+                                    ` : ''}
+
+                                    <button onclick="deleteAppointmentPermanently(${a.id})" class="w-full bg-[#353535] hover:bg-black text-white text-[10px] font-bold py-1.5 rounded-md transition flex items-center justify-center gap-1 shadow-sm vintage-condensed">
+                                        <i class="fa-regular fa-trash-can"></i> Apagar Registro
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ESTRELA E RODAPÉ VINTAGE DO CARTÃO -->
+                        <div class="text-center pt-2 pb-3 border-t border-armyGreen/20">
+                            <i class="fa-solid fa-compass-drafting text-armyGreen/40 text-xs mb-1"></i>
+                            <p class="text-[10px] font-bold text-armyGreen/80 vintage-condensed uppercase tracking-widest">
+                                QUALIDADE &nbsp;★&nbsp; RESPEITO &nbsp;★&nbsp; ESTILO
+                            </p>
+                        </div>
+                    </div>
                 `;
             });
         }
@@ -1040,23 +961,19 @@
             const clientUsers = users.filter(u => u.role !== 'admin');
 
             if (clientUsers.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="p-3 text-center text-gray-500">Nenhum cliente cadastrado.</td></tr>`;
                 return;
             }
 
             clientUsers.forEach(u => {
                 tbody.innerHTML += `
                     <tr class="border-b border-armyGreen/20">
-                        <td class="p-3 text-forestGreen font-bold">${u.name}</td>
-                        <td class="p-3 font-semibold">${u.phone || u.username}</td>
-                        <td class="p-3">${u.email || 'N/I'}</td>
-                        <td class="p-3"><code class="bg-paperBg border border-armyGreen/30 px-2 py-1 rounded text-charcoal font-bold">${u.pass}</code></td>
-                        <td class="p-3 flex gap-2">
-                            <button onclick="resetUserPassword('${u.phone || u.username}')" class="bg-vintageGold text-forestGreen font-bold px-2 py-1 rounded text-xs transition">
-                                Reset Senha
-                            </button>
-                            <button onclick="deleteUser('${u.phone || u.username}')" class="bg-vintageRed text-white font-bold px-2 py-1 rounded text-xs transition">
-                                Excluir Conta
+                        <td class="p-2 text-forestGreen font-bold">${u.name}</td>
+                        <td class="p-2 font-semibold">${u.phone || u.username}</td>
+                        <td class="p-2"><code class="bg-paperBg border border-armyGreen/30 px-1.5 py-0.5 rounded text-charcoal font-bold">${u.pass}</code></td>
+                        <td class="p-2">
+                            <button onclick="deleteUser('${u.phone || u.username}')" class="bg-vintageRed text-white font-bold px-2 py-1 rounded text-[10px]">
+                                Excluir
                             </button>
                         </td>
                     </tr>
@@ -1064,26 +981,12 @@
             });
         }
 
-        function resetUserPassword(identifier) {
-            const user = users.find(u => (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier);
-            if (user) {
-                const newPass = prompt(`Digite a nova senha para o cliente ${user.name}:`);
-                if (newPass && newPass.trim().length > 0) {
-                    user.pass = newPass.trim();
-                    saveData('newUser', user);
-                    renderAdminUsers();
-                    alert(`Senha de ${user.name} alterada para: ${newPass}`);
-                }
-            }
-        }
-
         function deleteUser(identifier) {
             const userObj = users.find(u => (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier);
-            if (userObj && confirm(`Tem certeza que deseja excluir o cadastro de ${userObj.name}?`)) {
+            if (userObj && confirm(`Excluir ${userObj.name}?`)) {
                 users = users.filter(u => !( (u.phone && cleanPhone(u.phone) === cleanPhone(identifier)) || u.username === identifier ));
                 saveData();
                 renderAdminUsers();
-                alert(`Cadastro excluído.`);
             }
         }
 
@@ -1101,9 +1004,9 @@
             servicesContainer.innerHTML = '';
             services.forEach(s => {
                 servicesContainer.innerHTML += `
-                    <div class="flex justify-between items-center bg-paperBg p-2 rounded border border-armyGreen/30">
-                        <span class="text-sm font-bold text-charcoal">${s.name} - <b class="text-forestGreen">R$ ${s.price.toFixed(2)}</b></span>
-                        <button onclick="removeService(${s.id})" class="text-vintageRed hover:text-red-700 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>
+                    <div class="flex justify-between items-center bg-paperBg p-2 rounded border border-armyGreen/20 text-xs">
+                        <span class="font-bold text-charcoal">${s.name} - <b class="text-forestGreen">R$ ${s.price.toFixed(2)}</b></span>
+                        <button onclick="removeService(${s.id})" class="text-vintageRed font-bold"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 `;
             });
@@ -1147,53 +1050,7 @@
 
             lockedSlots.push({ id: Date.now(), date, time, barber });
             saveData();
-            alert(`Horário das ${time} no dia ${date} foi trancado com sucesso!`);
-        }
-
-        function handleAddCost(e) {
-            e.preventDefault();
-            const name = document.getElementById('costName').value;
-            const value = parseFloat(document.getElementById('costValue').value);
-
-            costs.push({ id: Date.now(), name, value });
-            saveData();
-            document.getElementById('costName').value = '';
-            document.getElementById('costValue').value = '';
-            renderReports();
-        }
-
-        function removeCost(id) {
-            costs = costs.filter(c => c.id !== id);
-            saveData();
-            renderReports();
-        }
-
-        function renderReports() {
-            const tbody = document.getElementById('costsList');
-            tbody.innerHTML = '';
-            let totalCostVal = 0;
-
-            costs.forEach(c => {
-                totalCostVal += c.value;
-                tbody.innerHTML += `
-                    <tr class="border-b border-armyGreen/20">
-                        <td class="p-2 font-medium">${c.name}</td>
-                        <td class="p-2 text-vintageRed font-bold">R$ ${c.value.toFixed(2)}</td>
-                        <td class="p-2"><button onclick="removeCost(${c.id})" class="text-vintageRed hover:underline text-xs font-bold">Excluir</button></td>
-                    </tr>
-                `;
-            });
-
-            let grossRevenue = appointments
-                .reduce((sum, a) => sum + parseFloat(a.price || 0), 0);
-
-            let netProfit = grossRevenue - totalCostVal;
-            let grossMargin = grossRevenue > 0 ? ((netProfit / grossRevenue) * 100).toFixed(1) : 0;
-
-            document.getElementById('calcGrossRevenue').innerText = `R$ ${grossRevenue.toFixed(2)}`;
-            document.getElementById('calcTotalCosts').innerText = `R$ ${totalCostVal.toFixed(2)}`;
-            document.getElementById('calcNetProfit').innerText = `R$ ${netProfit.toFixed(2)}`;
-            document.getElementById('calcGrossMargin').innerText = `${grossMargin}%`;
+            alert(`Horário das ${time} no dia ${date} foi trancado.`);
         }
     </script>
 </body>
